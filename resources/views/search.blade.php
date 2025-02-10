@@ -13,43 +13,85 @@
 
 <body class="bg-light">
     <div class="container mt-5">
+        <!-- Imagen superior -->
+        <div class="text-center mb-4">
+            <!-- Asegúrate de que la ruta de la imagen sea correcta -->
+            <img src="{{ asset('img/banner.jpg') }}" class="img-fluid" alt="FlyLow Banner">
+        </div>
+
         <h1 class="text-center">Buscar Vuelos</h1>
         <div class="card shadow p-4">
             <form action="/flights" method="GET">
-                
+
+                <!-- Tipo de viaje -->
                 <div class="mb-3">
                     <label class="form-label">Tipo de viaje:</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="trip_type" id="round_trip" value="1" checked>
-                        <label class="form-check-label" for="round_trip">Ida y vuelta</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="trip_type" id="one_way" value="2">
-                        <label class="form-check-label" for="one_way">Solo ida</label>
+                    <div class="btn-group w-100" role="group" aria-label="Tipo de viaje">
+                        <input type="radio" class="btn-check" name="trip_type" id="round_trip" value="1" checked>
+                        <label class="btn btn-outline-primary w-100" for="round_trip">Ida y vuelta</label>
+
+                        <input type="radio" class="btn-check" name="trip_type" id="one_way" value="2">
+                        <label class="btn btn-outline-primary w-100" for="one_way">Solo ida</label>
                     </div>
                 </div>
 
+                <!-- Desde -->
                 <div class="mb-3">
                     <label class="form-label">Desde:</label>
                     <select id="departure" name="departure" class="form-select" required>
                         <option value="">Selecciona un aeropuerto...</option>
                     </select>
                 </div>
+
+                <!-- Hasta -->
                 <div class="mb-3">
                     <label class="form-label">Hasta:</label>
                     <select id="arrival" name="arrival" class="form-select" required>
                         <option value="">Selecciona un aeropuerto...</option>
                     </select>
                 </div>
+
+                <!-- Fecha de salida -->
                 <div class="mb-3">
                     <label class="form-label">Fecha de salida:</label>
                     <input type="date" name="date" class="form-control" required>
                 </div>
+
+                <!-- Fecha de regreso (ocultada si es solo ida) -->
                 <div class="mb-3" id="return_date_container">
                     <label class="form-label">Fecha de regreso:</label>
                     <input type="date" name="return_date" id="return_date" class="form-control">
                 </div>
 
+                <!-- Pasajeros -->
+                <div class="mb-3">
+                    <label class="form-label">Pasajeros:</label>
+                    <select name="passengers" class="form-select" required>
+                        <option value="">Selecciona el número de pasajeros...</option>
+                        <option value="1">1 Pasajero</option>
+                        <option value="2">2 Pasajeros</option>
+                        <option value="3">3 Pasajeros</option>
+                        <option value="4">4 Pasajeros</option>
+                        <option value="5">5 Pasajeros</option>
+                        <option value="6">6 Pasajeros</option>
+                        <option value="7">7 Pasajeros</option>
+                        <option value="8">8 Pasajeros</option>
+                        <option value="9">9 Pasajeros</option>
+                    </select>
+                </div>
+
+                <!-- Clase -->
+                <div class="mb-3">
+                    <label class="form-label">Clase:</label>
+                    <select name="class" class="form-select" required>
+                        <option value="">Selecciona una clase...</option>
+                        <option value="economy">Económica</option>
+                        <option value="business">Business</option>
+                        <option value="first_class">Primera clase</option>
+                    </select>
+                </div>
+
+                <!-- Botón de búsqueda -->
                 <button type="submit" class="btn btn-primary w-100">Buscar</button>
             </form>
         </div>
@@ -81,11 +123,13 @@
                 });
             });
 
-            // Habilitar o deshabilitar la fecha de regreso
+            // Cambiar la visibilidad de la fecha de regreso
             $('input[name="trip_type"]').change(function () {
                 if ($('#one_way').is(':checked')) {
+                    $('#return_date_container').hide();
                     $('#return_date').prop('disabled', true).val('');
                 } else {
+                    $('#return_date_container').show();
                     $('#return_date').prop('disabled', false);
                 }
             });

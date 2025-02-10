@@ -19,6 +19,7 @@ class FlightController extends Controller
         $date = $request->input('date');
         $returnDate = $request->input('return_date');
         $tripType = $request->input('trip_type', '1'); // 1: Ida y vuelta (default), 2: Solo ida
+        $passengers = $request->input('passengers');
 
         $apiKey = env('SERPAPI_KEY');
 
@@ -30,6 +31,7 @@ class FlightController extends Controller
             . "&type={$tripType}"
             . "&currency=EUR"
             . "&hl=en"
+            . "&adults={$passengers}"
             . "&api_key={$apiKey}";
 
         // Solo agregar return_date si el viaje es ida y vuelta

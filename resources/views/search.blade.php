@@ -13,40 +13,38 @@
 
 <body class="bg-light">
     <div class="container mt-5">
-        <!-- Imagen superior -->
         <div class="text-center mb-4">
-            <!-- Asegúrate de que la ruta de la imagen sea correcta -->
             <img src="{{ asset('img/banner.jpg') }}" class="img-fluid" alt="FlyLow Banner">
         </div>
 
         <h1 class="text-center">Buscar Vuelos</h1>
         <div class="card shadow p-4">
-            <form action="/flights" method="GET">
+            <form action="/flights" method="GET" id="flight-form">
 
                 <!-- Tipo de viaje -->
                 <div class="mb-3">
                     <label class="form-label">Tipo de viaje:</label>
-                    <div class="btn-group w-100" role="group" aria-label="Tipo de viaje">
-                        <input type="radio" class="btn-check" name="trip_type" id="round_trip" value="1" checked>
-                        <label class="btn btn-outline-primary w-100" for="round_trip">Ida y vuelta</label>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="tipo_viaje" id="ida_vuelta" value="ida_vuelta" checked>
+                        <label class="btn btn-outline-primary w-50" for="ida_vuelta">Ida y vuelta</label>
 
-                        <input type="radio" class="btn-check" name="trip_type" id="one_way" value="2">
-                        <label class="btn btn-outline-primary w-100" for="one_way">Solo ida</label>
+                        <input type="radio" class="btn-check" name="tipo_viaje" id="solo_ida" value="solo_ida">
+                        <label class="btn btn-outline-primary w-50" for="solo_ida">Solo ida</label>
                     </div>
                 </div>
 
                 <!-- Desde -->
                 <div class="mb-3">
-                    <label class="form-label">Desde:</label>
-                    <select id="departure" name="departure" class="form-select" required>
+                    <label class="form-label">Origen:</label>
+                    <select id="origen" name="origen" class="form-select" required>
                         <option value="">Selecciona un aeropuerto...</option>
                     </select>
                 </div>
 
                 <!-- Hasta -->
                 <div class="mb-3">
-                    <label class="form-label">Hasta:</label>
-                    <select id="arrival" name="arrival" class="form-select" required>
+                    <label class="form-label">Destino:</label>
+                    <select id="destino" name="destino" class="form-select" required>
                         <option value="">Selecciona un aeropuerto...</option>
                     </select>
                 </div>
@@ -54,40 +52,62 @@
                 <!-- Fecha de salida -->
                 <div class="mb-3">
                     <label class="form-label">Fecha de salida:</label>
-                    <input type="date" name="date" class="form-control" required>
+                    <input type="date" name="fecha_salida" class="form-control" required>
                 </div>
 
-                <!-- Fecha de regreso (ocultada si es solo ida) -->
-                <div class="mb-3" id="return_date_container">
+                <!-- Fecha de regreso -->
+                <div class="mb-3" id="fecha_regreso_contenedor">
                     <label class="form-label">Fecha de regreso:</label>
-                    <input type="date" name="return_date" id="return_date" class="form-control">
+                    <input type="date" name="fecha_regreso" id="fecha_regreso" class="form-control">
                 </div>
 
                 <!-- Pasajeros -->
                 <div class="mb-3">
                     <label class="form-label">Pasajeros:</label>
-                    <select name="passengers" class="form-select" required>
-                        <option value="">Selecciona el número de pasajeros...</option>
-                        <option value="1">1 Pasajero</option>
-                        <option value="2">2 Pasajeros</option>
-                        <option value="3">3 Pasajeros</option>
-                        <option value="4">4 Pasajeros</option>
-                        <option value="5">5 Pasajeros</option>
-                        <option value="6">6 Pasajeros</option>
-                        <option value="7">7 Pasajeros</option>
-                        <option value="8">8 Pasajeros</option>
-                        <option value="9">9 Pasajeros</option>
-                    </select>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Adultos (12+ años)</label>
+                            <select id="adultos" name="adultos" class="form-select" required>
+                                @for ($i = 1; $i <= 9; $i++)
+                                    <option value="{{ $i }}">{{ $i }} Adulto(s)</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Niños (2-11 años)</label>
+                            <select id="ninos" name="ninos" class="form-select">
+                                @for ($i = 0; $i <= 9; $i++)
+                                    <option value="{{ $i }}">{{ $i }} Niño(s)</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Bebés (con asiento, 0-1 año)</label>
+                            <select id="bebes_asiento" name="bebes_asiento" class="form-select">
+                                @for ($i = 0; $i <= 9; $i++)
+                                    <option value="{{ $i }}">{{ $i }} Bebé(s)</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Bebés (en regazo, 0-1 año)</label>
+                            <select id="bebes_regazo" name="bebes_regazo" class="form-select">
+                                @for ($i = 0; $i <= 9; $i++)
+                                    <option value="{{ $i }}">{{ $i }} Bebé(s)</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Clase -->
                 <div class="mb-3">
                     <label class="form-label">Clase:</label>
-                    <select name="class" class="form-select" required>
+                    <select name="clase" class="form-select" required>
                         <option value="">Selecciona una clase...</option>
-                        <option value="economy">Económica</option>
+                        <option value="economica">Económica</option>
                         <option value="business">Business</option>
-                        <option value="first_class">Primera clase</option>
+                        <option value="primera_clase">Primera clase</option>
                     </select>
                 </div>
 
@@ -101,36 +121,48 @@
         $(document).ready(function () {
             // Cargar aeropuertos desde Laravel
             $.getJSON('/airports', function (data) {
-                let departureSelect = $('#departure');
-                let arrivalSelect = $('#arrival');
+                let origenSelect = $('#origen');
+                let destinoSelect = $('#destino');
 
-                Object.keys(data).forEach(city_country => {
-                    let optgroup = $('<optgroup>', { label: city_country });
+                Object.keys(data).forEach(ciudad => {
+                    let optgroup = $('<optgroup>', { label: ciudad });
 
-                    data[city_country].forEach(airport => {
-                        let option = new Option(`${airport.name} (${airport.iata})`, airport.iata, false, false);
+                    data[ciudad].forEach(aeropuerto => {
+                        let option = new Option(`${aeropuerto.name} (${aeropuerto.iata})`, aeropuerto.iata, false, false);
                         optgroup.append(option);
                     });
 
-                    departureSelect.append(optgroup.clone());
-                    arrivalSelect.append(optgroup.clone());
+                    origenSelect.append(optgroup.clone());
+                    destinoSelect.append(optgroup.clone());
                 });
 
-                $('#departure, #arrival').select2({
+                $('#origen, #destino').select2({
                     placeholder: "Escribe una ciudad o aeropuerto...",
                     allowClear: true,
                     width: '100%'
                 });
             });
 
-            // Cambiar la visibilidad de la fecha de regreso
-            $('input[name="trip_type"]').change(function () {
-                if ($('#one_way').is(':checked')) {
-                    $('#return_date_container').hide();
-                    $('#return_date').prop('disabled', true).val('');
+            // Ocultar la fecha de regreso si es solo ida
+            $('input[name="tipo_viaje"]').change(function () {
+                if ($('#solo_ida').is(':checked')) {
+                    $('#fecha_regreso_contenedor').hide();
+                    $('#fecha_regreso').prop('disabled', true).val('');
                 } else {
-                    $('#return_date_container').show();
-                    $('#return_date').prop('disabled', false);
+                    $('#fecha_regreso_contenedor').show();
+                    $('#fecha_regreso').prop('disabled', false);
+                }
+            });
+
+            // Validar pasajeros (no menores solos)
+            $('#flight-form').submit(function (e) {
+                let adultos = parseInt($('#adultos').val());
+                let ninos = parseInt($('#ninos').val());
+                let bebes = parseInt($('#bebes_asiento').val()) + parseInt($('#bebes_regazo').val());
+
+                if ((ninos > 0 || bebes > 0) && adultos === 0) {
+                    alert("Los niños y bebés deben viajar con al menos un adulto.");
+                    e.preventDefault();
                 }
             });
         });

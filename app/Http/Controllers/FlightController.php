@@ -53,11 +53,12 @@ class FlightController extends Controller
             $data = $response->json() ?? [];
             $flights = $data['best_flights'] ?? [];
             $other_flights = $data['other_flights'] ?? [];
+            $prices = $data['price_insights'] ?? [];
         } else {
             $flights = [];
             $other_flights = [];
         }
 
-        return view('flights', compact('flights', 'other_flights'));
+        return view('flights', compact('flights', 'other_flights', 'prices'));
     }
 }

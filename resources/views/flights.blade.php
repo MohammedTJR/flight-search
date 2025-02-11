@@ -27,6 +27,12 @@
         <a href="/" class="btn btn-secondary mb-4">Nueva búsqueda</a>
 
         <div class="card shadow p-4 mt-4">
+            <h3 class="text-center">Información de Precios</h3>
+            <p><strong>Nivel de precio:</strong> <span id="priceLevel"></span> |
+            <strong>Rango típico de precios:</strong> <span id="priceRange"></span> €</p>
+        </div>
+
+        <div class="card shadow p-4 mt-3">
             <h3 class="text-center">Evolución de Precios</h3>
             <canvas id="priceChart"></canvas>
         </div>
@@ -90,54 +96,63 @@
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            fetch('/api/flights/prices') // Ajusta la URL según corresponda
-                .then(response => response.json())
-                .then(data => {
-                    const priceHistory = data.price_insights.price_history;
+            const priceData = @json($prices['price_history'] ?? []);
+            const priceLevel = @json($prices['price_level'] ?? 'No disponible');
+            const priceRange = @json($prices['typical_price_range'] ?? []);
 
-                    // Convertir timestamps a fechas legibles
-                    const labels = priceHistory.map(entry => {
-                        const date = new Date(entry[0] * 1000);
-                        return date.toLocaleDateString();
-                    });
+            // Mostrar el nivel de precio y el rango típico
+            document.getElementById("priceLevel").innerText = priceLevel.charAt(0).toUpperCase() + priceLevel.slice(
+                1);
 
-                    const prices = priceHistory.map(entry => entry[1]);
+                if(priceLevel)
+            document.getElementById("priceRange").innerText = priceRange.length === 2 ?
+                `${priceRange[0]} - ${priceRange[1]}` : "No disponible";
 
-                    // Crear gráfico
-                    const ctx = document.getElementById("priceChart").getContext("2d");
-                    new Chart(ctx, {
-                        type: "line",
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: "Precio Histórico",
-                                data: prices,
-                                borderColor: "blue",
-                                backgroundColor: "rgba(0, 0, 255, 0.1)",
-                                fill: true
-                            }]
+            if (priceData.length === 0) {
+                console.warn("No hay datos de precios.");
+                return;
+            }
+
+            const labels = priceData.map(entry => {
+                const date = new Date(entry[0] * 1000);
+                return date.toLocaleDateString();
+            });
+
+            const prices = priceData.map(entry => entry[1]);
+
+            const ctx = document.getElementById("priceChart").getContext("2d");
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Precio Histórico (€)",
+                        data: prices,
+                        borderColor: "blue",
+                        backgroundColor: "rgba(0, 0, 255, 0.1)",
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Fecha"
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: "Fecha"
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: "Precio (€)"
-                                    }
-                                }
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Precio (€)"
                             }
                         }
-                    });
-                })
-                .catch(error => console.error("Error cargando los datos:", error));
+                    }
+                }
+            });
         });
     </script>
 </body>
+
 </html>

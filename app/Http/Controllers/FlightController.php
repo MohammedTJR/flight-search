@@ -19,7 +19,11 @@ class FlightController extends Controller
         $date = $request->input('date');
         $returnDate = $request->input('return_date');
         $tripType = $request->input('trip_type', '1'); // 1: Ida y vuelta (default), 2: Solo ida
-        $passengers = $request->input('passengers');
+        $adults = $request->input('adults', 1);
+        $children = $request->input('children', 0);
+        $infants_in_seat = $request->input('infants_in_seat', 0);
+        $infants_on_lap = $request->input('infants_on_lap', 0);
+        $travel_class = $request->input('travel_class', 'economy');
 
         $apiKey = env('SERPAPI_KEY');
 
@@ -31,7 +35,11 @@ class FlightController extends Controller
             . "&type={$tripType}"
             . "&currency=EUR"
             . "&hl=en"
-            . "&adults={$passengers}"
+            . "&adults={$adults}"
+            . "&children={$children}"
+            . "&infants_in_seat={$infants_in_seat}"
+            . "&infants_on_lap={$infants_on_lap}"
+            . "&travel_class={$travel_class}"
             . "&api_key={$apiKey}";
 
         // Solo agregar return_date si el viaje es ida y vuelta
@@ -40,11 +48,16 @@ class FlightController extends Controller
         }
 
         $response = Http::get($url);
-        $data = $response->json();
 
-        // Si la API devuelve datos, los tomamos; si no, inicializamos un array vacío
-        $flights = $data['best_flights'] ?? [];
+        if ($response->successful()) {
+            $data = $response->json() ?? [];
+            $flights = $data['best_flights'] ?? [];
+            $other_flights = $data['other_flights'] ?? [];
+        } else {
+            $flights = [];
+            $other_flights = [];
+        }
 
-        return view('flights', compact('flights'));
+        return view('flights', compact('flights', 'other_flights'));
     }
 }

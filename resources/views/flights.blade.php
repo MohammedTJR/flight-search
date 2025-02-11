@@ -100,11 +100,21 @@
             const priceLevel = @json($prices['price_level'] ?? 'No disponible');
             const priceRange = @json($prices['typical_price_range'] ?? []);
 
-            // Mostrar el nivel de precio y el rango típico
-            document.getElementById("priceLevel").innerText = priceLevel.charAt(0).toUpperCase() + priceLevel.slice(
-                1);
+            const level = priceLevel.charAt(0).toUpperCase() + priceLevel.slice(1);
 
-                if(priceLevel)
+            var color;
+
+            document.getElementById("priceLevel").innerText = level
+
+            if (level === "Low") {
+                color = "green";
+            } else if (level === "Typical") {
+                color = "orange";
+            } else if (level === "High") {
+                color = "red";
+            }
+
+
             document.getElementById("priceRange").innerText = priceRange.length === 2 ?
                 `${priceRange[0]} - ${priceRange[1]}` : "No disponible";
 
@@ -128,7 +138,7 @@
                     datasets: [{
                         label: "Precio Histórico (€)",
                         data: prices,
-                        borderColor: "blue",
+                        borderColor: color,
                         backgroundColor: "rgba(0, 0, 255, 0.1)",
                         fill: true
                     }]

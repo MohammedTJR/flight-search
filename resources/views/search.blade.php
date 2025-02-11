@@ -162,16 +162,17 @@
                         data[ciudad].forEach(function(aeropuerto) {
                             airports.push({
                                 name: aeropuerto.name,
+                                city: ciudad,
                                 iata: aeropuerto.iata,
                                 lat: aeropuerto.latitude,
                                 lon: aeropuerto.longitude
                             });
                             // Crear las opciones para el campo de Origen
-                            var optionDeparture = $('<div>').text(aeropuerto.name + ' (' + aeropuerto.iata + ')').data('iata', aeropuerto.iata);
+                            var optionDeparture = $('<div>').text(aeropuerto.name + ' ,' + ciudad + ', ' + aeropuerto.iata ).data('iata', aeropuerto.iata);
                             departureDropdown.append(optionDeparture);
 
                             // Crear las opciones para el campo de Destino
-                            var optionArrival = $('<div>').text(aeropuerto.name + ' (' + aeropuerto.iata + ')').data('iata', aeropuerto.iata);
+                            var optionArrival = $('<div>').text(aeropuerto.name + ' ,' + ciudad + ', ' + aeropuerto.iata ).data('iata', aeropuerto.iata);
                             arrivalDropdown.append(optionArrival);
                         });
                     });
@@ -187,7 +188,7 @@
                                 var closestAirport = getClosestAirport(userLat, userLon, airports);
 
                                 // Autocompletar el campo de "Origen" con el aeropuerto más cercano
-                                $('#departure').val(closestAirport.name + ' (' + closestAirport.iata + ')');
+                                $('#departure').val(closestAirport.name + ' (' + closestAirport.city + ', ' + closestAirport.iata + ')');
                                 $("input[name='departure']").val(closestAirport.iata);
                             });
                         } else {

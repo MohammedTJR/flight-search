@@ -156,8 +156,16 @@
                     departureDropdown.empty();
                     arrivalDropdown.empty();
 
+                    // Variables para almacenar la información de los aeropuertos y sus coordenadas
+                    var airports = [];
                     Object.keys(data).forEach(function(ciudad) {
                         data[ciudad].forEach(function(aeropuerto) {
+                            airports.push({
+                                name: aeropuerto.name,
+                                iata: aeropuerto.iata,
+                                lat: aeropuerto.latitude,
+                                lon: aeropuerto.longitude
+                            });
                             // Crear las opciones para el campo de Origen
                             var optionDeparture = $('<div>').text(aeropuerto.name + ' (' + aeropuerto.iata + ')').data('iata', aeropuerto.iata);
                             departureDropdown.append(optionDeparture);
@@ -167,6 +175,56 @@
                             arrivalDropdown.append(optionArrival);
                         });
                     });
+
+                    // Función para obtener la ubicación actual del dispositivo
+                    function getLocation() {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                var userLat = position.coords.latitude;
+                                var userLon = position.coords.longitude;
+
+                                // Calcular la distancia a cada aeropuerto y seleccionar el más cercano
+                                var closestAirport = getClosestAirport(userLat, userLon, airports);
+
+                                // Autocompletar el campo de "Origen" con el aeropuerto más cercano
+                                $('#departure').val(closestAirport.name + ' (' + closestAirport.iata + ')');
+                                $("input[name='departure']").val(closestAirport.iata);
+                            });
+                        } else {
+                            alert("Geolocalización no es soportada por este navegador.");
+                        }
+                    }
+
+                    // Función para calcular la distancia entre dos puntos geográficos
+                    function getDistance(lat1, lon1, lat2, lon2) {
+                        var R = 6371; // Radio de la Tierra en km
+                        var dLat = (lat2 - lat1) * Math.PI / 180;
+                        var dLon = (lon2 - lon1) * Math.PI / 180;
+                        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        return R * c; // Distancia en km
+                    }
+
+                    // Función para obtener el aeropuerto más cercano
+                    function getClosestAirport(userLat, userLon, airports) {
+                        var closest = airports[0];
+                        var closestDist = getDistance(userLat, userLon, closest.lat, closest.lon);
+
+                        airports.forEach(function(airport) {
+                            var dist = getDistance(userLat, userLon, airport.lat, airport.lon);
+                            if (dist < closestDist) {
+                                closest = airport;
+                                closestDist = dist;
+                            }
+                        });
+
+                        return closest;
+                    }
+
+                    // Llamar a la función para obtener la ubicación y seleccionar el aeropuerto más cercano
+                    getLocation();
                 });
 
                 // Función para mostrar el dropdown cuando el usuario escribe

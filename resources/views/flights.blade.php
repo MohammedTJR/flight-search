@@ -18,6 +18,14 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+
+        .clickable-card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .clickable-card:hover {
+            transform: scale(1.02);
+        }
     </style>
 </head>
 
@@ -64,34 +72,37 @@
                                     $horaLlegada = date('H:i', strtotime($detalleVuelo['arrival_airport']['time']));
                                 @endphp
                                 <div class="col-md-6">
-                                    <div class="card mb-4 shadow-sm">
-                                        <div class="card-body">
-                                            <div class="flight-header">
-                                                <h5 class="card-title">
-                                                    <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
-                                                    {{ $detalleVuelo['airline'] }}
-                                                </h5>
-                                                <div class="flight-times">
-                                                    {{ $horaSalida }} → {{ $horaLlegada }}
+                                    <a href="{{ route('flight.show', ['id' => $detalleVuelo['flight_number']]) }}"
+                                        class="text-decoration-none">
+                                        <div class="card mb-4 shadow-sm clickable-card">
+                                            <div class="card-body">
+                                                <div class="flight-header">
+                                                    <h5 class="card-title">
+                                                        <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
+                                                        {{ $detalleVuelo['airline'] }}
+                                                    </h5>
+                                                    <div class="flight-times">
+                                                        {{ $horaSalida }} → {{ $horaLlegada }}
+                                                    </div>
                                                 </div>
+                                                <p class="card-text">
+                                                    <strong>Precio:</strong> €{{ $flight['price'] }} <br>
+                                                    <strong>Duración total:</strong>
+                                                    {{ intdiv($flight['total_duration'], 60) }}h
+                                                    {{ $flight['total_duration'] % 60 }}min
+                                                    <br>
+                                                    <strong>Escalas:</strong>
+                                                    @if (!empty($flight['layovers']))
+                                                        @foreach ($flight['layovers'] as $layover)
+                                                            {{ $layover['name'] }} ({{ $layover['duration'] }} min)
+                                                        @endforeach
+                                                    @else
+                                                        Directo (sin escalas)
+                                                    @endif
+                                                </p>
                                             </div>
-                                            <p class="card-text">
-                                                <strong>Precio:</strong> €{{ $flight['price'] }} <br>
-                                                <strong>Duración total:</strong>
-                                                {{ intdiv($flight['total_duration'], 60) }}h
-                                                {{ $flight['total_duration'] % 60 }}min
-                                                <br>
-                                                <strong>Escalas:</strong>
-                                                @if (!empty($flight['layovers']))
-                                                    @foreach ($flight['layovers'] as $layover)
-                                                        {{ $layover['name'] }} ({{ $layover['duration'] }} min)
-                                                    @endforeach
-                                                @else
-                                                    Directo (sin escalas)
-                                                @endif
-                                            </p>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             @endif
                         @endforeach

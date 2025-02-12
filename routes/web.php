@@ -8,3 +8,5 @@ Route::get('/', [FlightController::class, 'index']);
 Route::get('/flights', [FlightController::class, 'search']);
 Route::get('/airports', [AirportsController::class, 'airports']);
 Route::get('/api/search-airports', [AirportsController::class, 'searchAirports']); // Nueva ruta
+
+Route::get('/vuelo/{id}', [FlightController::class, 'show'])->name('flight.show');

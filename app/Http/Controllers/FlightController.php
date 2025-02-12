@@ -56,12 +56,31 @@ class FlightController extends Controller
             $flights = $data['best_flights'] ?? [];
             $other_flights = $data['other_flights'] ?? [];
             $prices = $data['price_insights'] ?? [];
+            session(['flights' => array_merge($flights, $other_flights)]);
         } else {
             $flights = [];
             $other_flights = [];
             $prices = [];
         }
 
+
         return view('flights', compact('flights', 'other_flights', 'prices'));
+    }
+
+    public function show($id)
+    {
+        // Aquí deberías recuperar la información del vuelo desde la API o base de datos.
+        // Por ahora, simularemos una respuesta con datos de prueba.
+
+        $flights = session('flights', []); // Recuperar la lista de vuelos de la sesión
+
+        // Buscar el vuelo por su ID en la lista
+        $selectedFlight = collect($flights)->firstWhere('flights.0.flight_number', $id);
+
+        if (!$selectedFlight) {
+            abort(404, 'Vuelo no encontrado');
+        }
+
+        return view('details', ['flight' => $selectedFlight]);
     }
 }

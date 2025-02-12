@@ -29,7 +29,8 @@
         <div class="card shadow p-4 mt-4">
             <h3 class="text-center">Información de Precios</h3>
             <p><strong>Nivel de precio:</strong> <span id="priceLevel"></span> |
-            <strong>Rango típico de precios:</strong> <span id="priceRange"></span> €</p>
+                <strong>Rango típico de precios:</strong> <span id="priceRange"></span> €
+            </p>
         </div>
 
         <div class="card shadow p-4 mt-3">
@@ -44,58 +45,64 @@
             ];
         @endphp
 
-        @foreach ($categorias as $titulo => $listaVuelos)
-            @if (!empty($listaVuelos))
-                <h2 class="mt-4">{{ $titulo }}</h2>
-                <div class="row">
-                    @foreach ($listaVuelos as $flight)
-                        @if (isset($flight['flights'][0]))
-                            @php
-                                $detalleVuelo = $flight['flights'][0];
-                                $horaSalida = date('H:i', strtotime($detalleVuelo['departure_airport']['time']));
-                                $horaLlegada = date('H:i', strtotime($detalleVuelo['arrival_airport']['time']));
-                            @endphp
-                            <div class="col-md-6">
-                                <div class="card mb-4 shadow-sm">
-                                    <div class="card-body">
-                                        <div class="flight-header">
-                                            <h5 class="card-title">
-                                                <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo"
-                                                    width="30">
-                                                {{ $detalleVuelo['airline'] }}
-                                            </h5>
-                                            <div class="flight-times">
-                                                {{ $horaSalida }} → {{ $horaLlegada }}
+        @php
+            $noHayVuelos = empty($flights) && empty($other_flights);
+        @endphp
+
+        @if ($noHayVuelos)
+            <div class="alert alert-danger text-center mt-4">No se encontraron vuelos disponibles.</div>
+        @else
+            @foreach ($categorias as $titulo => $listaVuelos)
+                @if (!empty($listaVuelos))
+                    <h2 class="mt-4">{{ $titulo }}</h2>
+                    <div class="row">
+                        @foreach ($listaVuelos as $flight)
+                            @if (isset($flight['flights'][0]))
+                                @php
+                                    $detalleVuelo = $flight['flights'][0];
+                                    $horaSalida = date('H:i', strtotime($detalleVuelo['departure_airport']['time']));
+                                    $horaLlegada = date('H:i', strtotime($detalleVuelo['arrival_airport']['time']));
+                                @endphp
+                                <div class="col-md-6">
+                                    <div class="card mb-4 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="flight-header">
+                                                <h5 class="card-title">
+                                                    <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
+                                                    {{ $detalleVuelo['airline'] }}
+                                                </h5>
+                                                <div class="flight-times">
+                                                    {{ $horaSalida }} → {{ $horaLlegada }}
+                                                </div>
                                             </div>
+                                            <p class="card-text">
+                                                <strong>Precio:</strong> €{{ $flight['price'] }} <br>
+                                                <strong>Duración total:</strong>
+                                                {{ intdiv($flight['total_duration'], 60) }}h
+                                                {{ $flight['total_duration'] % 60 }}min
+                                                <br>
+                                                <strong>Escalas:</strong>
+                                                @if (!empty($flight['layovers']))
+                                                    @foreach ($flight['layovers'] as $layover)
+                                                        {{ $layover['name'] }} ({{ $layover['duration'] }} min)
+                                                    @endforeach
+                                                @else
+                                                    Directo (sin escalas)
+                                                @endif
+                                            </p>
                                         </div>
-                                        <p class="card-text">
-                                            <strong>Precio:</strong> €{{ $flight['price'] }} <br>
-                                            <strong>Duración total:</strong>
-                                            {{ intdiv($flight['total_duration'], 60) }}h
-                                            {{ $flight['total_duration'] % 60 }}min
-                                            <br>
-                                            <strong>Escalas:</strong>
-                                            @if (!empty($flight['layovers']))
-                                                @foreach ($flight['layovers'] as $layover)
-                                                    {{ $layover['name'] }} ({{ $layover['duration'] }} min)
-                                                @endforeach
-                                            @else
-                                                Directo (sin escalas)
-                                            @endif
-                                        </p>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-            @else
-                <div class="alert alert-warning">No se encontraron vuelos en la categoría "{{ $titulo }}".</div>
-            @endif
-        @endforeach
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
+            @endforeach
+        @endif
+
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const priceData = @json($prices['price_history'] ?? []);
             const priceLevel = @json($prices['price_level'] ?? 'No disponible');
             const priceRange = @json($prices['typical_price_range'] ?? []);

@@ -24,6 +24,7 @@ class FlightController extends Controller
         $infants_in_seat = $request->input('infants_in_seat', 0);
         $infants_on_lap = $request->input('infants_on_lap', 0);
         $travel_class = $request->input('travel_class', 'economy');
+        $stops = $request->input('stops', 0);
 
         $apiKey = env('SERPAPI_KEY');
 
@@ -40,6 +41,7 @@ class FlightController extends Controller
             . "&infants_in_seat={$infants_in_seat}"
             . "&infants_on_lap={$infants_on_lap}"
             . "&travel_class={$travel_class}"
+            . "&stops={$stops}"
             . "&api_key={$apiKey}";
 
         // Solo agregar return_date si el viaje es ida y vuelta
@@ -57,6 +59,7 @@ class FlightController extends Controller
         } else {
             $flights = [];
             $other_flights = [];
+            $prices = [];
         }
 
         return view('flights', compact('flights', 'other_flights', 'prices'));

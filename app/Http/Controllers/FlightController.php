@@ -69,12 +69,9 @@ class FlightController extends Controller
 
     public function show($id)
     {
-        // Aquí deberías recuperar la información del vuelo desde la API o base de datos.
-        // Por ahora, simularemos una respuesta con datos de prueba.
 
-        $flights = session('flights', []); // Recuperar la lista de vuelos de la sesión
+        $flights = session('flights', []);
 
-        // Buscar el vuelo por su ID en la lista
         $selectedFlight = collect($flights)->firstWhere('flights.0.flight_number', $id);
 
         if (!$selectedFlight) {

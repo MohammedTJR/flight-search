@@ -13,41 +13,60 @@
         <h1 class="text-center">Detalles del Vuelo</h1>
         <a href="/" class="btn btn-secondary mb-4">Volver a la búsqueda</a>
 
-        <div class="card shadow p-4">
-            <h3 class="text-center">
-                <img src="{{ $flight['airline_logo'] }}" alt="Logo" width="50">
-            </h3>
-            <p class="text-center"><strong>Precio:</strong> €{{ $flight['price'] }}</p>
-        </div>
+        @if (!empty($flight['airline_logo']))
+            <div class="card shadow p-4">
+                <h3 class="text-center">
+                    <img src="{{ $flight['airline_logo'] }}" alt="Logo" width="50">
+                </h3>
+                @if (!empty($flight['price']))
+                    <p class="text-center"><strong>Precio:</strong> €{{ $flight['price'] }}</p>
+                @endif
+            </div>
+        @endif
 
-        <div class="card shadow p-4 mt-3">
-            <h4>Información del vuelo</h4>
-            @foreach ($flight['flights'] as $segmento)
-                <div class="mb-3 p-3 border rounded">
-                    <h5>{{ $segmento['airline'] }} ({{ $segmento['flight_number'] }})</h5>
-                    <p><strong>Salida:</strong> {{ $segmento['departure_airport']['name'] }}
-                        ({{ $segmento['departure_airport']['id'] }}) -
-                        {{ date('H:i', strtotime($segmento['departure_airport']['time'])) }}
-                    </p>
-                    <p><strong>Llegada:</strong> {{ $segmento['arrival_airport']['name'] }}
-                        ({{ $segmento['arrival_airport']['id'] }}) -
-                        {{ date('H:i', strtotime($segmento['arrival_airport']['time'])) }}
-                    </p>
-                    <p><strong>Duración:</strong> {{ intdiv($segmento['duration'], 60) }}h
-                        {{ $segmento['duration'] % 60 }}min
-                    </p>
-                    <p><strong>Clase de viaje:</strong> {{ $segmento['travel_class'] }}</p>
-                    <p><strong>Espacio para las piernas:</strong> {{ $segmento['legroom'] }}</p>
-                </div>
-            @endforeach
-        </div>
+        @if (!empty($flight['flights']))
+            <div class="card shadow p-4 mt-3">
+                <h4>Información del vuelo</h4>
+                @foreach ($flight['flights'] as $segmento)
+                    <div class="mb-3 p-3 border rounded">
+                        @if (!empty($segmento['airline']) && !empty($segmento['flight_number']))
+                            <h5>{{ $segmento['airline'] }} ({{ $segmento['flight_number'] }})</h5>
+                        @endif
+                        @if (!empty($segmento['departure_airport']))
+                            <p><strong>Salida:</strong> {{ $segmento['departure_airport']['name'] ?? '' }}
+                                ({{ $segmento['departure_airport']['id'] ?? '' }})
+                                -
+                                {{ !empty($segmento['departure_airport']['time']) ? date('H:i', strtotime($segmento['departure_airport']['time'])) : '' }}
+                            </p>
+                        @endif
+                        @if (!empty($segmento['arrival_airport']))
+                            <p><strong>Llegada:</strong> {{ $segmento['arrival_airport']['name'] ?? '' }}
+                                ({{ $segmento['arrival_airport']['id'] ?? '' }}) -
+                                {{ !empty($segmento['arrival_airport']['time']) ? date('H:i', strtotime($segmento['arrival_airport']['time'])) : '' }}
+                            </p>
+                        @endif
+                        @if (!empty($segmento['duration']))
+                            <p><strong>Duración:</strong> {{ intdiv($segmento['duration'], 60) }}h
+                                {{ $segmento['duration'] % 60 }}min
+                            </p>
+                        @endif
+                        @if (!empty($segmento['travel_class']))
+                            <p><strong>Clase de viaje:</strong> {{ $segmento['travel_class'] }}</p>
+                        @endif
+                        @if (!empty($segmento['legroom']))
+                            <p><strong>Espacio para las piernas:</strong> {{ $segmento['legroom'] }}</p>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
         @if (!empty($flight['layovers']))
             <div class="card shadow p-4 mt-3">
                 <h4>Escalas</h4>
                 @foreach ($flight['layovers'] as $layover)
-                    <p><strong>{{ $layover['name'] }} ({{ $layover['id'] }})</strong> - {{ intdiv($layover['duration'], 60) }}h
-                        {{ $layover['duration'] % 60 }}min
+                    <p><strong>{{ $layover['name'] ?? '' }} ({{ $layover['id'] ?? '' }})</strong> -
+                        {{ !empty($layover['duration']) ? intdiv($layover['duration'], 60) . 'h ' . $layover['duration'] % 60 . 'min' : '' }}
                     </p>
                 @endforeach
             </div>
@@ -55,19 +74,21 @@
 
         <div class="card shadow p-4 mt-3">
             <h4>Información Adicional</h4>
-            <p><strong>Tipo de vuelo:</strong> {{ $flight['type'] }}</p>
-            <p><strong>Duración total (incluyendo escalas):</strong> {{ intdiv($flight['total_duration'], 60) }}h
-                {{ $flight['total_duration'] % 60 }}min
-            </p>
+            @if (!empty($flight['type']))
+                <p><strong>Tipo de vuelo:</strong> {{ $flight['type'] }}</p>
+            @endif
+            @if (!empty($flight['total_duration']))
+                <p><strong>Duración total (incluyendo escalas):</strong> {{ intdiv($flight['total_duration'], 60) }}h
+                    {{ $flight['total_duration'] % 60 }}min
+                </p>
+            @endif
 
-            <h5 class="mt-3">Emisiones de Carbono</h5>
-            <p><strong>Este vuelo:</strong> {{ $flight['carbon_emissions']['this_flight'] }}g CO₂</p>
-            <p><strong>Típico para esta ruta:</strong> {{ $flight['carbon_emissions']['typical_for_this_route'] }}g CO₂
-            </p>
-            <p><strong>Diferencia:</strong> {{ $flight['carbon_emissions']['difference_percent'] }}%</p>
-
-            @if (!empty($flight['flights'][0]['often_delayed_by_over_30_min']))
-                <span class="badge bg-danger">Este vuelo suele retrasarse más de 30 minutos</span>
+            @if (!empty($flight['carbon_emissions']))
+                <h5 class="mt-3">Emisiones de Carbono</h5>
+                <p><strong>Este vuelo:</strong> {{ $flight['carbon_emissions']['this_flight'] ?? '' }}g CO₂</p>
+                <p><strong>Típico para esta ruta:</strong>
+                    {{ $flight['carbon_emissions']['typical_for_this_route'] ?? '' }}g CO₂</p>
+                <p><strong>Diferencia:</strong> {{ $flight['carbon_emissions']['difference_percent'] ?? '' }}%</p>
             @endif
         </div>
 

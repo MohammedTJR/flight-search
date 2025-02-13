@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscar Vuelos</title>
+    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .banner {
             width: 100%;
-            height: 350px;
+            height: 20rem;
             object-fit: cover;
-            border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -38,6 +38,14 @@
         .input-container {
             position: relative;
         }
+
+        input,
+        select,
+        button {
+            border: 1px solid gray !important;
+            border-radius: 5px;
+            padding: 8px;
+        }
     </style>
 </head>
 
@@ -51,62 +59,37 @@
         <h1 class="text-center">Buscar Vuelos</h1>
         <div class="card shadow p-4">
             <form action="/flights" method="GET" id="flight-form">
-                <div class="mb-3">
-                    <label class="form-label">Tipo de viaje:</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" name="trip_type" id="ida_vuelta" value="1" checked>
-                        <label class="btn btn-outline-primary w-50" for="ida_vuelta">Ida y vuelta</label>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de viaje:</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="trip_type" id="ida_vuelta" value="1"
+                                checked>
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="ida_vuelta">Ida y
+                                vuelta</label>
 
-                        <input type="radio" class="btn-check" name="trip_type" id="solo_ida" value="2">
-                        <label class="btn btn-outline-primary w-50" for="solo_ida">Solo ida</label>
+                            <input type="radio" class="btn-check" name="trip_type" id="solo_ida" value="2">
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="solo_ida">Solo
+                                ida</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Escalas:</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="stops" id="directo" value="1"
+                                checked>
+                            <label class="btn btn-outline-primary border border-secondary w-50"
+                                for="directo">Directo</label>
+
+                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0">
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con
+                                escalas</label>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 input-container">
-                        <label class="form-label">Origen:</label>
-                        <input type="text" id="departure" name="departure" class="form-control" required
-                            autocomplete="off">
-                        <div id="departure-dropdown" class="autocomplete-dropdown"></div>
-                    </div>
 
-                    <div class="col-md-6 input-container">
-                        <label class="form-label">Destino:</label>
-                        <input type="text" id="arrival" name="arrival" class="form-control" required
-                            autocomplete="off">
-                        <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha de salida:</label>
-                        <input type="date" name="date" id="departure_date" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6" id="return_date_contenedor">
-                        <label class="form-label">Fecha de regreso:</label>
-                        <input type="date" name="return_date" id="return_date" class="form-control">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Clase:</label>
-                        <select name="travel_class" class="form-select">
-                            <option value="1">Selecciona una clase...</option>
-                            <option value="1">Económica</option>
-                            <option value="2">Económica Premium</option>
-                            <option value="3">Business</option>
-                            <option value="4">Primera clase</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Número de escalas:</label>
-                        <select name="stops" class="form-select">
-                            <option value="0">Cualquier número de escalas</option>
-                            <option value="1">Solo vuelos directos</option>
-                            <option value="2">Máximo 1 escala</option>
-                            <option value="3">Máximo 2 escalas</option>
-                        </select>
-                    </div>
-
+                <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Pasajeros:</label>
                         <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="dropdown"
@@ -150,6 +133,43 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Clase:</label>
+                        <select name="travel_class" class="form-select">
+                            <option value="1">Económica</option>
+                            <option value="2">Económica Premium</option>
+                            <option value="3">Business</option>
+                            <option value="4">Primera clase</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row ">
+                    <div class="col-md-6 input-container">
+                        <label class="form-label">Origen:</label>
+                        <input type="text" id="departure" name="departure" class="form-control" required
+                            autocomplete="off">
+                        <div id="departure-dropdown" class="autocomplete-dropdown"></div>
+                    </div>
+
+                    <div class="col-md-6 input-container">
+                        <label class="form-label">Destino:</label>
+                        <input type="text" id="arrival" name="arrival" class="form-control" required
+                            autocomplete="off">
+                        <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <label class="form-label">Fecha de salida:</label>
+                        <input type="date" name="date" id="departure_date" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6 mt-3" id="return_date_contenedor">
+                        <label class="form-label">Fecha de regreso:</label>
+                        <input type="date" name="return_date" id="return_date" class="form-control">
+                    </div>
+
                 </div>
 
                 <div class="text-center mt-4">
@@ -157,8 +177,9 @@
                 </div>
             </form>
         </div>
-
     </div>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -166,16 +187,13 @@
         jQuery.noConflict();
         (function($) {
             $(document).ready(function() {
-                // Cargar los aeropuertos de la API para "Origen" y "Destino"
                 $.getJSON('/airports', function(data) {
                     var departureDropdown = $('#departure-dropdown');
                     var arrivalDropdown = $('#arrival-dropdown');
 
-                    // Limpiar los dropdowns primero
                     departureDropdown.empty();
                     arrivalDropdown.empty();
 
-                    // Variables para almacenar la información de los aeropuertos y sus coordenadas
                     var airports = [];
                     Object.keys(data).forEach(function(ciudad) {
                         data[ciudad].forEach(function(aeropuerto) {
@@ -186,13 +204,11 @@
                                 lat: aeropuerto.latitude,
                                 lon: aeropuerto.longitude
                             });
-                            // Crear las opciones para el campo de Origen
                             var optionDeparture = $('<div>').text(aeropuerto.name +
                                 ' ,' + ciudad + ', ' + aeropuerto.iata).data('iata',
                                 aeropuerto.iata);
                             departureDropdown.append(optionDeparture);
 
-                            // Crear las opciones para el campo de Destino
                             var optionArrival = $('<div>').text(aeropuerto.name + ' ,' +
                                 ciudad + ', ' + aeropuerto.iata).data('iata',
                                 aeropuerto.iata);
@@ -200,18 +216,15 @@
                         });
                     });
 
-                    // Función para obtener la ubicación actual del dispositivo
                     function getLocation() {
                         if (navigator.geolocation) {
                             navigator.geolocation.getCurrentPosition(function(position) {
                                 var userLat = position.coords.latitude;
                                 var userLon = position.coords.longitude;
 
-                                // Calcular la distancia a cada aeropuerto y seleccionar el más cercano
                                 var closestAirport = getClosestAirport(userLat, userLon,
                                     airports);
 
-                                // Autocompletar el campo de "Origen" con el aeropuerto más cercano
                                 $('#departure').val(closestAirport.name + ' (' + closestAirport
                                     .city + ', ' + closestAirport.iata + ')');
                                 $("input[name='departure']").val(closestAirport.iata);
@@ -221,19 +234,17 @@
                         }
                     }
 
-                    // Función para calcular la distancia entre dos puntos geográficos
                     function getDistance(lat1, lon1, lat2, lon2) {
-                        var R = 6371; // Radio de la Tierra en km
+                        var R = 6371;
                         var dLat = (lat2 - lat1) * Math.PI / 180;
                         var dLon = (lon2 - lon1) * Math.PI / 180;
                         var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                             Math.sin(dLon / 2) * Math.sin(dLon / 2);
                         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                        return R * c; // Distancia en km
+                        return R * c;
                     }
 
-                    // Función para obtener el aeropuerto más cercano
                     function getClosestAirport(userLat, userLon, airports) {
                         var closest = airports[0];
                         var closestDist = getDistance(userLat, userLon, closest.lat, closest.lon);
@@ -249,11 +260,9 @@
                         return closest;
                     }
 
-                    // Llamar a la función para obtener la ubicación y seleccionar el aeropuerto más cercano
                     getLocation();
                 });
 
-                // Función para mostrar el dropdown cuando el usuario escribe
                 $('#departure').on('input', function() {
                     var searchText = $(this).val().toLowerCase();
 
@@ -292,14 +301,12 @@
                     });
                 });
 
-                // Cuando se selecciona una opción
                 $(document).on('click', '#departure-dropdown div', function() {
                     var selectedText = $(this).text();
                     var inputId = 'departure';
                     $('#' + inputId).val(selectedText);
                     $('#departure-dropdown').hide();
 
-                    // Asignar el código IATA al input de "Origen"
                     $("input[name='departure']").val($(this).data('iata'));
                 });
 
@@ -309,30 +316,37 @@
                     $('#' + inputId).val(selectedText);
                     $('#arrival-dropdown').hide();
 
-                    // Asignar el código IATA al input de "Destino"
                     $("input[name='arrival']").val($(this).data('iata'));
                 });
 
-                // Fecha de ida no puede ser antes de hoy
                 let today = new Date().toISOString().split('T')[0];
                 $('#departure_date').attr('min', today);
+                $('#return_date').prop('disabled', true);
 
-                // Fecha de regreso no puede ser antes de la fecha de ida
                 $('#departure_date').change(function() {
                     let departureDate = $(this).val();
-                    $('#return_date').attr('min', departureDate);
+                    if (departureDate) {
+                        $('#return_date').prop('disabled', false).attr('min', departureDate);
+                    } else {
+                        $('#return_date').prop('disabled', true).val('');
+                    }
                 });
 
-                // Cambiar la visibilidad del campo de regreso según el tipo de viaje
                 $('input[name="trip_type"]').change(function() {
                     if ($('#solo_ida').is(':checked')) {
                         $('#return_date_contenedor').hide();
                         $('#return_date').prop('disabled', true).val('');
+                        $('#departure_date').closest('.col-md-6').removeClass('col-md-6').addClass(
+                            'col-md-12');
                     } else {
                         $('#return_date_contenedor').show();
                         $('#return_date').prop('disabled', false);
+                        $('#departure_date').closest('.col-md-12').removeClass('col-md-12').addClass(
+                            'col-md-6');
                     }
                 });
+
+
 
                 $('#flight-form').submit(function(e) {
                     var adultos = parseInt($('#adultos').val());

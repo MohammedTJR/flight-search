@@ -63,13 +63,11 @@ class FlightController extends Controller
             $prices = [];
         }
 
-
         return view('flights', compact('flights', 'other_flights', 'prices'));
     }
 
     public function show($id)
     {
-
         $flights = session('flights', []);
 
         $selectedFlight = collect($flights)->firstWhere('flights.0.flight_number', $id);

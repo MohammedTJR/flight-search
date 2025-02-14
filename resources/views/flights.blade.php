@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados de Vuelos</title>
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -48,6 +47,26 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+
+        .date-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .date-box {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .date-box.active {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 
@@ -55,6 +74,55 @@
     <div class="container mt-5">
         <h1 class="text-center">Resultados de Vuelos</h1>
         <a href="/" class="btn btn-secondary mb-4">Nueva búsqueda</a>
+
+        <!-- Navegación de fechas -->
+        <div class="date-navigation">
+            <a href="{{ route('flights', [
+                'departure' => request('departure'),
+                'arrival' => request('arrival'),
+                'date' => \Carbon\Carbon::parse(request('date'))->subDay()->format('Y-m-d'),
+                'trip_type' => request('trip_type'),
+                'adults' => request('adults'),
+                'children' => request('children'),
+                'infants_in_seat' => request('infants_in_seat'),
+                'infants_on_lap' => request('infants_on_lap'),
+                'travel_class' => request('travel_class'),
+                'stops' => request('stops'),
+            ]) }}"
+                class="btn btn-primary {{ \Carbon\Carbon::parse(request('date'))->isToday() ? 'disabled' : '' }}"
+                id="prevDayBtnNav">← Ayer</a>
+
+            <div class="date-box" id="dateBoxYesterday">
+                {{ \Carbon\Carbon::parse(request('date'))->subDay()->format('d/m') }}
+            </div>
+            <div class="date-box active" id="dateBoxToday">
+                {{ \Carbon\Carbon::parse(request('date'))->format('d/m') }}
+            </div>
+            <div class="date-box" id="dateBoxTomorrow">
+                {{ \Carbon\Carbon::parse(request('date'))->addDay()->format('d/m') }}
+            </div>
+
+            <a href="{{ route('flights', [
+                'departure' => request('departure'),
+                'arrival' => request('arrival'),
+                'date' => \Carbon\Carbon::parse(request('date'))->addDay()->format('Y-m-d'),
+                'trip_type' => request('trip_type'),
+                'adults' => request('adults'),
+                'children' => request('children'),
+                'infants_in_seat' => request('infants_in_seat'),
+                'infants_on_lap' => request('infants_on_lap'),
+                'travel_class' => request('travel_class'),
+                'stops' => request('stops'),
+            ]) }}"
+                class="btn btn-primary" id="nextDayBtnNav">Mañana →</a>
+        </div>
+
+        <!-- Mostrar origen y destino -->
+        <div class="text-center mt-3">
+            <strong>Origen:</strong> {{ request('departure') }} |
+            <strong>Destino:</strong> {{ request('arrival') }}
+        </div>
+
         <div class="card shadow p-4 mt-4">
             <h3 class="text-center">Información de Precios</h3>
             <p>
@@ -81,7 +149,7 @@
             @foreach ($categorias as $titulo => $listaVuelos)
                 @if (!empty($listaVuelos))
                     <h2 class="mt-4">{{ $titulo }}</h2>
-                    <div class="row">
+                    <div class="row" id="flightList">
                         @foreach ($listaVuelos as $flight)
                             @if (isset($flight['flights'][0]))
                                 @php
@@ -174,7 +242,7 @@
                 return;
             }
 
-            let currentIndex = priceData.length - 1;  // Empezamos con el último día de los datos
+            let currentIndex = priceData.length - 1; // Empezamos con el último día de los datos
             const labels = priceData.map(entry => {
                 const date = new Date(entry[0] * 1000);
                 return date.toLocaleDateString();
@@ -186,7 +254,7 @@
             let chart = new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: labels.slice(0, currentIndex + 1),  // Mostrar solo los días hasta el día actual
+                    labels: labels.slice(0, currentIndex + 1), // Mostrar solo los días hasta el día actual
                     datasets: [{
                         label: "Precio Histórico (€)",
                         data: prices.slice(0, currentIndex + 1),
@@ -231,9 +299,124 @@
 
             function updateDateLabel() {
                 const selectedDate = new Date(priceData[currentIndex][0] * 1000);
-                document.getElementById('selectedDate').innerText = `Fecha seleccionada: ${selectedDate.toLocaleDateString()}`;
+                document.getElementById('selectedDate').innerText =
+                    `Fecha seleccionada: ${selectedDate.toLocaleDateString()}`;
             }
         });
+
+        const dateBoxYesterday = document.getElementById('dateBoxYesterday');
+        const dateBoxToday = document.getElementById('dateBoxToday');
+        const dateBoxTomorrow = document.getElementById('dateBoxTomorrow');
+
+        const prevDayBtnNav = document.getElementById('prevDayBtnNav');
+        const nextDayBtnNav = document.getElementById('nextDayBtnNav');
+
+        let currentDate = new Date();
+        let yesterday = new Date(currentDate);
+        yesterday.setDate(currentDate.getDate() - 1);
+        let tomorrow = new Date(currentDate);
+        tomorrow.setDate(currentDate.getDate() + 1);
+
+        function formatDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${day}/${month}`;
+        }
+
+        function updateDateBoxes() {
+            dateBoxYesterday.textContent = formatDate(yesterday);
+            dateBoxToday.textContent = formatDate(currentDate);
+            dateBoxTomorrow.textContent = formatDate(tomorrow);
+        }
+
+        function fetchFlights(date) {
+            const departure = document.querySelector('input[name="departure"]').value;
+            const arrival = document.querySelector('input[name="arrival"]').value;
+            const tripType = document.querySelector('input[name="trip_type"]:checked').value;
+            const adults = document.querySelector('select[name="adults"]').value;
+            const children = document.querySelector('select[name="children"]').value;
+            const infants_in_seat = document.querySelector('select[name="infants_in_seat"]').value;
+            const infants_on_lap = document.querySelector('select[name="infants_on_lap"]').value;
+            const travel_class = document.querySelector('select[name="travel_class"]').value;
+            const stops = document.querySelector('input[name="stops"]:checked').value;
+
+            const url =
+                `/flights/search?departure=${departure}&arrival=${arrival}&date=${date}&trip_type=${tripType}&adults=${adults}&children=${children}&infants_in_seat=${infants_in_seat}&infants_on_lap=${infants_on_lap}&travel_class=${travel_class}&stops=${stops}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar la vista con los nuevos vuelos
+                    updateFlightList(data.flights);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateFlightList(flights) {
+            const flightList = document.getElementById('flightList');
+            flightList.innerHTML = ''; // Limpiar la lista actual
+
+            flights.forEach(flight => {
+                if (flight.flights && flight.flights[0]) {
+                    const detalleVuelo = flight.flights[0];
+                    const horaSalida = new Date(detalleVuelo.departure_airport.time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    const horaLlegada = new Date(detalleVuelo.arrival_airport.time).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    const flightElement = document.createElement('div');
+                    flightElement.className = 'col-md-6';
+                    flightElement.innerHTML = `
+                        <a href="/flight/${detalleVuelo.flight_number}" class="text-decoration-none">
+                            <div class="card mb-4 shadow-sm clickable-card">
+                                <div class="card-body">
+                                    <div class="flight-header">
+                                        <h5 class="card-title">
+                                            <img src="${detalleVuelo.airline_logo}" alt="Logo" width="30">
+                                            ${detalleVuelo.airline}
+                                        </h5>
+                                        <div class="flight-times">
+                                            ${horaSalida} → ${horaLlegada}
+                                        </div>
+                                    </div>
+                                    <p class="card-text">
+                                        <strong>Precio:</strong> €${flight.price} <br>
+                                        <strong>Duración total:</strong>
+                                        ${Math.floor(flight.total_duration / 60)}h ${flight.total_duration % 60}min
+                                        <br>
+                                        <strong>Escalas:</strong>
+                                        ${flight.layovers && flight.layovers.length > 0 ? flight.layovers.map(layover => `${layover.name} (${layover.duration} min)`).join(', ') : 'Directo (sin escalas)'}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    flightList.appendChild(flightElement);
+                }
+            });
+        }
+
+        prevDayBtnNav.addEventListener('click', function() {
+            currentDate.setDate(currentDate.getDate() - 1);
+            yesterday.setDate(yesterday.getDate() - 1);
+            tomorrow.setDate(tomorrow.getDate() - 1);
+            updateDateBoxes();
+            fetchFlights(currentDate.toISOString().split('T')[0]);
+        });
+
+        nextDayBtnNav.addEventListener('click', function() {
+            currentDate.setDate(currentDate.getDate() + 1);
+            yesterday.setDate(yesterday.getDate() + 1);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            updateDateBoxes();
+            fetchFlights(currentDate.toISOString().split('T')[0]);
+        });
+
+        updateDateBoxes();
     </script>
 </body>
 

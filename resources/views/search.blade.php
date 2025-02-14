@@ -46,6 +46,33 @@
             border-radius: 5px;
             padding: 8px;
         }
+
+        footer {
+            background-color: #061631;
+            padding: 20px;
+            position: relative;
+            width: 100%;
+            color: white;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+        }
+
+        .logo img {
+            max-width: 150px;
+        }
+
+        .derechos {
+            margin-left: 20px;
+        }
+
+        .derechos p {
+            font-size: 14px;
+            color: #ccc;
+        }
     </style>
 </head>
 
@@ -178,7 +205,16 @@
             </form>
         </div>
     </div>
-
+    <footer>
+        <div class="footer-content">
+            <div class="logo">
+                <img src="{{ asset('img/logo.png') }}" alt="FlyLow Logo">
+            </div>
+            <div class="derechos">
+                <p>&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>

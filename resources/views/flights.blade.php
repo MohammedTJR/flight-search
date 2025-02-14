@@ -200,12 +200,6 @@
         <div class="card shadow p-4 mt-3">
             <h3 class="text-center">Evolución de Precios</h3>
 
-            <!-- Botones para cambiar día -->
-            <div class="price-chart-buttons">
-                <button class="btn btn-primary" id="prevDayBtn">Día Anterior</button>
-                <button class="btn btn-primary" id="nextDayBtn">Día Siguiente</button>
-            </div>
-
             <!-- Mostrar la fecha seleccionada -->
             <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada: {{ date('d-m-Y') }}</div>
 

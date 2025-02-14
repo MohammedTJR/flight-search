@@ -75,7 +75,6 @@
         <h1 class="text-center">Resultados de Vuelos</h1>
         <a href="/" class="btn btn-secondary mb-4">Nueva búsqueda</a>
 
-        <!-- Navegación de fechas -->
         <div class="date-navigation">
             <a href="{{ route('flights', [
                 'departure' => request('departure'),
@@ -117,7 +116,6 @@
                 class="btn btn-primary" id="nextDayBtnNav">Mañana →</a>
         </div>
 
-        <!-- Mostrar origen y destino -->
         <div class="text-center mt-3">
             <strong>Origen:</strong> {{ request('departure') }} |
             <strong>Destino:</strong> {{ request('arrival') }}
@@ -200,7 +198,6 @@
         <div class="card shadow p-4 mt-3">
             <h3 class="text-center">Evolución de Precios</h3>
 
-            <!-- Mostrar la fecha seleccionada -->
             <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada: {{ date('d-m-Y') }}</div>
 
             <canvas id="priceChart"></canvas>
@@ -236,7 +233,7 @@
                 return;
             }
 
-            let currentIndex = priceData.length - 1; // Empezamos con el último día de los datos
+            let currentIndex = priceData.length - 1;
             const labels = priceData.map(entry => {
                 const date = new Date(entry[0] * 1000);
                 return date.toLocaleDateString();
@@ -248,7 +245,7 @@
             let chart = new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: labels.slice(0, currentIndex + 1), // Mostrar solo los días hasta el día actual
+                    labels: labels.slice(0, currentIndex + 1),
                     datasets: [{
                         label: "Precio Histórico (€)",
                         data: prices.slice(0, currentIndex + 1),

@@ -11,66 +11,8 @@
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .flight-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    <link rel="stylesheet" href="{{ asset('css/flights.css') }}">
 
-        .flight-times {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .clickable-card {
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .clickable-card:hover {
-            transform: scale(1.02);
-        }
-
-        .price-level-box {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-
-        .price-chart-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .price-chart-date {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .date-navigation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .date-box {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border: 1px solid #ccc;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-
-        .date-box.active {
-            background-color: #f0f0f0;
-        }
-    </style>
 </head>
 
 <body class="bg-light">

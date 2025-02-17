@@ -1,0 +1,58 @@
+.flight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flight-times {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.clickable-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.clickable-card:hover {
+    transform: scale(1.02);
+}
+
+.price-level-box {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.price-chart-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.price-chart-date {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.date-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.date-box {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.date-box.active {
+    background-color: #f0f0f0;
+}

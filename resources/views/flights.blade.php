@@ -75,9 +75,14 @@
 
         @php
             $categorias = [
-                'Vuelos más económicos' => $flights ?? [],
-                'Vuelos menos económicos' => $other_flights ?? [],
+                'Opciones destacadas' => $flights ?? [],
+                'Otros vuelos' => $other_flights ?? [],
             ];
+
+            if (empty($flights)) {
+                $categorias = ['Vuelos' => $other_flights ?? []];
+            }
+
         @endphp
 
         @php

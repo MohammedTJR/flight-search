@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const { priceData, priceLevel, priceRange } = window.flightPrices;
-    
+
     const level = priceLevel.charAt(0).toUpperCase() + priceLevel.slice(1);
     document.getElementById("priceLevel").innerText = level;
     const priceLevelElement = document.getElementById("priceLevel");
@@ -10,18 +10,21 @@ document.addEventListener("DOMContentLoaded", function() {
         const downIcon = document.createElement("i");
         downIcon.classList.add("fa-solid", "fa-arrow-trend-down");
         downIcon.style.color = "#00ff00";
+        priceLevelElement.appendChild(document.createTextNode(" "));
         priceLevelElement.appendChild(downIcon);
     } else if (level === "Typical") {
         color = "orange";
         const icon = document.createElement("i");
         icon.classList.add("fa-solid", "fa-minus");
         icon.style.color = "#ff6600";
+        priceLevelElement.appendChild(document.createTextNode(" "));
         priceLevelElement.appendChild(icon);
     } else if (level === "High") {
         color = "red";
         const upIcon = document.createElement("i");
         upIcon.classList.add("fa-solid", "fa-arrow-trend-up");
         upIcon.style.color = "#ff0000";
+        priceLevelElement.appendChild(document.createTextNode(" "));
         priceLevelElement.appendChild(upIcon);
     }
 

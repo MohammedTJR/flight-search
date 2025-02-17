@@ -198,7 +198,7 @@
         <div class="card shadow p-4 mt-3">
             <h3 class="text-center">Evolución de Precios</h3>
 
-            <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada: {{ date('d-m-Y') }}</div>
+            <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada: {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}</div>
 
             <canvas id="priceChart"></canvas>
         </div>

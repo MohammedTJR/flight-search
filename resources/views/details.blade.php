@@ -52,12 +52,7 @@
                     <p><strong>Promedio de la ruta:</strong> {{ number_format($flight['carbon_emissions']['typical_for_this_route'] ?? 0) }}g CO₂</p>
                     <p><strong>Diferencia:</strong> {{ $flight['carbon_emissions']['difference_percent'] ?? 0 }}%</p>
                 </div>
-                <img src="{{ asset('img/carbon-footprint.jpg') }}" alt="CO₂ Emissions" class="ms-4" width="100">
             </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <a href="#" class="btn btn-primary">Reservar ahora</a>
         </div>
     </div>
 </body>

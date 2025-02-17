@@ -7,73 +7,8 @@
     <title>Buscar Vuelos</title>
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .banner {
-            width: 100%;
-            height: 20rem;
-            object-fit: cover;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+    <link rel="stylesheet" href="{{ asset('css/search.css') }}">
 
-        .autocomplete-dropdown {
-            position: absolute;
-            z-index: 9999;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            width: 100%;
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .autocomplete-dropdown div {
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        .autocomplete-dropdown div:hover {
-            background-color: #f0f0f0;
-        }
-
-        .input-container {
-            position: relative;
-        }
-
-        input,
-        select,
-        button {
-            border: 1px solid gray !important;
-            border-radius: 5px;
-            padding: 8px;
-        }
-
-        footer {
-            background-color: #061631;
-            padding: 20px;
-            position: relative;
-            width: 100%;
-            color: white;
-        }
-
-        .footer-content {
-            display: flex;
-            align-items: flex-end;
-            padding: 1rem;
-        }
-
-        .logo img {
-            max-width: 150px;
-        }
-
-        .derechos {
-            margin-left: 20px;
-        }
-
-        .derechos p {
-            font-size: 14px;
-            color: #ccc;
-        }
-    </style>
 </head>
 
 <body class="bg-light">

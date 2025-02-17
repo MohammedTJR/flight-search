@@ -44,8 +44,11 @@ jQuery.noConflict();
                         $("input[name='departure']").val(closestAirport.iata);
                     });
                 } else {
-                    alert("Geolocalización no es soportada por este navegador.");
-                }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Geolocalización no es soportada por este navegador.',
+                    });                }
             }
 
             function getDistance(lat1, lon1, lat2, lon2) {
@@ -169,8 +172,12 @@ jQuery.noConflict();
             var bebesRegazo = parseInt($('#bebes_regazo').val());
             var totalPasajeros = adultos + ninos + bebesAsiento + bebesRegazo;
             if (totalPasajeros > 9) {
-                alert("El número total de pasajeros no puede superar los 9.");
-                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'El número total de pasajeros no puede superar los 9.',
+                    confirmButtonText: 'Entendido'
+                });                e.preventDefault();
             }
         });
     });

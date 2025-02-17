@@ -16,17 +16,20 @@
 
         <h3 class="text-center mb-4">Vuelo {{ $flight['flights'][0]['flight_number'] ?? 'N/A' }}</h3>
 
-        <div class="row mb-4">
-            <div class="col-md-3 text-center">
-                <img src="{{ $flight['airline_logo'] ?? '' }}" alt="Logo aerolínea" class="img-fluid" width="100">
-                <p class="mt-2"><strong>Precio:</strong> €{{ $flight['price'] ?? 'N/A' }}</p>
-            </div>
-            <div class="col-md-9">
-                <p><strong>Aerolínea:</strong> {{ $flight['flights'][0]['airline'] ?? 'N/A' }}</p>
-                <p><strong>Tipo de vuelo:</strong> {{ $flight['type'] ?? 'N/A' }}</p>
-                <p><strong>Duración total:</strong> {{ intdiv($flight['total_duration'] ?? 0, 60) }}h {{ ($flight['total_duration'] ?? 0) % 60 }}min</p>
+        <div class="card shadow p-4 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center">
+                    <img src="{{ $flight['airline_logo'] ?? '' }}" alt="Logo aerolínea" class="img-fluid" width="100">
+                    <p class="mt-2"><strong>Precio:</strong> €{{ $flight['price'] ?? 'N/A' }}</p>
+                </div>
+                <div class="col-md-9">
+                    <p><strong>Aerolínea:</strong> {{ $flight['flights'][0]['airline'] ?? 'N/A' }}</p>
+                    <p><strong>Tipo de vuelo:</strong> {{ $flight['type'] ?? 'N/A' }}</p>
+                    <p><strong>Duración total:</strong> {{ intdiv($flight['total_duration'] ?? 0, 60) }}h {{ ($flight['total_duration'] ?? 0) % 60 }}min</p>
+                </div>
             </div>
         </div>
+
 
         <div class="card shadow p-4 mb-4">
             <h4>Detalles del Vuelo</h4>

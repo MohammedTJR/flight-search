@@ -26,28 +26,29 @@
                     <div class="col-md-6">
                         <label class="form-label">Tipo de viaje:</label>
                         <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check" name="trip_type" id="ida_vuelta" value="1"
+                            <input type="radio" class="btn-check" name="trip_type" id="solo_ida" value="2"
                                 checked>
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="ida_vuelta">Ida y
-                                vuelta</label>
-
-                            <input type="radio" class="btn-check" name="trip_type" id="solo_ida" value="2">
                             <label class="btn btn-outline-primary border border-secondary w-50" for="solo_ida">Solo
                                 ida</label>
+
+                            <input type="radio" class="btn-check" name="trip_type" id="ida_vuelta" value="1">
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="ida_vuelta">Ida y
+                                vuelta</label>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label">Escalas:</label>
                         <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check" name="stops" id="directo" value="1"
+                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0"
                                 checked>
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con
+                                escalas</label>
+
+                            <input type="radio" class="btn-check" name="stops" id="directo" value="1">
                             <label class="btn btn-outline-primary border border-secondary w-50"
                                 for="directo">Directo</label>
 
-                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0">
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con
-                                escalas</label>
                         </div>
                     </div>
                 </div>

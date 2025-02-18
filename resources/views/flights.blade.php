@@ -115,7 +115,7 @@
                                                         {{ $detalleVuelo['airline'] }}
                                                     </h5>
                                                     <div class="flight-times">
-                                                        {{ $horaSalida }} → {{ $horaLlegada }}
+                                                        {{ $horaSalida }} <i class="fa-solid fa-arrow-right"></i> {{ $horaLlegada }}
                                                     </div>
                                                 </div>
                                                 <p class="card-text">

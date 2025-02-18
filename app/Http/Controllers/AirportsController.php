@@ -8,7 +8,8 @@ class AirportsController extends Controller
 {
     public function airports()
     {
-        $airports = Airport::orderBy('country')
+        $airports = Airport::whereNotNull('iata')
+            ->orderBy('country')
             ->get()
             ->groupBy(fn($airport) => "{$airport->city} ({$airport->country})");
 

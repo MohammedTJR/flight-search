@@ -2,9 +2,11 @@ jQuery.noConflict();
 (function ($) {
     $(document).ready(function () {
         let today = new Date().toISOString().split('T')[0];
+
         $('#return_date_contenedor').hide();
         $('#return_date').prop('disabled', true).val('');
         $('#departure_date').attr('min', today);
+        $('#departure_date').closest('.col-md-6').removeClass('col-md-6').addClass('col-md-12');
 
         $.getJSON('/airports', function (data) {
             var airports = [];
@@ -25,6 +27,7 @@ jQuery.noConflict();
                     arrivalDropdown.append(option);
                 });
             });
+
             getLocation(airports);
         });
 
@@ -76,14 +79,31 @@ jQuery.noConflict();
 
         $('#departure_date').change(function () {
             let departureDate = $(this).val();
-            $('#return_date').prop('disabled', !departureDate).attr('min', departureDate || '');
+            if (departureDate) {
+                $('#return_date').prop('disabled', false).attr('min', departureDate);
+            } else {
+                $('#return_date').prop('disabled', true).val('');
+            }
         });
 
         $('input[name="trip_type"]').change(function () {
             let isOneWay = $('#solo_ida').is(':checked');
+
             $('#return_date_contenedor').toggle(!isOneWay);
-            $('#return_date').prop('disabled', isOneWay).val('');
-            $('#departure_date').closest(isOneWay ? '.col-md-6' : '.col-md-12').toggleClass('col-md-6 col-md-12');
+            $('#return_date').prop('disabled', true).val('');
+
+            if (!isOneWay) {
+                $('#return_date').attr('required', 'required');
+            } else {
+                $('#return_date').removeAttr('required');
+            }
+
+            let departureContainer = $('#departure_date').closest('.col-md-6, .col-md-12');
+            if (isOneWay) {
+                departureContainer.removeClass('col-md-6').addClass('col-md-12');
+            } else {
+                departureContainer.removeClass('col-md-12').addClass('col-md-6');
+            }
         });
 
         $('#flight-form').submit(function (e) {

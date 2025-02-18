@@ -18,7 +18,7 @@
             <img src="{{ asset('img/banner.jpg') }}" class="img-fluid banner" alt="FlyLow Banner">
         </div>
     </div>
-    <div class="container mt-5">
+    <div class="container mt-5 mb-5">
         <h1 class="text-center">Buscar Vuelos</h1>
         <div class="card shadow p-4">
             <form action="/flights" method="GET" id="flight-form">

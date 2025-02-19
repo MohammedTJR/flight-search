@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalles del Vuelo</title>
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -23,9 +26,8 @@
                     <p class="mt-2"><strong>Precio:</strong> €{{ $flight['price'] ?? 'N/A' }}</p>
                 </div>
                 <div class="col-md-9">
-                    <p><strong>Aerolínea:</strong> {{ $flight['flights'][0]['airline'] ?? 'N/A' }}</p>
-                    <p><strong>Tipo de vuelo:</strong> {{ $flight['type'] ?? 'N/A' }}</p>
-                    <p><strong>Duración total:</strong> {{ intdiv($flight['total_duration'] ?? 0, 60) }}h {{ ($flight['total_duration'] ?? 0) % 60 }}min</p>
+                    <p><i class="fa-solid fa-plane"></i><strong> Aerolínea:</strong> {{ $flight['flights'][0]['airline'] ?? 'N/A' }}</p>
+                    <p><i class="fa-solid fa-clock" style="color: blue;"></i><strong> Duración total:</strong> {{ intdiv($flight['total_duration'] ?? 0, 60) }}h {{ ($flight['total_duration'] ?? 0) % 60 }}min</p>
                 </div>
             </div>
         </div>

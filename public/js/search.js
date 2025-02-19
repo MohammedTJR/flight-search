@@ -138,35 +138,6 @@ jQuery.noConflict();
 
         let today = new Date().toISOString().split('T')[0];
         $('#departure_date').attr('min', today);
-        $('#return_date').prop('disabled', true);
-        $('#return_date_contenedor').hide();
-
-        $('#departure_date').change(function () {
-            let departureDate = $(this).val();
-            if (departureDate) {
-                $('#return_date_contenedor').show();
-                $('#return_date').prop('disabled', false).attr('min', departureDate);
-            } else {
-                $('#return_date_contenedor').hide();
-                $('#return_date').prop('disabled', true).val('');
-            }
-        });
-
-        $('input[name="trip_type"]').change(function () {
-            if ($('#solo_ida').is(':checked')) {
-                $('#return_date_contenedor').hide();
-                $('#return_date').prop('disabled', true).val('');
-                $('#departure_date').closest('.col-md-6').removeClass('col-md-6').addClass(
-                    'col-md-12');
-            } else {
-                if ($('#departure_date').val()) {
-                    $('#return_date_contenedor').show();
-                    $('#return_date').prop('disabled', false);
-                }
-                $('#departure_date').closest('.col-md-12').removeClass('col-md-12').addClass(
-                    'col-md-6');
-            }
-        });
 
         $('#flight-form').submit(function (e) {
             var adultos = parseInt($('#adultos').val());

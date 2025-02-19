@@ -18,7 +18,6 @@ class FlightController extends Controller
         $arrival = $request->input('arrival');
         $date = $request->input('date');
         $returnDate = $request->input('return_date');
-        $tripType = $request->input('trip_type', '1'); // 1: Ida y vuelta (default), 2: Solo ida
         $adults = $request->input('adults', 1);
         $children = $request->input('children', 0);
         $infants_in_seat = $request->input('infants_in_seat', 0);
@@ -33,7 +32,7 @@ class FlightController extends Controller
             . "&departure_id={$departure}"
             . "&arrival_id={$arrival}"
             . "&outbound_date={$date}"
-            . "&type={$tripType}"
+            . "&type=2"
             . "&currency=EUR"
             . "&hl=en"
             . "&adults={$adults}"
@@ -43,11 +42,6 @@ class FlightController extends Controller
             . "&travel_class={$travel_class}"
             . "&stops={$stops}"
             . "&api_key={$apiKey}";
-
-        // Solo agregar return_date si el viaje es ida y vuelta
-        if ($tripType == "1" && !empty($returnDate)) {
-            $url .= "&return_date={$returnDate}";
-        }
 
         $response = Http::get($url);
 

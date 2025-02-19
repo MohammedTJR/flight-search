@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/search.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
 
 <body class="bg-light">
@@ -24,40 +23,17 @@
             <form action="/flights" method="GET" id="flight-form">
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">Tipo de viaje:</label>
-                        <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check" name="trip_type" id="solo_ida" value="2"
-                                checked>
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="solo_ida">Solo
-                                ida</label>
-
-                            <input type="radio" class="btn-check" name="trip_type" id="ida_vuelta" value="1">
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="ida_vuelta">Ida y
-                                vuelta</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
                         <label class="form-label">Escalas:</label>
                         <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0"
-                                checked>
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con
-                                escalas</label>
-
+                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0" checked>
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con escalas</label>
                             <input type="radio" class="btn-check" name="stops" id="directo" value="1">
-                            <label class="btn btn-outline-primary border border-secondary w-50"
-                                for="directo">Directo</label>
-
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="directo">Directo</label>
                         </div>
                     </div>
-                </div>
-
-                <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Pasajeros:</label>
-                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="dropdown" aria-expanded="false">
                             Seleccionar Pasajeros
                         </button>
                         <div class="dropdown-menu w-100">
@@ -97,7 +73,10 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <div class="row mb-3">
+                    
                     <div class="col-md-6">
                         <label class="form-label">Clase:</label>
                         <select name="travel_class" class="form-select">
@@ -107,33 +86,23 @@
                             <option value="4">Primera clase</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="row ">
-                    <div class="col-md-6 input-container">
-                        <label class="form-label">Origen:</label>
-                        <input type="text" id="departure" name="departure" class="form-control" required
-                            autocomplete="off">
-                        <div id="departure-dropdown" class="autocomplete-dropdown"></div>
-                    </div>
-
-                    <div class="col-md-6 input-container">
-                        <label class="form-label">Destino:</label>
-                        <input type="text" id="arrival" name="arrival" class="form-control" required
-                            autocomplete="off">
-                        <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
-                    </div>
-
-                    <div class="col-md-6 mt-3">
+                    <div class="col-md-6">
                         <label class="form-label">Fecha de salida:</label>
                         <input type="date" name="date" id="departure_date" class="form-control" required>
                     </div>
+                </div>
 
-                    <div class="col-md-6 mt-3" id="return_date_contenedor">
-                        <label class="form-label">Fecha de regreso:</label>
-                        <input type="date" name="return_date" id="return_date" class="form-control">
+                <div class="row">
+                    <div class="col-md-6 input-container">
+                        <label class="form-label">Origen:</label>
+                        <input type="text" id="departure" name="departure" class="form-control" required autocomplete="off">
+                        <div id="departure-dropdown" class="autocomplete-dropdown"></div>
                     </div>
-
+                    <div class="col-md-6 input-container">
+                        <label class="form-label">Destino:</label>
+                        <input type="text" id="arrival" name="arrival" class="form-control" required autocomplete="off">
+                        <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
+                    </div>
                 </div>
 
                 <div class="text-center mt-4">
@@ -142,6 +111,7 @@
             </form>
         </div>
     </div>
+
     <footer>
         <div class="footer-content">
             <div class="logo">
@@ -153,10 +123,8 @@
         </div>
     </footer>
 
-
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/search.js') }}"></script>
 </body>
-
 </html>

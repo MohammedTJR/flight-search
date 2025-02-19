@@ -12,7 +12,6 @@
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <!-- Encabezado -->
         <header class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-plane"></i> Detalles del Vuelo</h1>
             <a href="javascript:history.back()" class="btn btn-secondary">
@@ -20,7 +19,6 @@
             </a>
         </header>
 
-        <!-- Información principal del vuelo -->
         <section class="card shadow p-4 mb-4">
             <h3 class="text-center mb-4">
                 <i class="fas fa-plane"></i> Vuelo {{ $flight['flights'][0]['flight_number'] ?? 'N/A' }}
@@ -39,7 +37,6 @@
             </div>
         </section>
 
-        <!-- Detalles de los segmentos del vuelo -->
         <section class="card shadow p-4 mb-4">
             <h4><i class="fas fa-info-circle"></i> Detalles del Vuelo</h4>
             @foreach ($flight['flights'] as $segmento)
@@ -56,7 +53,6 @@
             @endforeach
         </section>
 
-        <!-- Emisiones de CO₂ -->
         <section class="card shadow p-4 mb-4">
             <h4><i class="fas fa-leaf"></i> Emisiones de CO₂</h4>
             <div class="d-flex align-items-center">

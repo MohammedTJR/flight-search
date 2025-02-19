@@ -19,7 +19,7 @@
         <h1 class="text-center">Resultados de Vuelos</h1>
         <a href="/" class="btn btn-secondary mb-4">Nueva búsqueda</a>
 
-        <div class="date-navigation">
+        <div class="date-navigation d-flex justify-content-center align-items-center gap-3">
             <a href="{{ route('flights', [
                 'departure' => request('departure'),
                 'arrival' => request('arrival'),
@@ -33,7 +33,9 @@
                 'stops' => request('stops'),
             ]) }}"
                 class="btn btn-primary {{ \Carbon\Carbon::parse(request('date'))->isToday() ? 'disabled' : '' }}"
-                id="prevDayBtnNav">← Ayer</a>
+                id="prevDayBtnNav">
+                <i class="fas fa-arrow-left"></i>
+            </a>
 
             <div class="date-box" id="dateBoxYesterday">
                 {{ \Carbon\Carbon::parse(request('date'))->subDay()->format('d/m') }}
@@ -57,7 +59,9 @@
                 'travel_class' => request('travel_class'),
                 'stops' => request('stops'),
             ]) }}"
-                class="btn btn-primary" id="nextDayBtnNav">Mañana →</a>
+                class="btn btn-primary" id="nextDayBtnNav">
+                <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
 
         <div class="text-center mt-3">
@@ -82,7 +86,6 @@
             if (empty($flights)) {
                 $categorias = ['Vuelos' => $other_flights ?? []];
             }
-
         @endphp
 
         @php
@@ -143,16 +146,15 @@
                 @endif
             @endforeach
         @endif
+
         <div class="card shadow p-4 mt-3">
             <h3 class="text-center">Evolución de Precios</h3>
-
             <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada:
                 {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}</div>
-
             <canvas id="priceChart"></canvas>
         </div>
-
     </div>
+
     <script>
         window.flightPrices = {
             priceData: @json($prices['price_history'] ?? []),
@@ -161,7 +163,6 @@
         };
     </script>
     <script src="{{ asset('js/flight.js') }}"></script>
-
 </body>
 
 </html>

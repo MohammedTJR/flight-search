@@ -27,6 +27,7 @@ class FlightController extends Controller
 
         $apiKey = env('SERPAPI_KEY');
 
+        // Construcción de la URL para consultar la API de SerpApi (Google Flights)
         $url = "https://serpapi.com/search.json?"
             . "engine=google_flights"
             . "&departure_id={$departure}"
@@ -42,20 +43,27 @@ class FlightController extends Controller
             . "&travel_class={$travel_class}"
             . "&stops={$stops}"
             . "&api_key={$apiKey}";
+        // Realiza la solicitud GET a la API
 
         $response = Http::get($url);
+        // Verifica si la respuesta es exitosa
 
         if ($response->successful()) {
             $data = $response->json() ?? [];
             $flights = $data['best_flights'] ?? [];
             $other_flights = $data['other_flights'] ?? [];
             $prices = $data['price_insights'] ?? [];
+            // Almacena los vuelos en la sesión para poder acceder a ellos en otras partes de la aplicación
+
             session(['flights' => array_merge($flights, $other_flights)]);
         } else {
+            // En caso de error en la solicitud, inicializa las variables vacías
+
             $flights = [];
             $other_flights = [];
             $prices = [];
         }
+        // Retorna la vista 'flights' con los datos obtenidos
 
         return view('flights', compact('flights', 'other_flights', 'prices'));
     }

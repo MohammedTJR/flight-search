@@ -18,8 +18,11 @@
     <div class="container mt-5">
         <h1 class="text-center">Resultados de Vuelos</h1>
         <a href="/" class="btn btn-secondary mb-4">Nueva búsqueda</a>
+        <!-- Contenedor principal para la navegación de fechas -->
 
         <div class="date-navigation d-flex justify-content-center align-items-center gap-3">
+            <!-- Enlace para navegar al día anterior -->
+
             <a href="{{ route('flights', [
                 'departure' => request('departure'),
                 'arrival' => request('arrival'),
@@ -36,17 +39,20 @@
                 id="prevDayBtnNav">
                 <i class="fas fa-arrow-left"></i>
             </a>
+            <!-- Caja que muestra la fecha del día anterior -->
 
             <div class="date-box" id="dateBoxYesterday">
                 {{ \Carbon\Carbon::parse(request('date'))->subDay()->format('d/m') }}
             </div>
+            <!-- Caja que muestra la fecha actual (activa) -->
             <div class="date-box active" id="dateBoxToday">
                 {{ \Carbon\Carbon::parse(request('date'))->format('d/m') }}
             </div>
+            <!-- Caja que muestra la fecha del día siguiente -->
             <div class="date-box" id="dateBoxTomorrow">
                 {{ \Carbon\Carbon::parse(request('date'))->addDay()->format('d/m') }}
             </div>
-
+            <!-- Enlace para navegar al día siguiente -->
             <a href="{{ route('flights', [
                 'departure' => request('departure'),
                 'arrival' => request('arrival'),
@@ -98,15 +104,24 @@
             @foreach ($categorias as $titulo => $listaVuelos)
                 @if (!empty($listaVuelos))
                     <h2 class="mt-4">{{ $titulo }}</h2>
+                    <!-- Contenedor principal para la lista de vuelos -->
+
                     <div class="row" id="flightList">
+                        <!-- Itera sobre cada vuelo en la lista de vuelos ($listaVuelos) -->
+
                         @foreach ($listaVuelos as $flight)
+                            <!-- Verifica si el vuelo tiene al menos un segmento de vuelo (flights[0] existe) -->
                             @if (isset($flight['flights'][0]))
                                 @php
+                                    // Extrae los detalles del primer segmento de vuelo.
                                     $detalleVuelo = $flight['flights'][0];
+                                    // Formatea la hora de salida y llegada en formato HH:MM.
+
                                     $horaSalida = date('H:i', strtotime($detalleVuelo['departure_airport']['time']));
                                     $horaLlegada = date('H:i', strtotime($detalleVuelo['arrival_airport']['time']));
                                 @endphp
                                 <div class="col-md-6">
+                                    <!-- Enlace que redirige a la página de detalles del vuelo -->
                                     <a href="{{ route('flight.show', ['id' => $detalleVuelo['flight_number']]) }}"
                                         class="text-decoration-none">
                                         <div class="card mb-4 shadow-sm clickable-card">

@@ -25,15 +25,19 @@
                     <div class="col-md-6">
                         <label class="form-label">Escalas:</label>
                         <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0" checked>
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con escalas</label>
+                            <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0"
+                                checked>
+                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con
+                                escalas</label>
                             <input type="radio" class="btn-check" name="stops" id="directo" value="1">
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="directo">Directo</label>
+                            <label class="btn btn-outline-primary border border-secondary w-50"
+                                for="directo">Directo</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Pasajeros:</label>
-                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             Seleccionar Pasajeros
                         </button>
                         <div class="dropdown-menu w-100">
@@ -76,7 +80,7 @@
                 </div>
 
                 <div class="row mb-3">
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">Clase:</label>
                         <select name="travel_class" class="form-select">
@@ -95,12 +99,14 @@
                 <div class="row">
                     <div class="col-md-6 input-container">
                         <label class="form-label">Origen:</label>
-                        <input type="text" id="departure" name="departure" class="form-control" required autocomplete="off">
+                        <input type="text" id="departure" name="departure" class="form-control" required
+                            autocomplete="off">
                         <div id="departure-dropdown" class="autocomplete-dropdown"></div>
                     </div>
                     <div class="col-md-6 input-container">
                         <label class="form-label">Destino:</label>
-                        <input type="text" id="arrival" name="arrival" class="form-control" required autocomplete="off">
+                        <input type="text" id="arrival" name="arrival" class="form-control" required
+                            autocomplete="off">
                         <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
                     </div>
                 </div>
@@ -127,4 +133,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/search.js') }}"></script>
 </body>
+
 </html>

@@ -118,7 +118,8 @@
                                                         {{ $detalleVuelo['airline'] }}
                                                     </h5>
                                                     <div class="flight-times">
-                                                        {{ $horaSalida }} <i class="fa-solid fa-arrow-right"></i> {{ $horaLlegada }}
+                                                        {{ $horaSalida }} <i class="fa-solid fa-arrow-right"></i>
+                                                        {{ $horaLlegada }}
                                                     </div>
                                                 </div>
                                                 <p class="card-text">
@@ -147,13 +148,23 @@
             @endforeach
         @endif
 
-        <div class="card shadow p-4 mt-3">
+        <div class="card shadow p-4 mt-3 mb-4">
             <h3 class="text-center">Evolución de Precios</h3>
             <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada:
                 {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}</div>
             <canvas id="priceChart"></canvas>
         </div>
     </div>
+    <footer>
+        <div class="footer-content">
+            <div class="logo">
+                <img src="{{ asset('img/logo.png') }}" alt="FlyLow Logo">
+            </div>
+            <div class="derechos">
+                <p>&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         window.flightPrices = {

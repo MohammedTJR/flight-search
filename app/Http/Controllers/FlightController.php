@@ -34,7 +34,7 @@ class FlightController extends Controller
             . "&outbound_date={$date}"
             . "&type=2"
             . "&currency=EUR"
-            . "&hl=en"
+            . "&hl=es"
             . "&adults={$adults}"
             . "&children={$children}"
             . "&infants_in_seat={$infants_in_seat}"

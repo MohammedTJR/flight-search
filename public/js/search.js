@@ -92,7 +92,6 @@ jQuery.noConflict();
                 return closest;
             }
             // Ejecuta la función para obtener la ubicación del usuario.
-e
             getLocation();
         });
 

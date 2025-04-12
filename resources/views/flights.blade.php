@@ -1,41 +1,41 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('plantilla')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultados de Vuelos</title>
-    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/flights.css') }}">
+@endsection
+
+@section('styles_ext')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/flights.css') }}">
-</head>
+@endsection
 
-<body class="bg-light">
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@endsection
+
+@section('titulo_pagina', 'Resultados de Vuelos')
+
+@section('contenido')
     <div class="container mt-5">
-        <h1 class="text-center">Resultados de Vuelos</h1>
-        <a href="/" class="btn btn-secondary mb-4">Nueva búsqueda</a>
+        <h1 class="text-center mb-5">Resultados de Vuelos</h1>
         <!-- Contenedor principal para la navegación de fechas -->
 
         <div class="date-navigation d-flex justify-content-center align-items-center gap-3">
             <!-- Enlace para navegar al día anterior -->
 
             <a href="{{ route('flights', [
-                'departure' => request('departure'),
-                'arrival' => request('arrival'),
-                'date' => \Carbon\Carbon::parse(request('date'))->subDay()->format('Y-m-d'),
-                'trip_type' => request('trip_type'),
-                'adults' => request('adults'),
-                'children' => request('children'),
-                'infants_in_seat' => request('infants_in_seat'),
-                'infants_on_lap' => request('infants_on_lap'),
-                'travel_class' => request('travel_class'),
-                'stops' => request('stops'),
-            ]) }}"
-                class="btn btn-primary {{ \Carbon\Carbon::parse(request('date'))->isToday() ? 'disabled' : '' }}"
+        'departure' => request('departure'),
+        'arrival' => request('arrival'),
+        'date' => \Carbon\Carbon::parse(request('date'))->subDay()->format('Y-m-d'),
+        'trip_type' => request('trip_type'),
+        'adults' => request('adults'),
+        'children' => request('children'),
+        'infants_in_seat' => request('infants_in_seat'),
+        'infants_on_lap' => request('infants_on_lap'),
+        'travel_class' => request('travel_class'),
+        'stops' => request('stops'),
+    ]) }}" class="btn btn-primary {{ \Carbon\Carbon::parse(request('date'))->isToday() ? 'disabled' : '' }}"
                 id="prevDayBtnNav">
                 <i class="fas fa-arrow-left"></i>
             </a>
@@ -54,18 +54,17 @@
             </div>
             <!-- Enlace para navegar al día siguiente -->
             <a href="{{ route('flights', [
-                'departure' => request('departure'),
-                'arrival' => request('arrival'),
-                'date' => \Carbon\Carbon::parse(request('date'))->addDay()->format('Y-m-d'),
-                'trip_type' => request('trip_type'),
-                'adults' => request('adults'),
-                'children' => request('children'),
-                'infants_in_seat' => request('infants_in_seat'),
-                'infants_on_lap' => request('infants_on_lap'),
-                'travel_class' => request('travel_class'),
-                'stops' => request('stops'),
-            ]) }}"
-                class="btn btn-primary" id="nextDayBtnNav">
+        'departure' => request('departure'),
+        'arrival' => request('arrival'),
+        'date' => \Carbon\Carbon::parse(request('date'))->addDay()->format('Y-m-d'),
+        'trip_type' => request('trip_type'),
+        'adults' => request('adults'),
+        'children' => request('children'),
+        'infants_in_seat' => request('infants_in_seat'),
+        'infants_on_lap' => request('infants_on_lap'),
+        'travel_class' => request('travel_class'),
+        'stops' => request('stops'),
+    ]) }}" class="btn btn-primary" id="nextDayBtnNav">
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -122,14 +121,12 @@
                                 @endphp
                                 <div class="col-md-6">
                                     <!-- Enlace que redirige a la página de detalles del vuelo -->
-                                    <a href="{{ route('flight.show', ['id' => $detalleVuelo['flight_number']]) }}"
-                                        class="text-decoration-none">
+                                    <a href="{{ route('flight.show', ['id' => $detalleVuelo['flight_number']]) }}" class="text-decoration-none">
                                         <div class="card mb-4 shadow-sm clickable-card">
                                             <div class="card-body">
                                                 <div class="flight-header">
                                                     <h5 class="card-title">
-                                                        <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo"
-                                                            width="30">
+                                                        <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
                                                         {{ $detalleVuelo['airline'] }}
                                                     </h5>
                                                     <div class="flight-times">
@@ -166,29 +163,21 @@
         <div class="card shadow p-4 mt-3 mb-4">
             <h3 class="text-center">Evolución de Precios</h3>
             <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada:
-                {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}</div>
+                {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}
+            </div>
             <canvas id="priceChart"></canvas>
         </div>
     </div>
-    <footer>
-        <div class="footer-content">
-            <div class="logo">
-                <img src="{{ asset('img/logo.png') }}" alt="FlyLow Logo">
-            </div>
-            <div class="derechos">
-                <p>&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
 
-    <script>
-        window.flightPrices = {
-            priceData: @json($prices['price_history'] ?? []),
-            priceLevel: @json($prices['price_level'] ?? 'No disponible'),
-            priceRange: @json($prices['typical_price_range'] ?? [])
-        };
-    </script>
-    <script src="{{ asset('js/flight.js') }}"></script>
-</body>
+    @section('scripts')
+        <script>
+            window.flightPrices = {
+                priceData: @json($prices['price_history'] ?? []),
+                priceLevel: @json($prices['price_level'] ?? 'No disponible'),
+                priceRange: @json($prices['typical_price_range'] ?? [])
+            };
+        </script>
+        <script src="{{ asset('js/flight.js') }}"></script>
+    @endsection
 
-</html>
+@endsection

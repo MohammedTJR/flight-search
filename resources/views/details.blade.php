@@ -1,19 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('plantilla')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles del Vuelo</title>
-    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/detalles.css') }}">
+@endsection
+
+@section('styles_ext')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/detalles.css') }}">
-</head>
+@endsection
 
-<body class="bg-light">
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@endsection
+
+@section('titulo_pagina', 'Detalles del Vuelo')
+
+@section('contenido')
     <div class="container mt-5">
         <header class="d-flex justify-content-between align-items-center mb-4">
             <h1>Detalles del Vuelo</h1>
@@ -28,8 +31,7 @@
             </h3>
             <div class="row align-items-center">
                 <div class="col-md-3 text-center">
-                    <img src="{{ $flight['airline_logo'] ?? '' }}" alt="Logo aerolínea" class="img-fluid"
-                        width="100">
+                    <img src="{{ $flight['airline_logo'] ?? '' }}" alt="Logo aerolínea" class="img-fluid" width="100">
                     <p class="mt-2">
                         <i class="fas fa-tag"></i> <strong>Precio:</strong> €{{ $flight['price'] ?? 'N/A' }}
                     </p>
@@ -87,16 +89,4 @@
             </div>
         </section>
     </div>
-    <footer>
-        <div class="footer-content">
-            <div class="logo">
-                <img src="{{ asset('img/logo.png') }}" alt="FlyLow Logo">
-            </div>
-            <div class="derechos">
-                <p>&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-</body>
-
-</html>
+@endsection

@@ -1,0 +1,64 @@
+.profile-avatar {
+    margin-bottom: 1rem;
+}
+
+.profile-avatar img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header h3, .card-header h5 {
+    font-weight: 600;
+}
+
+.account-info h6 {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.account-info p {
+    font-size: 1.1rem;
+}
+
+/* Estilos para el formulario */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+hr {
+    margin: 2rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    background-color: #061631;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+    color: white;
+}
+
+.footer-content {
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+}
+
+.logo img {
+    max-width: 150px;
+}
+
+.derechos {
+    margin-left: 20px;
+}
+
+.derechos p {
+    font-size: 14px;
+    color: #ccc;
+}

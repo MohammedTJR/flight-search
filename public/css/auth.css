@@ -1,0 +1,88 @@
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    padding: 1.5rem;
+    background-color: #3b7ddd;
+}
+
+.card-body {
+    padding: 2rem;
+    background-color: #f8f9fa;
+}
+
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}
+
+.btn-primary {
+    background-color: #3b7ddd;
+    border-color: #3b7ddd;
+    padding: 0.75rem;
+    font-weight: 500;
+}
+
+.alert {
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.text-center p {
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+}
+
+.btn-outline-primary {
+    border-color: #3b7ddd;
+    color: #3b7ddd;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #3b7ddd;
+    color: white;
+}
+
+a {
+    color: #3b7ddd;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #2f6bc5;
+    text-decoration: underline;
+}
+
+footer {
+    background-color: #061631;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+    color: white;
+}
+
+.footer-content {
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+}
+
+.logo img {
+    max-width: 150px;
+}
+
+.derechos {
+    margin-left: 20px;
+}
+
+.derechos p {
+    font-size: 14px;
+    color: #ccc;
+}

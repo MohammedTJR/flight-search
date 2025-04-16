@@ -127,7 +127,7 @@
     <div class="email-container">
         <!-- Cabecera con logo -->
         <div class="header">
-            <img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo" class="logo">
+            <img src="https://flylow.es/img/favicon.png" alt="FlyLow Logo" class="logo">
             <h1>¡Bienvenido a bordo, {{ $user->name }}!</h1>
         </div>
 
@@ -165,7 +165,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" width="24">
                 </a>
                 <a href="https://twitter.com/flylow">
-                    <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" width="24">
+                <img src="https://abs.twimg.com/favicons/twitter.3.ico" alt="X" width="24">
                 </a>
                 <a href="https://instagram.com/flylow">
                     <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" width="24">
@@ -173,7 +173,7 @@
             </div>
 
             <p>FlyLow - Encuentra los mejores vuelos al mejor precio</p>
-            <p>+34 123 456 789 | info@flylow.com</p>
+            <p>+34 603 84 21 35 | info@flylow.es</p>
 
             <div class="disclaimer">
                 <p>Este es un correo automático, por favor no respondas directamente a este mensaje.</p>

@@ -25,7 +25,7 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form method="GET" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item">Cerrar sesión</button>
                             </form>

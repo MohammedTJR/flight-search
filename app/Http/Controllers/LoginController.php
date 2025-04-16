@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class LoginController extends Controller
 {
@@ -16,12 +17,14 @@ class LoginController extends Controller
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:8'
+            'password' => 'required'
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('home'));
+
+            return redirect()->intended(route('home'))
+                ->with('success', '¡Bienvenido/a de nuevo!');
         }
 
         return back()->withErrors([
@@ -30,10 +33,17 @@ class LoginController extends Controller
     }
 
     public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
-    }
+{
+    Auth::logout();
+    
+    $request->session()->invalidate();
+    
+    $request->session()->regenerateToken();
+    
+    $cookie = Cookie::forget(Auth::getRecallerName());
+    
+    return redirect('/')
+           ->withCookie($cookie)
+           ->with('status', 'Has cerrado sesión correctamente.');
+}
 }

@@ -7,8 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     @yield('styles')
-    @yield('styles_ext')
     @yield('script')
     <title>@yield('titulo_pagina')</title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])

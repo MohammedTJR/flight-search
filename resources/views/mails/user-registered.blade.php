@@ -127,7 +127,7 @@
     <div class="email-container">
         <!-- Cabecera con logo -->
         <div class="header">
-            <img src="https://flylow.es/img/favicon.png" alt="FlyLow Logo" class="logo">
+            <img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo" class="logo">
             <h1>¡Bienvenido a bordo, {{ $user->name }}!</h1>
         </div>
 

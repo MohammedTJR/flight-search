@@ -71,9 +71,6 @@
                                 <a href="{{ route('social.login', 'google') }}" class="btn btn-outline-danger">
                                     <i class="fab fa-google"></i> Google
                                 </a>
-                                <a href="{{ route('social.login', 'facebook') }}" class="btn btn-outline-primary">
-                                    <i class="fab fa-facebook-f"></i> Facebook
-                                </a>
                                 <a href="{{ route('social.login', 'github') }}" class="btn btn-outline-dark">
                                     <i class="fab fa-github"></i> GitHub
                                 </a>

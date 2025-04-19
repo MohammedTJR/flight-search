@@ -11,7 +11,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
 {
-    protected $providers = ['google', 'facebook', 'github'];
+    protected $providers = ['google', 'github'];
 
     public function redirectToProvider($provider)
     {

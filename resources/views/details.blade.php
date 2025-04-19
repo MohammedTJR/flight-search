@@ -14,9 +14,47 @@
     <div class="container mt-5">
         <header class="d-flex justify-content-between align-items-center mb-4">
             <h1>Detalles del Vuelo</h1>
-            <a href="javascript:history.back()" class="btn btn-secondary">
-                Volver
-            </a>
+            <div class="d-flex align-items-center gap-2">
+                @auth
+                            @php
+                                $isFavorite = auth()->user()->favoriteFlights()
+                                    ->where('flight_id', $flight['flights'][0]['flight_number'])
+                                    ->where('departure_date', date('Y-m-d', strtotime($flight['flights'][0]['departure_airport']['time'] ?? '')))
+                                    ->exists();
+                            @endphp
+
+                            <form id="favorite-form" method="POST" action="{{ $isFavorite ?
+                        route('favorites.remove', $flight['flights'][0]['flight_number']) :
+                        route('favorites.add') }}">
+                                @csrf
+                                @if($isFavorite)
+                                    @method('DELETE')
+                                @endif
+
+                                <input type="hidden" name="flight_id" value="{{ $flight['flights'][0]['flight_number'] }}">
+                                <input type="hidden" name="origin" value="{{ $flight['flights'][0]['departure_airport']['id'] ?? '' }}">
+                                <input type="hidden" name="destination"
+                                    value="{{ $flight['flights'][0]['arrival_airport']['id'] ?? '' }}">
+                                <input type="hidden" name="departure_date"
+                                    value="{{ date('Y-m-d', strtotime($flight['flights'][0]['departure_airport']['time'] ?? '')) }}">
+                                <input type="hidden" name="price" value="{{ $flight['price'] ?? 0 }}">
+                                <input type="hidden" name="airline" value="{{ $flight['flights'][0]['airline'] ?? '' }}">
+
+                                <button type="button" onclick="toggleFavorite(this)"
+                                    class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-primary' }} btn-sm">
+                                    <i class="{{ $isFavorite ? 'fas' : 'far' }} fa-heart"></i>
+                                    {{ $isFavorite ? 'Quitar de favoritos' : 'Guardar como favorito' }}
+                                </button>
+                            </form>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="far fa-heart"></i> Guardar como favorito
+                    </a>
+                @endauth
+                <a href="javascript:history.back()" class="btn btn-secondary btn-sm">
+                    Volver
+                </a>
+            </div>
         </header>
 
         <section class="card shadow p-4 mb-4">

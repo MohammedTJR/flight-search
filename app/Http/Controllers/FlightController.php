@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FavoriteFlight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -79,5 +80,51 @@ class FlightController extends Controller
         }
 
         return view('details', ['flight' => $selectedFlight]);
+    }
+
+    // app/Http/Controllers/FlightController.php
+    public function addFavorite(Request $request)
+    {
+        $request->validate([
+            'flight_id' => 'required',
+            'origin' => 'required|size:3',
+            'destination' => 'required|size:3',
+            'departure_date' => 'required|date',
+            'price' => 'required|numeric'
+        ]);
+
+        $favorite = FavoriteFlight::create([
+            'user_id' => auth()->id(),
+            'flight_id' => $request->flight_id,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'departure_date' => $request->departure_date,
+            'price' => $request->price,
+            'airline' => $request->airline
+        ]);
+
+        return back()->with('success', 'Vuelo guardado en favoritos');
+    }
+
+    public function removeFavorite(FavoriteFlight $favoriteFlight)
+    {
+        if ($favoriteFlight->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $favoriteFlight->delete();
+        return back()->with('success', 'Vuelo eliminado de favoritos');
+    }
+
+    public function showFavorites()
+    {
+        \DB::enableQueryLog();
+        $favorites = auth()->user()->favoriteFlights()->latest()->get();
+        \Log::debug(\DB::getQueryLog());
+
+        return view('favorites.index', [
+            'favorites' => $favorites,
+            'debug' => \DB::getQueryLog()
+        ]);
     }
 }

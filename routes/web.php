@@ -28,4 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
+
+    Route::post('/favorites', [FlightController::class, 'addFavorite'])->name('favorites.add');
+    Route::delete('/favorites/{favoriteFlight}', [FlightController::class, 'removeFavorite'])->name('favorites.remove');
+    Route::get('/favorites', [FlightController::class, 'showFavorites'])->name('favorites.show');
 });

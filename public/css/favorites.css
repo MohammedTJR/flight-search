@@ -1,0 +1,154 @@
+/* Estilos generales para la sección de favoritos */
+.favorites-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.favorites-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.favorites-title {
+    font-size: 2rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Tarjetas de vuelos favoritos */
+.favorite-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid #3b7ddd;
+    overflow: hidden;
+}
+
+.favorite-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-card-body {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.favorite-info {
+    flex: 1;
+}
+
+.favorite-route {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.favorite-airline {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.favorite-date-price {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.favorite-date {
+    font-size: 0.95rem;
+    color: #34495e;
+}
+
+.favorite-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #3b7ddd;
+}
+
+/* Botones */
+.btn-remove-favorite {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-remove-favorite:hover {
+    color: #c0392b;
+    transform: scale(1.1);
+}
+
+/* Estado vacío */
+.empty-favorites {
+    text-align: center;
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: #bdc3c7;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .favorite-card-body {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .favorite-date-price {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+footer {
+    background-color: #061631;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+    color: white;
+}
+
+.footer-content {
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+}
+
+.logo img {
+    max-width: 150px;
+}
+
+.derechos {
+    margin-left: 20px;
+}
+
+.derechos p {
+    font-size: 14px;
+    color: #ccc;
+}

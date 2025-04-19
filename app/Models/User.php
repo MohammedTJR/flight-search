@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function favoriteFlights()
+    {
+        return $this->hasMany(FavoriteFlight::class);
+    }
 }

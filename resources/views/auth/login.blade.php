@@ -21,6 +21,12 @@
                             </div>
                         @endif
 
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         @if($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
@@ -57,6 +63,22 @@
                                 <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                             </div>
                         </form>
+
+                        <div class="mt-4">
+                            <p class="text-center mb-3">O inicia sesión con:</p>
+
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <a href="{{ route('social.login', 'google') }}" class="btn btn-outline-danger">
+                                    <i class="fab fa-google"></i> Google
+                                </a>
+                                <a href="{{ route('social.login', 'facebook') }}" class="btn btn-outline-primary">
+                                    <i class="fab fa-facebook-f"></i> Facebook
+                                </a>
+                                <a href="{{ route('social.login', 'github') }}" class="btn btn-outline-dark">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
 
                         <div class="text-center">
                             <p class="mb-2">¿No tienes una cuenta? <a href="{{ route('register') }}">Regístrate aquí</a></p>

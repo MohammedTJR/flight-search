@@ -20,6 +20,13 @@
                             {{ session('success') }}
                         </div>
                     @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <form action="{{ route('register') }}" method="POST">
                         @csrf
                         <div class="mb-3">
@@ -41,6 +48,23 @@
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary">Registrarse</button>
                         </div>
+
+                        <div class="mt-4">
+                            <p class="text-center mb-3">O regístrate con:</p>
+                            
+                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                <a href="{{ route('social.login', 'google') }}" class="btn btn-outline-danger">
+                                    <i class="fab fa-google"></i> Google
+                                </a>
+                                <a href="{{ route('social.login', 'facebook') }}" class="btn btn-outline-primary">
+                                    <i class="fab fa-facebook-f"></i> Facebook
+                                </a>
+                                <a href="{{ route('social.login', 'github') }}" class="btn btn-outline-dark">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+
                         <div class="text-center">
                             <p>¿Ya tienes una cuenta? <a href="{{ route('login') }}">Inicia sesión</a></p>
                         </div>

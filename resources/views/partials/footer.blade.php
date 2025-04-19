@@ -63,7 +63,7 @@
                 <p class="mb-0">&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</p>
             </div>
             <div class="col-md-6 text-md-end">
-                <p class="mb-0">Diseñado con <i class="fas fa-heart text-danger"></i> por MOTJR</p>
+                <p class="mb-0">Diseñado con <i class="fas fa-heart text-danger"></i> por MOTJR & Ruth V.M</p>
             </div>
         </div>
     </div>

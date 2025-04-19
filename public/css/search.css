@@ -36,30 +36,3 @@ button {
     border-radius: 5px;
     padding: 8px;
 }
-
-footer {
-    background-color: #061631;
-    padding: 20px;
-    position: relative;
-    width: 100%;
-    color: white;
-}
-
-.footer-content {
-    display: flex;
-    align-items: flex-end;
-    padding: 1rem;
-}
-
-.logo img {
-    max-width: 150px;
-}
-
-.derechos {
-    margin-left: 20px;
-}
-
-.derechos p {
-    font-size: 14px;
-    color: #ccc;
-}

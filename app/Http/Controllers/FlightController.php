@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\FavoriteFlight;
+use App\Services\ApiKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class FlightController extends Controller
 {
+    protected $apiKeyService;
+    
+    public function __construct(ApiKeyService $apiKeyService)
+    {
+        $this->apiKeyService = $apiKeyService;
+    }
+
     public function index()
     {
         return view('search');
@@ -26,7 +35,17 @@ class FlightController extends Controller
         $travel_class = $request->input('travel_class', 'economy');
         $stops = $request->input('stops', 0);
 
-        $apiKey = env('SERPAPI_KEY');
+        // Obtener una API key válida usando el servicio
+        $apiKey = $this->apiKeyService->getValidApiKey();
+        
+        if (!$apiKey) {
+            return view('flights', [
+                'flights' => [],
+                'other_flights' => [],
+                'prices' => [],
+                'error' => 'No hay API keys disponibles en este momento. Inténtalo más tarde.'
+            ]);
+        }
 
         // Construcción de la URL para consultar la API de SerpApi (Google Flights)
         $url = "https://serpapi.com/search.json?"
@@ -44,29 +63,73 @@ class FlightController extends Controller
             . "&travel_class={$travel_class}"
             . "&stops={$stops}"
             . "&api_key={$apiKey}";
-        // Realiza la solicitud GET a la API
+            
+        // Guardar parámetros de búsqueda en la sesión para usarlos después
+        session()->put('search_params', [
+            'adults' => $adults,
+            'children' => $children,
+            'infants_in_seat' => $infants_in_seat,
+            'infants_on_lap' => $infants_on_lap,
+            'travel_class' => $travel_class
+        ]);
 
-        $response = Http::get($url);
-        // Verifica si la respuesta es exitosa
-
-        if ($response->successful()) {
-            $data = $response->json() ?? [];
-            $flights = $data['best_flights'] ?? [];
-            $other_flights = $data['other_flights'] ?? [];
-            $prices = $data['price_insights'] ?? [];
-            // Almacena los vuelos en la sesión para poder acceder a ellos en otras partes de la aplicación
-
-            session(['flights' => array_merge($flights, $other_flights)]);
-        } else {
-            // En caso de error en la solicitud, inicializa las variables vacías
-
-            $flights = [];
-            $other_flights = [];
-            $prices = [];
+        try {
+            // Realiza la solicitud GET a la API
+            $response = Http::get($url);
+            
+            // Verifica si la respuesta es exitosa
+            if ($response->successful()) {
+                $data = $response->json() ?? [];
+                
+                // Verifica si hay un error relacionado con la API key
+                if (isset($data['error']) && (
+                    strpos($data['error'], 'api_key') !== false || 
+                    strpos($data['error'], 'limit') !== false || 
+                    strpos($data['error'], 'quota') !== false
+                )) {
+                    // Si hay un error relacionado con la API key, márcarla como inválida
+                    $this->apiKeyService->markKeyAsInvalid($apiKey);
+                    
+                    // Intentar nuevamente con una nueva API key
+                    return $this->search($request);
+                }
+                
+                $flights = $data['best_flights'] ?? [];
+                $other_flights = $data['other_flights'] ?? [];
+                $prices = $data['price_insights'] ?? [];
+                
+                // Almacena los vuelos en la sesión
+                session(['flights' => array_merge($flights, $other_flights)]);
+                
+                return view('flights', compact('flights', 'other_flights', 'prices'));
+            } else {
+                // Si la respuesta no es exitosa, intentar con otra API key
+                $this->apiKeyService->markKeyAsInvalid($apiKey);
+                
+                // Verificar si es un error de límite de API
+                if ($response->status() == 429) {
+                    Log::warning("API key agotada: $apiKey. Intentando con otra clave.");
+                    return $this->search($request);
+                }
+                
+                // Otro tipo de error
+                Log::error("Error en la búsqueda de vuelos: " . $response->body());
+                return view('flights', [
+                    'flights' => [],
+                    'other_flights' => [],
+                    'prices' => [],
+                    'error' => 'Error al buscar vuelos. Inténtalo de nuevo.'
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("Excepción al buscar vuelos: " . $e->getMessage());
+            return view('flights', [
+                'flights' => [],
+                'other_flights' => [],
+                'prices' => [],
+                'error' => 'Error al conectar con el servicio de búsqueda de vuelos.'
+            ]);
         }
-        // Retorna la vista 'flights' con los datos obtenidos
-
-        return view('flights', compact('flights', 'other_flights', 'prices'));
     }
 
     public function show($id)
@@ -82,7 +145,6 @@ class FlightController extends Controller
         return view('details', ['flight' => $selectedFlight]);
     }
 
-    // app/Http/Controllers/FlightController.php
     public function addFavorite(Request $request)
     {
         $request->validate([
@@ -148,13 +210,7 @@ class FlightController extends Controller
 
     public function showFavorites()
     {
-        \DB::enableQueryLog();
         $favorites = auth()->user()->favoriteFlights()->latest()->get();
-        \Log::debug(\DB::getQueryLog());
-
-        return view('favorites.index', [
-            'favorites' => $favorites,
-            'debug' => \DB::getQueryLog()
-        ]);
+        return view('favorites.index', ['favorites' => $favorites]);
     }
 }

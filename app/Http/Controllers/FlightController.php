@@ -90,8 +90,23 @@ class FlightController extends Controller
             'origin' => 'required|size:3',
             'destination' => 'required|size:3',
             'departure_date' => 'required|date',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric',
+            'airline' => 'required'
         ]);
+
+        $existing = FavoriteFlight::where('user_id', auth()->id())
+            ->where('flight_id', $request->flight_id)
+            ->where('airline', $request->airline)
+            ->where('departure_date', $request->departure_date)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'error' => 'Ya tienes este vuelo en favoritos',
+                'id' => $existing->id,
+                'is_favorite' => true
+            ], 409);
+        }
 
         $favorite = FavoriteFlight::create([
             'user_id' => auth()->id(),
@@ -103,17 +118,32 @@ class FlightController extends Controller
             'airline' => $request->airline
         ]);
 
-        return back()->with('success', 'Vuelo guardado en favoritos');
+        return response()->json([
+            'id' => $favorite->id,
+            'message' => 'Vuelo guardado en favoritos',
+            'is_favorite' => true
+        ]);
     }
 
     public function removeFavorite(FavoriteFlight $favoriteFlight)
     {
         if ($favoriteFlight->user_id !== auth()->id()) {
+            if (request()->wantsJson()) {
+                return response()->json(['error' => 'No autorizado'], 403);
+            }
             abort(403);
         }
 
         $favoriteFlight->delete();
-        return back()->with('success', 'Vuelo eliminado de favoritos');
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Vuelo eliminado de favoritos',
+                'is_favorite' => false
+            ]);
+        }
+
+        return redirect()->route('favorites.show')->with('success', 'Vuelo eliminado de favoritos');
     }
 
     public function showFavorites()

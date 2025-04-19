@@ -17,15 +17,18 @@
             <div class="d-flex align-items-center gap-2">
                 @auth
                             @php
-                                $isFavorite = auth()->user()->favoriteFlights()
+                                $favorite = auth()->user()->favoriteFlights()
                                     ->where('flight_id', $flight['flights'][0]['flight_number'])
+                                    ->where('airline', $flight['flights'][0]['airline'] ?? '')
                                     ->where('departure_date', date('Y-m-d', strtotime($flight['flights'][0]['departure_airport']['time'] ?? '')))
-                                    ->exists();
+                                    ->first();
+
+                                $isFavorite = !is_null($favorite);
+                                $favoriteId = $isFavorite ? $favorite->id : null;
                             @endphp
 
-                            <form id="favorite-form" method="POST" action="{{ $isFavorite ?
-                        route('favorites.remove', $flight['flights'][0]['flight_number']) :
-                        route('favorites.add') }}">
+                            <form id="favorite-form" method="POST"
+                                action="{{ $isFavorite ? route('favorites.remove', $favoriteId) : route('favorites.add') }}">
                                 @csrf
                                 @if($isFavorite)
                                     @method('DELETE')
@@ -39,7 +42,6 @@
                                     value="{{ date('Y-m-d', strtotime($flight['flights'][0]['departure_airport']['time'] ?? '')) }}">
                                 <input type="hidden" name="price" value="{{ $flight['price'] ?? 0 }}">
                                 <input type="hidden" name="airline" value="{{ $flight['flights'][0]['airline'] ?? '' }}">
-
                                 <button type="button" onclick="toggleFavorite(this)"
                                     class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-primary' }} btn-sm">
                                     <i class="{{ $isFavorite ? 'fas' : 'far' }} fa-heart"></i>
@@ -120,5 +122,20 @@
                 </div>
             </div>
         </section>
+
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body"></div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
     </div>
+    @section('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{{ asset('js/details.js') }}"></script>
+    @endsection
 @endsection

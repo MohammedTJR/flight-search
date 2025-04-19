@@ -13,15 +13,15 @@ return new class extends Migration {
         Schema::create('favorite_flights', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('flight_id'); // Ej: "IB123-2023-12-25"
-            $table->string('origin'); // Código IATA (MAD)
-            $table->string('destination'); // Código IATA (JFK)
+            $table->string('flight_id');
+            $table->string('origin');
+            $table->string('destination');
             $table->date('departure_date');
             $table->decimal('price', 10, 2);
             $table->string('airline')->nullable();
             $table->timestamps();
 
-            $table->unique(['user_id', 'flight_id']); // Evitar duplicados
+            $table->unique(['user_id', 'flight_id', 'airline', 'departure_date']);
         });
     }
 

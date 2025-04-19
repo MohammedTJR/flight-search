@@ -17,7 +17,7 @@ class FavoriteFlight extends Model
     ];
 
     protected $casts = [
-        'departure_date' => 'date:Y-m-d', // Convierte el string a Carbon
+        'departure_date' => 'date:Y-m-d',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

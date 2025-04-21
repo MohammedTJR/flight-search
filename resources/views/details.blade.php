@@ -116,6 +116,91 @@
             @endforeach
         </section>
 
+        
+        <!-- Sección de opciones de reserva mejorada -->
+        @if(!empty($bookingOptions))
+            <section class="card shadow p-4 mb-4">
+                <h4 class="mb-4"><i class="fas fa-shopping-cart"></i> Opciones de Reserva</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Proveedor</th>
+                                <th class="text-center">Precio</th>
+                                <th>Detalles</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bookingOptions as $option)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if(isset($option['together']['airline_logos']) && count($option['together']['airline_logos']) > 0)
+                                                        <img src="{{ $option['together']['airline_logos'][0] }}"
+                                                            alt="{{ $option['together']['book_with'] }}" class="provider-logo me-3" width="40">
+                                                    @endif
+                                                    <div>
+                                                        <strong>{{ $option['together']['book_with'] ?? 'Proveedor' }}</strong>
+                                                        @if(isset($option['together']['option_title']))
+                                                            <div class="text-muted small">{{ $option['together']['option_title'] }}</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="fw-bold">€{{ number_format($option['together']['price'] ?? 0, 2) }}</span>
+                                                @if(isset($option['together']['local_prices']))
+                                                    <div class="text-muted small">
+                                                        @foreach($option['together']['local_prices'] as $localPrice)
+                                                            {{ $localPrice['currency'] }} {{ $localPrice['price'] }}
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if(isset($option['together']['extensions']) && is_array($option['together']['extensions']))
+                                                    <ul class="list-unstyled mb-0">
+                                                        @foreach($option['together']['extensions'] as $extension)
+                                                            <li><small><i class="fas fa-check text-success me-1"></i> {{ $extension }}</small></li>
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                                @if(isset($option['together']['baggage_prices']))
+                                                    <div class="mt-1">
+                                                        <small><i class="fas fa-suitcase text-primary me-1"></i>
+                                                            {{ implode(', ', $option['together']['baggage_prices']) }}
+                                                        </small>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if(isset($option['together']['booking_request']['url']) && isset($option['together']['booking_request']['post_data']))
+                                                                    <form method="POST" action="{{ $option['together']['booking_request']['url'] }}"
+                                                                        target="_blank" id="bookingForm_{{ $loop->index }}">
+                                                                        @php
+                                                                            parse_str($option['together']['booking_request']['post_data'], $postFields);
+                                                                        @endphp
+
+                                                                        @foreach($postFields as $name => $value)
+                                                                            <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+                                                                        @endforeach
+
+                                                                        <button type="submit" class="btn btn-primary btn-sm">
+                                                                            <i class="fas fa-external-link-alt me-1"></i> Reservar
+                                                                        </button>
+                                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        @endif
+
         <section class="card shadow p-4 mb-4">
             <h4><i class="fas fa-leaf"></i> Emisiones de CO₂</h4>
             <div class="d-flex align-items-center">

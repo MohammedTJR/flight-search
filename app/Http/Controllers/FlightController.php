@@ -139,14 +139,24 @@ class FlightController extends Controller
     public function show($id)
     {
         $flights = session('flights', []);
-
         $selectedFlight = collect($flights)->firstWhere('flights.0.flight_number', $id);
 
         if (!$selectedFlight) {
             abort(404, 'Vuelo no encontrado');
         }
 
-        return view('details', ['flight' => $selectedFlight]);
+        $bookingOptions = [];
+        if (!empty($selectedFlight['booking_token'])) {
+            $bookingOptions = $this->getBookingOptions(
+                $selectedFlight['booking_token'],
+                $selectedFlight // Pasamos todos los datos del vuelo
+            );
+        }
+
+        return view('details', [
+            'flight' => $selectedFlight,
+            'bookingOptions' => $bookingOptions
+        ]);
     }
 
     public function addFavorite(Request $request)
@@ -330,8 +340,17 @@ class FlightController extends Controller
                     ]);
                 }
 
-                // Mostrar la vista de detalles con el vuelo encontrado
-                return view('details', ['flight' => $flight]);
+                $bookingOptions = [];
+                $bookingToken = $flight['booking_token'] ?? null;
+
+                if ($bookingToken) {
+                    $bookingOptions = $this->getBookingOptions($bookingToken);
+                }
+
+                return view('details', [
+                    'flight' => $flight,
+                    'bookingOptions' => $bookingOptions
+                ]);
 
             } else {
                 // Si hay error de la API, intentar con otra clave
@@ -350,6 +369,59 @@ class FlightController extends Controller
             Log::error("Excepción al buscar vuelo favorito: " . $e->getMessage());
             return redirect()->route('favorites.show')
                 ->with('error', 'Error al conectar con el servicio de búsqueda de vuelos.');
+        }
+    }
+
+    private function getBookingOptions($bookingToken, $flightData)
+    {
+        $apiKey = $this->apiKeyService->getValidApiKey();
+        if (!$apiKey) {
+            return null;
+        }
+
+        // Parámetros OBLIGATORIOS para la API
+        $query = [
+            'engine' => 'google_flights',
+            'type' => '2', // ¡IMPORTANTE! Siempre type=2
+            'departure_id' => $flightData['flights'][0]['departure_airport']['id'] ?? '',
+            'arrival_id' => $flightData['flights'][0]['arrival_airport']['id'] ?? '',
+            'outbound_date' => date('Y-m-d', strtotime($flightData['flights'][0]['departure_airport']['time'] ?? '')),
+            'booking_token' => $bookingToken,
+            'currency' => 'EUR',
+            'hl' => 'es',
+            'api_key' => $apiKey
+        ];
+
+        try {
+            $response = Http::get('https://serpapi.com/search.json', $query);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                // Manejo de errores de API key
+                if (isset($data['error'])) {
+                    if (
+                        strpos($data['error'], 'api_key') !== false ||
+                        strpos($data['error'], 'limit') !== false ||
+                        strpos($data['error'], 'quota') !== false
+                    ) {
+                        $this->apiKeyService->markKeyAsInvalid($apiKey);
+                        return $this->getBookingOptions($bookingToken, $flightData); // Reintento
+                    }
+                }
+
+                return $data['booking_options'] ?? [];
+            } else {
+                if ($response->status() == 429) {
+                    $this->apiKeyService->markKeyAsInvalid($apiKey);
+                    return $this->getBookingOptions($bookingToken, $flightData);
+                }
+                Log::error("Error en booking options: " . $response->body());
+                return [];
+            }
+        } catch (\Exception $e) {
+            Log::error("Excepción en booking options: " . $e->getMessage());
+            return [];
         }
     }
 }

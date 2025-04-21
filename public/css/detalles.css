@@ -1,0 +1,21 @@
+/* details.css */
+.booking-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card .card-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+.badge-bg {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: normal;
+}

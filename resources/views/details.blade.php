@@ -14,6 +14,13 @@
     <div class="container mt-5">
         <header class="d-flex justify-content-between align-items-center mb-4">
             <h1>Detalles del Vuelo</h1>
+            @if(session()->has('price_changed'))
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>¡El precio ha cambiado!</strong> El precio anterior era €{{ session('price_changed')['old_price'] }}
+                    y ahora es €{{ session('price_changed')['new_price'] }}.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="d-flex align-items-center gap-2">
                 @auth
                             @php

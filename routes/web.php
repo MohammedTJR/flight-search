@@ -39,4 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/favorites', [FlightController::class, 'addFavorite'])->name('favorites.add');
     Route::delete('/favorites/{favoriteFlight}', [FlightController::class, 'removeFavorite'])->name('favorites.remove');
     Route::get('/favorites', [FlightController::class, 'showFavorites'])->name('favorites.show');
+
+    Route::get('/favorites/{favoriteFlight}/details', [FlightController::class, 'showFavoriteDetails'])->name('favorites.details');
 });

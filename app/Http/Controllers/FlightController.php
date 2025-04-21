@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Airport;
 use App\Models\FavoriteFlight;
 use App\Services\ApiKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\ImageService;
 
 class FlightController extends Controller
 {
     protected $apiKeyService;
-    
+
     public function __construct(ApiKeyService $apiKeyService)
     {
         $this->apiKeyService = $apiKeyService;
@@ -37,7 +39,7 @@ class FlightController extends Controller
 
         // Obtener una API key válida usando el servicio
         $apiKey = $this->apiKeyService->getValidApiKey();
-        
+
         if (!$apiKey) {
             return view('flights', [
                 'flights' => [],
@@ -63,7 +65,7 @@ class FlightController extends Controller
             . "&travel_class={$travel_class}"
             . "&stops={$stops}"
             . "&api_key={$apiKey}";
-            
+
         // Guardar parámetros de búsqueda en la sesión para usarlos después
         session()->put('search_params', [
             'adults' => $adults,
@@ -76,42 +78,44 @@ class FlightController extends Controller
         try {
             // Realiza la solicitud GET a la API
             $response = Http::get($url);
-            
+
             // Verifica si la respuesta es exitosa
             if ($response->successful()) {
                 $data = $response->json() ?? [];
-                
+
                 // Verifica si hay un error relacionado con la API key
-                if (isset($data['error']) && (
-                    strpos($data['error'], 'api_key') !== false || 
-                    strpos($data['error'], 'limit') !== false || 
-                    strpos($data['error'], 'quota') !== false
-                )) {
+                if (
+                    isset($data['error']) && (
+                        strpos($data['error'], 'api_key') !== false ||
+                        strpos($data['error'], 'limit') !== false ||
+                        strpos($data['error'], 'quota') !== false
+                    )
+                ) {
                     // Si hay un error relacionado con la API key, márcarla como inválida
                     $this->apiKeyService->markKeyAsInvalid($apiKey);
-                    
+
                     // Intentar nuevamente con una nueva API key
                     return $this->search($request);
                 }
-                
+
                 $flights = $data['best_flights'] ?? [];
                 $other_flights = $data['other_flights'] ?? [];
                 $prices = $data['price_insights'] ?? [];
-                
+
                 // Almacena los vuelos en la sesión
                 session(['flights' => array_merge($flights, $other_flights)]);
-                
+
                 return view('flights', compact('flights', 'other_flights', 'prices'));
             } else {
                 // Si la respuesta no es exitosa, intentar con otra API key
                 $this->apiKeyService->markKeyAsInvalid($apiKey);
-                
+
                 // Verificar si es un error de límite de API
                 if ($response->status() == 429) {
                     Log::warning("API key agotada: $apiKey. Intentando con otra clave.");
                     return $this->search($request);
                 }
-                
+
                 // Otro tipo de error
                 Log::error("Error en la búsqueda de vuelos: " . $response->body());
                 return view('flights', [
@@ -211,6 +215,141 @@ class FlightController extends Controller
     public function showFavorites()
     {
         $favorites = auth()->user()->favoriteFlights()->latest()->get();
+
+        $imageService = app(ImageService::class);
+
+        foreach ($favorites as $favorite) {
+            $airport = Airport::where('iata', $favorite->destination)->first();
+
+            $cityName = $airport ? $airport->city : $favorite->destination;
+
+            $favorite->destination_image = $imageService->getCityImage($cityName);
+        }
+
         return view('favorites.index', ['favorites' => $favorites]);
+    }
+
+    public function showFavoriteDetails(FavoriteFlight $favoriteFlight)
+    {
+        if ($favoriteFlight->user_id !== auth()->id()) {
+            abort(403, 'No estás autorizado para ver este vuelo');
+        }
+
+        $apiKey = $this->apiKeyService->getValidApiKey();
+
+        if (!$apiKey) {
+            return redirect()->route('favorites.show')
+                ->with('error', 'No hay API keys disponibles en este momento. Inténtalo más tarde.');
+        }
+
+        $departure = $favoriteFlight->origin;
+        $arrival = $favoriteFlight->destination;
+        $date = $favoriteFlight->departure_date->format('Y-m-d');
+
+        $searchParams = session()->get('search_params', []);
+        $adults = $searchParams['adults'] ?? 1;
+        $children = $searchParams['children'] ?? 0;
+        $infants_in_seat = $searchParams['infants_in_seat'] ?? 0;
+        $infants_on_lap = $searchParams['infants_on_lap'] ?? 0;
+        $travel_class = $searchParams['travel_class'] ?? 'economy';
+        $stops = 0;
+
+        $url = "https://serpapi.com/search.json?"
+            . "engine=google_flights"
+            . "&departure_id={$departure}"
+            . "&arrival_id={$arrival}"
+            . "&outbound_date={$date}"
+            . "&type=2"
+            . "&currency=EUR"
+            . "&hl=es"
+            . "&adults={$adults}"
+            . "&children={$children}"
+            . "&infants_in_seat={$infants_in_seat}"
+            . "&infants_on_lap={$infants_on_lap}"
+            . "&travel_class={$travel_class}"
+            . "&stops={$stops}"
+            . "&api_key={$apiKey}";
+
+        try {
+            // Realizar la consulta a la API
+            $response = Http::get($url);
+
+            if ($response->successful()) {
+                $data = $response->json() ?? [];
+
+                // Verificar si hay errores de API key
+                if (
+                    isset($data['error']) && (
+                        strpos($data['error'], 'api_key') !== false ||
+                        strpos($data['error'], 'limit') !== false ||
+                        strpos($data['error'], 'quota') !== false
+                    )
+                ) {
+                    $this->apiKeyService->markKeyAsInvalid($apiKey);
+                    return $this->showFavoriteDetails($favoriteFlight); // Reintentar con otra clave
+                }
+
+                // Combinar todos los vuelos
+                $allFlights = array_merge($data['best_flights'] ?? [], $data['other_flights'] ?? []);
+
+                // Buscar el vuelo específico por número de vuelo y aerolínea
+                $flight = null;
+                foreach ($allFlights as $f) {
+                    if (
+                        isset($f['flights'][0]['flight_number']) &&
+                        $f['flights'][0]['flight_number'] == $favoriteFlight->flight_id &&
+                        $f['flights'][0]['airline'] == $favoriteFlight->airline
+                    ) {
+                        $flight = $f;
+                        break;
+                    }
+                }
+
+                // Si no se encuentra el vuelo específico, usar el primero disponible
+                if (!$flight && !empty($allFlights)) {
+                    $flight = $allFlights[0];
+                    Log::info("No se encontró el vuelo exacto. Usando el primero disponible.");
+                } elseif (!$flight) {
+                    return redirect()->route('favorites.show')
+                        ->with('error', 'No se encontraron vuelos disponibles para esta ruta y fecha.');
+                }
+
+                // Almacenar el vuelo en la sesión para referencia futura
+                session(['flights' => $allFlights]);
+
+                // Verificar si el precio ha cambiado y actualizar en la base de datos
+                if (isset($flight['price']) && $flight['price'] != $favoriteFlight->price) {
+                    $oldPrice = $favoriteFlight->price;
+                    $favoriteFlight->price = $flight['price'];
+                    $favoriteFlight->save();
+
+                    // Enviar mensaje de cambio de precio a la vista
+                    session()->flash('price_changed', [
+                        'old_price' => $oldPrice,
+                        'new_price' => $flight['price']
+                    ]);
+                }
+
+                // Mostrar la vista de detalles con el vuelo encontrado
+                return view('details', ['flight' => $flight]);
+
+            } else {
+                // Si hay error de la API, intentar con otra clave
+                $this->apiKeyService->markKeyAsInvalid($apiKey);
+
+                if ($response->status() == 429) {
+                    Log::warning("API key agotada: $apiKey. Intentando con otra clave.");
+                    return $this->showFavoriteDetails($favoriteFlight);
+                }
+
+                Log::error("Error en la búsqueda del vuelo favorito: " . $response->body());
+                return redirect()->route('favorites.show')
+                    ->with('error', 'Error al recuperar la información del vuelo. Inténtelo de nuevo más tarde.');
+            }
+        } catch (\Exception $e) {
+            Log::error("Excepción al buscar vuelo favorito: " . $e->getMessage());
+            return redirect()->route('favorites.show')
+                ->with('error', 'Error al conectar con el servicio de búsqueda de vuelos.');
+        }
     }
 }

@@ -25,7 +25,7 @@
                     <div class="row mb-4">
                         <div class="col-md-4 text-center">
                             <div class="profile-avatar">
-                                <i class="fas fa-user-circle fa-5x text-secondary"></i>
+                                <img src={{ $user->avatar }} alt="Foto perfil">
                             </div>
                             <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary mt-3">
                                 Editar Perfil

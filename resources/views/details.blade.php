@@ -44,7 +44,7 @@
                                 <input type="hidden" name="flight_id" value="{{ $flight['flights'][0]['flight_number'] }}">
                                 <input type="hidden" name="origin" value="{{ $flight['flights'][0]['departure_airport']['id'] ?? '' }}">
                                 <input type="hidden" name="destination"
-                                    value="{{ $flight['flights'][0]['arrival_airport']['id'] ?? '' }}">
+                                    value="{{ $flight['flights'][count($flight['flights']) - 1]['arrival_airport']['id'] ?? '' }}">
                                 <input type="hidden" name="departure_date"
                                     value="{{ date('Y-m-d', strtotime($flight['flights'][0]['departure_airport']['time'] ?? '')) }}">
                                 <input type="hidden" name="price" value="{{ $flight['price'] ?? 0 }}">
@@ -116,7 +116,7 @@
             @endforeach
         </section>
 
-        
+
         <!-- Sección de opciones de reserva mejorada -->
         @if(!empty($bookingOptions))
             <section class="card shadow p-4 mb-4">

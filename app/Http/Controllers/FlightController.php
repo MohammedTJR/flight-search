@@ -344,7 +344,7 @@ class FlightController extends Controller
                 $bookingToken = $flight['booking_token'] ?? null;
 
                 if ($bookingToken) {
-                    $bookingOptions = $this->getBookingOptions($bookingToken);
+                    $bookingOptions = $this->getBookingOptions($bookingToken, $flight);
                 }
 
                 return view('details', [

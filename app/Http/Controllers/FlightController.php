@@ -241,6 +241,8 @@ class FlightController extends Controller
 
     public function showFavoriteDetails(FavoriteFlight $favoriteFlight)
     {
+        $this->apiKeyService->refreshInvalidKeys();
+
         if ($favoriteFlight->user_id !== auth()->id()) {
             abort(403, 'No estás autorizado para ver este vuelo');
         }

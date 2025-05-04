@@ -92,7 +92,7 @@ class FlightController extends Controller
                     )
                 ) {
                     // Si hay un error relacionado con la API key, márcarla como inválida
-                    $this->apiKeyService->markKeyAsInvalid($apiKey, 'serpapi');
+                    $this->apiKeyService->markKeyAsInvalid($apiKey);
 
                     // Intentar nuevamente con una nueva API key
                     return $this->search($request);
@@ -108,7 +108,7 @@ class FlightController extends Controller
                 return view('flights', compact('flights', 'other_flights', 'prices'));
             } else {
                 // Si la respuesta no es exitosa, intentar con otra API key
-                $this->apiKeyService->markKeyAsInvalid($apiKey, 'serpapi');
+                $this->apiKeyService->markKeyAsInvalid($apiKey);
 
                 // Verificar si es un error de límite de API
                 if ($response->status() == 429) {
@@ -297,7 +297,7 @@ class FlightController extends Controller
                     )
                 ) {
                     // Si hay un error relacionado con la API key, márcarla como inválida
-                    $this->apiKeyService->markKeyAsInvalid($apiKey, 'serpapi');
+                    $this->apiKeyService->markKeyAsInvalid($apiKey);
 
                     // Intentar nuevamente con una nueva API key
                     return $this->showFavoriteDetails($favoriteFlight);
@@ -355,7 +355,7 @@ class FlightController extends Controller
                 ]);
             } else {
                 // Si la respuesta no es exitosa, intentar con otra API key
-                $this->apiKeyService->markKeyAsInvalid($apiKey, 'serpapi');
+                $this->apiKeyService->markKeyAsInvalid($apiKey);
 
                 // Verificar si es un error de límite de API
                 if ($response->status() == 429) {
@@ -407,7 +407,7 @@ class FlightController extends Controller
                         strpos($data['error'], 'limit') !== false ||
                         strpos($data['error'], 'quota') !== false
                     ) {
-                        $this->apiKeyService->markKeyAsInvalid($apiKey, 'serpapi');
+                        $this->apiKeyService->markKeyAsInvalid($apiKey);
                         return $this->getBookingOptions($bookingToken, $flightData); // Reintento
                     }
                 }
@@ -415,7 +415,7 @@ class FlightController extends Controller
                 return $data['booking_options'] ?? [];
             } else {
                 if ($response->status() == 429) {
-                    $this->apiKeyService->markKeyAsInvalid($apiKey, 'serpapi');
+                    $this->apiKeyService->markKeyAsInvalid($apiKey);
                     return $this->getBookingOptions($bookingToken, $flightData);
                 }
                 Log::error("Error en booking options: " . $response->body());

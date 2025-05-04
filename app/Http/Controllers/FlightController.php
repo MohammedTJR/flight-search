@@ -241,11 +241,12 @@ class FlightController extends Controller
 
     public function showFavoriteDetails(FavoriteFlight $favoriteFlight)
     {
+        $this->apiKeyService->refreshInvalidKeys();
+
         if ($favoriteFlight->user_id !== auth()->id()) {
             abort(403, 'No estás autorizado para ver este vuelo');
         }
 
-        // Obtener una API key válida usando el servicio
         $apiKey = $this->apiKeyService->getValidApiKey();
 
         if (!$apiKey) {
@@ -282,13 +283,13 @@ class FlightController extends Controller
             . "&api_key={$apiKey}";
 
         try {
+            // Realizar la consulta a la API
             $response = Http::get($url);
 
-            // Verifica si la respuesta es exitosa
             if ($response->successful()) {
                 $data = $response->json() ?? [];
 
-                // Verifica si hay un error relacionado con la API key
+                // Verificar si hay errores de API key
                 if (
                     isset($data['error']) && (
                         strpos($data['error'], 'api_key') !== false ||
@@ -296,11 +297,8 @@ class FlightController extends Controller
                         strpos($data['error'], 'quota') !== false
                     )
                 ) {
-                    // Si hay un error relacionado con la API key, márcarla como inválida
                     $this->apiKeyService->markKeyAsInvalid($apiKey);
-
-                    // Intentar nuevamente con una nueva API key
-                    return $this->showFavoriteDetails($favoriteFlight);
+                    return $this->showFavoriteDetails($favoriteFlight); // Reintentar con otra clave
                 }
 
                 // Combinar todos los vuelos
@@ -319,6 +317,7 @@ class FlightController extends Controller
                     }
                 }
 
+                // Si no se encuentra el vuelo específico, usar el primero disponible
                 if (!$flight && !empty($allFlights)) {
                     $flight = $allFlights[0];
                     Log::info("No se encontró el vuelo exacto. Usando el primero disponible.");
@@ -330,12 +329,13 @@ class FlightController extends Controller
                 // Almacenar el vuelo en la sesión para referencia futura
                 session(['flights' => $allFlights]);
 
-                // Verificar si el precio ha cambiado
+                // Verificar si el precio ha cambiado y actualizar en la base de datos
                 if (isset($flight['price']) && $flight['price'] != $favoriteFlight->price) {
                     $oldPrice = $favoriteFlight->price;
                     $favoriteFlight->price = $flight['price'];
                     $favoriteFlight->save();
 
+                    // Enviar mensaje de cambio de precio a la vista
                     session()->flash('price_changed', [
                         'old_price' => $oldPrice,
                         'new_price' => $flight['price']
@@ -353,11 +353,11 @@ class FlightController extends Controller
                     'flight' => $flight,
                     'bookingOptions' => $bookingOptions
                 ]);
+
             } else {
-                // Si la respuesta no es exitosa, intentar con otra API key
+                // Si hay error de la API, intentar con otra clave
                 $this->apiKeyService->markKeyAsInvalid($apiKey);
 
-                // Verificar si es un error de límite de API
                 if ($response->status() == 429) {
                     Log::warning("API key agotada: $apiKey. Intentando con otra clave.");
                     return $this->showFavoriteDetails($favoriteFlight);

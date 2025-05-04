@@ -257,12 +257,12 @@ class FlightController extends Controller
         $arrival = $favoriteFlight->destination;
         $date = $favoriteFlight->departure_date->format('Y-m-d');
 
-        // Usar valores por defecto más razonables en lugar de depender de la sesión
-        $adults = 1;
-        $children = 0;
-        $infants_in_seat = 0;
-        $infants_on_lap = 0;
-        $travel_class = 'economy';
+        $searchParams = session()->get('search_params', []);
+        $adults = $searchParams['adults'] ?? 1;
+        $children = $searchParams['children'] ?? 0;
+        $infants_in_seat = $searchParams['infants_in_seat'] ?? 0;
+        $infants_on_lap = $searchParams['infants_on_lap'] ?? 0;
+        $travel_class = $searchParams['travel_class'] ?? 'economy';
         $stops = 0;
 
         $url = "https://serpapi.com/search.json?"
@@ -319,10 +319,9 @@ class FlightController extends Controller
                     }
                 }
 
-                // Si no encontramos el vuelo exacto, mostrar el primero disponible con un mensaje
                 if (!$flight && !empty($allFlights)) {
                     $flight = $allFlights[0];
-                    session()->flash('warning', 'No se encontró el vuelo exacto. Mostrando un vuelo similar para esta ruta y fecha.');
+                    Log::info("No se encontró el vuelo exacto. Usando el primero disponible.");
                 } elseif (!$flight) {
                     return redirect()->route('favorites.show')
                         ->with('error', 'No se encontraron vuelos disponibles para esta ruta y fecha.');

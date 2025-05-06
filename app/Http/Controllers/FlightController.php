@@ -34,7 +34,7 @@ class FlightController extends Controller
         $children = $request->input('children', 0);
         $infants_in_seat = $request->input('infants_in_seat', 0);
         $infants_on_lap = $request->input('infants_on_lap', 0);
-        $travel_class = $request->input('travel_class', 'economy');
+        $travel_class = $request->input('travel_class', 1);
         $stops = $request->input('stops', 0);
 
         // Obtener una API key válida usando el servicio
@@ -261,8 +261,16 @@ class FlightController extends Controller
         $children = $searchParams['children'] ?? 0;
         $infants_in_seat = $searchParams['infants_in_seat'] ?? 0;
         $infants_on_lap = $searchParams['infants_on_lap'] ?? 0;
-        $travel_class = $searchParams['travel_class'] ?? 'economy';
+        $travel_class = $searchParams['travel_class'] ?? 1;
         $stops = 0;
+
+        session()->put('search_params', [
+            'adults' => $adults,
+            'children' => $children,
+            'infants_in_seat' => $infants_in_seat,
+            'infants_on_lap' => $infants_on_lap,
+            'travel_class' => $travel_class
+        ]);
 
         $url = "https://serpapi.com/search.json?"
             . "engine=google_flights"
@@ -297,6 +305,13 @@ class FlightController extends Controller
                 ) {
                     $this->apiKeyService->markKeyAsInvalid($apiKey);
                     return $this->showFavoriteDetails($favoriteFlight); // Reintentar con otra clave
+                }
+
+                // Si hay otro tipo de error en la respuesta
+                if (isset($data['error'])) {
+                    Log::error("Error en la respuesta de la API: " . $data['error']);
+                    return redirect()->route('favorites.show')
+                        ->with('error', 'Error al buscar el vuelo: ' . $data['error']);
                 }
 
                 // Combinar todos los vuelos
@@ -379,13 +394,25 @@ class FlightController extends Controller
             return null;
         }
 
-        // Parámetros OBLIGATORIOS para la API
+        $departureId = $flightData['flights'][0]['departure_airport']['id'] ?? '';
+        $arrivalId = $flightData['flights'][0]['arrival_airport']['id'] ?? '';
+        $departureTime = $flightData['flights'][0]['departure_airport']['time'] ?? '';
+
+        if (empty($departureId) || empty($arrivalId) || empty($departureTime)) {
+            Log::error("Datos insuficientes para booking options: " . json_encode([
+                'departure_id' => $departureId,
+                'arrival_id' => $arrivalId,
+                'departure_time' => $departureTime
+            ]));
+            return [];
+        }
+
         $query = [
             'engine' => 'google_flights',
-            'type' => '2', // ¡IMPORTANTE! Siempre type=2
-            'departure_id' => $flightData['flights'][0]['departure_airport']['id'] ?? '',
-            'arrival_id' => $flightData['flights'][0]['arrival_airport']['id'] ?? '',
-            'outbound_date' => date('Y-m-d', strtotime($flightData['flights'][0]['departure_airport']['time'] ?? '')),
+            'type' => '2',
+            'departure_id' => $departureId,
+            'arrival_id' => $arrivalId,
+            'outbound_date' => date('Y-m-d', strtotime($departureTime)),
             'booking_token' => $bookingToken,
             'currency' => 'EUR',
             'hl' => 'es',
@@ -398,7 +425,6 @@ class FlightController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
 
-                // Manejo de errores de API key
                 if (isset($data['error'])) {
                     if (
                         strpos($data['error'], 'api_key') !== false ||

@@ -1,0 +1,141 @@
+#map {
+    height: calc(100vh - 125px);
+    width: 100%;
+    z-index: 1;
+    transform: translateZ(0);
+}
+
+#flight-details-panel {
+    position: fixed;
+    top: 85px;
+    right: -400px;
+    width: 380px;
+    height: calc(100vh - 145px);
+    background-color: white;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+    transition: right 0.3s ease-in-out;
+}
+
+#flight-details-panel.show {
+    right: 0;
+}
+
+.close-panel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.detail-row {
+    display: flex;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 8px 0;
+}
+
+.detail-label {
+    font-weight: bold;
+    width: 40%;
+}
+
+.detail-value {
+    width: 60%;
+}
+
+.flight-title {
+    border-bottom: 2px solid #0d6efd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.info-section {
+    margin-bottom: 20px;
+}
+
+.refresh-info {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 999;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.aircraft-marker {
+    background: none !important;
+    border: none !important;
+    transition: 
+        transform 0.5s ease-out,
+        left 0.5s linear,
+        top 0.5s linear;
+    will-change: transform, left, top;
+}
+
+.aircraft-icon {
+    color: #0d6efd;
+    font-size: 20px;
+    transform-origin: center center;
+    transition: transform 0.1s linear;
+    display: inline-block; /* Asegura que la transformación se aplique correctamente */
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.radar-header {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    position: relative;
+}
+
+.stats-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background-color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    min-width: 120px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}

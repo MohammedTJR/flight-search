@@ -4,6 +4,7 @@ use App\Http\Controllers\AirportsController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RadarController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\SocialAuthController;
 use Illuminate\Support\Facades\Route;
@@ -41,4 +42,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/favorites', [FlightController::class, 'showFavorites'])->name('favorites.show');
 
     Route::get('/favorites/{favoriteFlight}/details', [FlightController::class, 'showFavoriteDetails'])->name('favorites.details');
+});
+
+Route::get('/radar', [RadarController::class, 'index'])->name('radar');
+
+Route::prefix('api/radar')->group(function () {
+    Route::get('/', [RadarController::class, 'getFlights']);
+    Route::get('/{icao24}', [RadarController::class, 'getFlightDetails']);
 });

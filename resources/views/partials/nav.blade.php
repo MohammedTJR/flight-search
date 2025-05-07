@@ -9,6 +9,14 @@
 
         <!-- Menú de navegación -->
         <ul class="nav nav-pills align-items-center">
+            <!-- Enlace al Radar (versión desktop) -->
+            <li class="nav-item d-none d-lg-block">
+                <a href="{{ route('radar') }}"
+                    class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
+                    <i class="fas fa-satellite-dish me-2"></i>Radar en vivo
+                </a>
+            </li>
+
             @auth
                 <!-- Versión Desktop (visible en lg+) -->
                 <div class="d-none d-lg-flex gap-3">
@@ -40,6 +48,12 @@
                         <i class="fas fa-user-circle me-2"></i>{{ Auth::user()->name }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <!-- Enlace al Radar (versión móvil) -->
+                        <li><a class="dropdown-item" href="{{ route('radar') }}"><i
+                                    class="fas fa-satellite-dish me-2"></i>Radar en vivo</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="fas fa-user me-2"></i>Mi
                                 Perfil</a></li>
                         <li>
@@ -60,6 +74,14 @@
                     </ul>
                 </li>
             @else
+                <!-- Enlace al Radar para usuarios no autenticados (versión móvil) -->
+                <li class="nav-item d-lg-none">
+                    <a href="{{ route('radar') }}"
+                        class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
+                        <i class="fas fa-satellite-dish me-2"></i>Radar
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="{{ route('login') }}" class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}">
                         <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión

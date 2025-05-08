@@ -25,6 +25,10 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
 
+Route::get('/ayuda', function () {
+    return view('help');
+})->name('help');
+
 // Rutas para Social Auth
 Route::get('auth/{provider}', [SocialAuthController::class, 'redirectToProvider'])
     ->name('social.login');

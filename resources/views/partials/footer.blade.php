@@ -21,11 +21,10 @@
             <div class="col-lg-2 col-md-6">
                 <h5 class="fw-bold mb-3">Enlaces</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="{{ route('home') }}" class="text-decoration-none text-light">Inicio</a>
-                    </li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">Buscar Vuelos</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">Ofertas</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">Destinos</a></li>
+                    <li class="mb-2"><a href="{{ route('home') }}" class="text-decoration-none text-light">Inicio</a></li>
+                    <li class="mb-2"><a href="{{ route('radar') }}" class="text-decoration-none text-light">Radar</a></li>
+                    <li class="mb-2"><a href="{{ route('favorites.show') }}" class="text-decoration-none text-light">Favoritos</a></li>
+                    <li class="mb-2"><a href="{{ route('profile.show') }}" class="text-decoration-none text-light">Mi cuenta</a></li>
                 </ul>
             </div>
 
@@ -33,7 +32,7 @@
             <div class="col-lg-3 col-md-6">
                 <h5 class="fw-bold mb-3">Ayuda</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">Centro de ayuda</a></li>
+                    <li class="mb-2"><a href="{{ route('help') }}" class="text-decoration-none text-light">Centro de ayuda</a></li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-light">Preguntas frecuentes</a>
                     </li>
                     <li class="mb-2"><a href="#" class="text-decoration-none text-light">Política de privacidad</a>

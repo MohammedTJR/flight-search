@@ -40,7 +40,11 @@
 
     <div class="container-fluid px-0">
         <div id="map"></div>
-
+        <div id="map-controls">
+            <button id="toggle-satellite" class="map-control-btn" title="Vista Satélite">
+                <i class="fas fa-satellite"></i>
+            </button>
+        </div>
         <div id="flight-details-panel">
             <i class="fas fa-times close-panel" onclick="closeFlightDetails()"></i>
             <div id="flight-details-content">

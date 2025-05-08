@@ -1,5 +1,6 @@
 // Variables globales
 let map;
+let baseLayers = {};
 let markers = {};
 let flightPaths = {}; // Para almacenar trayectorias
 let selectedFlight = null;
@@ -13,11 +14,40 @@ function initializeMap() {
     // Crear mapa centrado en España
     map = L.map('map').setView([40.416775, -3.703790], 6);
 
-    // Añadir capa de mapa
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Capa OpenStreetMap estándar
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 18
-    }).addTo(map);
+    });
+
+    // Capa Satelital (usando Mapbox, necesitarás una clave de acceso)
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri',
+        maxZoom: 18
+    });
+
+    // Añadir capas al objeto baseLayers
+    baseLayers = {
+        "Mapa estándar": osmLayer,
+        "Vista satélite": satelliteLayer
+    };
+
+    // Añadir capa inicial
+    osmLayer.addTo(map);
+
+    // Configurar control de capas
+    L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
+
+    // Configurar botón de satélite
+    document.getElementById('toggle-satellite').addEventListener('click', function () {
+        if (map.hasLayer(baseLayers["Vista satélite"])) {
+            map.removeLayer(baseLayers["Vista satélite"]);
+            map.addLayer(baseLayers["Mapa estándar"]);
+        } else {
+            map.removeLayer(baseLayers["Mapa estándar"]);
+            map.addLayer(baseLayers["Vista satélite"]);
+        }
+    });
 }
 
 // Inicializar el mapa
@@ -47,20 +77,20 @@ function animateFlights() {
     const now = performance.now();
     const deltaTime = Math.min((now - lastUpdateTime) / 1000, 0.1); // Limitar a 100ms máximo
     lastUpdateTime = now;
-    
+
     const markersToUpdate = Object.keys(markers);
     const markersCount = markersToUpdate.length;
-    
+
     for (let i = 0; i < markersCount; i++) {
         const icao24 = markersToUpdate[i];
         const marker = markers[icao24];
         const flight = marker.flightData;
-        
+
         if (!flight || flight[8]) continue; // Saltar si no hay datos o está en tierra
-        
+
         const velocity = flight[9];
         const heading = flight[10];
-        
+
         if (velocity && heading !== null) {
             // Cálculos optimizados
             const distanceDeg = velocity * deltaTime / 111320;
@@ -68,18 +98,18 @@ function animateFlights() {
             const cosHeading = Math.cos(headingRad);
             const sinHeading = Math.sin(headingRad);
             const cosLat = Math.cos(marker.getLatLng().lat * (Math.PI / 180));
-            
+
             const newLat = marker.getLatLng().lat + distanceDeg * cosHeading;
             const newLng = marker.getLatLng().lng + distanceDeg * sinHeading / (cosLat || 1); // Evitar división por 0
-            
+
             marker.setLatLng([newLat, newLng]);
-            
+
             // Actualizar datos de posición
             flight[5] = newLng;
             flight[6] = newLat;
         }
     }
-    
+
     animationFrame = requestAnimationFrame(animateFlights);
 }
 

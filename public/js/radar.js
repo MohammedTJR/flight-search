@@ -9,45 +9,83 @@ let countdown = 60;
 let animationFrame; // Para manejar la animación
 let lastUpdateTime = 0;
 
-// Función para inicializar el mapa
-function initializeMap() {
-    // Crear mapa centrado en España
-    map = L.map('map').setView([40.416775, -3.703790], 6);
-
-    // Capa OpenStreetMap estándar
-    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 18
-    });
-
-    // Capa Satelital (usando Mapbox, necesitarás una clave de acceso)
-    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+const mapLayers = {
+    osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }),
+    
+    esri: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles © Esri',
         maxZoom: 18
+    }),
+    
+    opentopomap: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenTopoMap',
+        maxZoom: 17
+    }),
+    
+    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© CartoDB'
+    })
+};
+
+// Función para inicializar el mapa
+function initializeMap() {
+    console.log('Inicializando mapa...'); // Verifica que se ejecuta
+    
+    map = L.map('map').setView([40.416775, -3.703790], 6);
+    
+    // Capa por defecto
+    mapLayers.osm.addTo(map);
+    
+    // Controlador del botón - versión más robusta
+    const toggleBtn = document.getElementById('toggle-map-style');
+    const optionsPanel = document.getElementById('map-style-options');
+    
+    if (!toggleBtn || !optionsPanel) {
+        console.error('Elementos del control de mapa no encontrados!');
+        return;
+    }
+    
+    toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        console.log('Botón clickeado');
+        optionsPanel.classList.toggle('show');
     });
-
-    // Añadir capas al objeto baseLayers
-    baseLayers = {
-        "Mapa estándar": osmLayer,
-        "Vista satélite": satelliteLayer
-    };
-
-    // Añadir capa inicial
-    osmLayer.addTo(map);
-
-    // Configurar control de capas
-    L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
-
-    // Configurar botón de satélite
-    document.getElementById('toggle-satellite').addEventListener('click', function () {
-        if (map.hasLayer(baseLayers["Vista satélite"])) {
-            map.removeLayer(baseLayers["Vista satélite"]);
-            map.addLayer(baseLayers["Mapa estándar"]);
-        } else {
-            map.removeLayer(baseLayers["Mapa estándar"]);
-            map.addLayer(baseLayers["Vista satélite"]);
+    
+    // Cierra al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!optionsPanel.contains(e.target) && e.target !== toggleBtn) {
+            optionsPanel.classList.remove('show');
         }
     });
+    
+    // Selección de capa
+    document.querySelectorAll('.map-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const selectedLayer = this.dataset.layer;
+            console.log('Capa seleccionada:', selectedLayer);
+            
+            Object.values(mapLayers).forEach(layer => map.removeLayer(layer));
+            mapLayers[selectedLayer].addTo(map);
+            
+            optionsPanel.classList.remove('show');
+            
+            // Actualiza el ícono del botón
+            const iconClass = {
+                'osm': 'fa-map',
+                'esri': 'fa-satellite',
+                'opentopomap': 'fa-mountain',
+                'dark': 'fa-moon'
+            }[selectedLayer];
+            
+            toggleBtn.innerHTML = `<i class="fas ${iconClass}"></i>`;
+        });
+    });
+    
+    console.log('Mapa y controles inicializados correctamente');
 }
 
 // Inicializar el mapa

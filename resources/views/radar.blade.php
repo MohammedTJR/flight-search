@@ -39,11 +39,28 @@
     </div>
 
     <div class="container-fluid px-0">
-        <div id="map"></div>
-        <div id="map-controls">
-            <button id="toggle-satellite" class="map-control-btn" title="Vista Satélite">
-                <i class="fas fa-satellite"></i>
-            </button>
+        <div id="map">
+            <div id="map-controls">
+                <div class="map-style-selector">
+                    <button id="toggle-map-style" class="btn-map-control" title="Cambiar estilo de mapa">
+                        <i class="fas fa-layer-group"></i>
+                    </button>
+                    <div id="map-style-options" class="map-style-options">
+                        <div class="map-option" data-layer="osm">
+                            <i class="fas fa-map"></i> Mapa Estándar
+                        </div>
+                        <div class="map-option" data-layer="esri">
+                            <i class="fas fa-satellite"></i> Satélite
+                        </div>
+                        <div class="map-option" data-layer="opentopomap">
+                            <i class="fas fa-mountain"></i> Topográfico
+                        </div>
+                        <div class="map-option" data-layer="dark">
+                            <i class="fas fa-moon"></i> Modo Oscuro
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div id="flight-details-panel">
             <i class="fas fa-times close-panel" onclick="closeFlightDetails()"></i>

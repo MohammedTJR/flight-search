@@ -1,16 +1,100 @@
 #map {
-    height: calc(100vh - 125px);
+    height: calc(100vh - 180px); /* Ajustado para considerar ambos headers */
     width: 100%;
     z-index: 1;
-    transform: translateZ(0);
+    margin-top: 0;
+    position: relative; /* Importante: hace que el posicionamiento absoluto de los controles sea relativo a este elemento */
+}
+
+#map-controls {
+    position: absolute;
+    top: 10px; /* Posicionado con respecto al contenedor del mapa */
+    right: 10px;
+    z-index: 999; /* Por encima del mapa pero por debajo del panel de detalles */
+    background: transparent;
+}
+
+.map-style-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-map-control {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-map-control:hover {
+    background: #f5f5f5;
+    transform: scale(1.05);
+}
+
+.btn-map-control i {
+    font-size: 18px;
+    color: #333;
+}
+
+.map-style-options {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    width: 180px;
+    z-index: 1002;
+}
+
+.map-style-options.show {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.map-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s ease;
+}
+
+.map-option:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.map-option:hover {
+    background-color: #f8f9fa;
+}
+
+.map-option i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    color: #0d6efd;
 }
 
 #flight-details-panel {
     position: fixed;
-    top: 85px;
+    top: 130px; /* Ajustado para considerar ambos headers */
     right: -400px;
     width: 380px;
-    height: calc(100vh - 145px);
+    height: calc(100vh - 180px); /* Ajustado para considerar ambos headers */
     background-color: white;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -71,7 +155,7 @@
 .aircraft-marker {
     background: none !important;
     border: none !important;
-    transition: 
+    transition:
         transform 0.5s ease-out,
         left 0.5s linear,
         top 0.5s linear;
@@ -83,7 +167,8 @@
     font-size: 20px;
     transform-origin: center center;
     transition: transform 0.1s linear;
-    display: inline-block; /* Asegura que la transformación se aplique correctamente */
+    display: inline-block;
+    /* Asegura que la transformación se aplique correctamente */
 }
 
 .loading-overlay {
@@ -109,8 +194,9 @@
     background-color: rgba(255, 255, 255, 0.9);
     padding: 10px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 999;
     position: relative;
+    z-index: 990;
+    /* El nav principal ya es sticky-top, este header debe fluir normalmente debajo de él */
 }
 
 .stats-container {

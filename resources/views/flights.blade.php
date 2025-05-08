@@ -64,15 +64,24 @@
         </div>
 
         <div class="text-center mt-3">
-            <strong>Origen:</strong> {{ request('departure') }} |
-            <strong>Destino:</strong> {{ request('arrival') }}
+            @if(request('departure'))
+                <strong>Origen:</strong> {{ request('departure') }} |
+            @endif
+            @if(request('arrival'))
+                <strong>Destino:</strong> {{ request('arrival') }}
+            @endif
         </div>
 
         <div class="card shadow p-4 mt-4">
             <h3 class="text-center">Información de Precios</h3>
             <p>
-                <strong>Nivel de precio:</strong> <span id="priceLevel"></span>
-                <strong>Rango típico de precios:</strong> <span id="priceRange"></span> €
+                @if(isset($prices['price_level']))
+                    <strong>Nivel de precio:</strong> <span id="priceLevel">{{ $prices['price_level'] }}</span>
+                @endif
+                @if(isset($prices['typical_price_range']))
+                    <strong>Rango típico de precios:</strong> <span
+                        id="priceRange">{{ implode(' - ', $prices['typical_price_range']) }}</span> €
+                @endif
             </p>
         </div>
 
@@ -110,18 +119,25 @@
                                     $detalleVuelo = $flight['flights'][0];
                                     // Formatea la hora de salida y llegada en formato HH:MM.
 
-                                    $horaSalida = date('H:i', strtotime($detalleVuelo['departure_airport']['time']));
-                                    $horaLlegada = date('H:i', strtotime($detalleVuelo['arrival_airport']['time']));
+                                    $horaSalida = isset($detalleVuelo['departure_airport']['time']) ? date('H:i', strtotime($detalleVuelo['departure_airport']['time'])) : 'No disponible';
+                                    $horaLlegada = isset($detalleVuelo['arrival_airport']['time']) ? date('H:i', strtotime($detalleVuelo['arrival_airport']['time'])) : 'No disponible';
                                 @endphp
                                 <div class="col-md-6">
                                     <!-- Enlace que redirige a la página de detalles del vuelo -->
-                                    <a href="{{ route('flight.show', ['id' => $detalleVuelo['flight_number']]) }}" class="text-decoration-none">
+                                    <a href="{{ isset($detalleVuelo['flight_number']) ? route('flight.show', ['id' => $detalleVuelo['flight_number']]) : '#' }}"
+                                        class="text-decoration-none">
                                         <div class="card mb-4 shadow-sm clickable-card">
                                             <div class="card-body">
                                                 <div class="flight-header">
                                                     <h5 class="card-title">
-                                                        <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
-                                                        {{ $detalleVuelo['airline'] }}
+                                                        @if(isset($detalleVuelo['airline_logo']))
+                                                            <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
+                                                        @endif
+                                                        @if(isset($detalleVuelo['airline']))
+                                                            {{ $detalleVuelo['airline'] }}
+                                                        @else
+                                                            Aerolínea no disponible
+                                                        @endif
                                                     </h5>
                                                     <div class="flight-times">
                                                         {{ $horaSalida }} <i class="fa-solid fa-arrow-right"></i>
@@ -129,15 +145,27 @@
                                                     </div>
                                                 </div>
                                                 <p class="card-text">
-                                                    <strong>Precio:</strong> €{{ $flight['price'] }} <br>
+                                                    <strong>Precio:</strong>
+                                                    @if (!isset($flight['price']))
+                                                        <span class="text-danger">No disponible</span>
+                                                    @else
+                                                        €{{ $flight['price'] }}
+                                                    @endif
+                                                    <br>
                                                     <strong>Duración total:</strong>
-                                                    {{ intdiv($flight['total_duration'], 60) }}h
-                                                    {{ $flight['total_duration'] % 60 }}min
+                                                    @if(isset($flight['total_duration']))
+                                                        {{ intdiv($flight['total_duration'], 60) }}h
+                                                        {{ $flight['total_duration'] % 60 }}min
+                                                    @else
+                                                        No disponible
+                                                    @endif
                                                     <br>
                                                     <strong>Escalas:</strong>
                                                     @if (!empty($flight['layovers']))
                                                         @foreach ($flight['layovers'] as $layover)
-                                                            {{ $layover['name'] }} ({{ $layover['duration'] }} min)
+                                                            @if(isset($layover['name']) && isset($layover['duration']))
+                                                                {{ $layover['name'] }} ({{ $layover['duration'] }} min)
+                                                            @endif
                                                         @endforeach
                                                     @else
                                                         Directo (sin escalas)
@@ -154,13 +182,15 @@
             @endforeach
         @endif
 
-        <div class="card shadow p-4 mt-3 mb-4">
-            <h3 class="text-center">Evolución de Precios</h3>
-            <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada:
-                {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}
+        @if(isset($prices['price_history']))
+            <div class="card shadow p-4 mt-3 mb-4">
+                <h3 class="text-center">Evolución de Precios</h3>
+                <div class="text-center price-chart-date" id="selectedDate">Fecha seleccionada:
+                    {{ \Carbon\Carbon::parse(request('date'))->format('d/m/y') }}
+                </div>
+                <canvas id="priceChart"></canvas>
             </div>
-            <canvas id="priceChart"></canvas>
-        </div>
+        @endif
     </div>
 
     @section('scripts')

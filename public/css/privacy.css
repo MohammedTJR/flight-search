@@ -1,0 +1,63 @@
+/* Estilos para política de privacidad */
+.privacy-hero {
+    background: linear-gradient(135deg, #1a365d 0%, #2a4365 100%);
+}
+
+.section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #1e3a8a;
+    color: white;
+    border-radius: 50%;
+    font-size: 1.25rem;
+}
+
+.privacy-content h2 {
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.privacy-content h3 {
+    font-size: 1.25rem;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding-left: 0;
+}
+
+.breadcrumb-item.active {
+    color: white;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .privacy-hero {
+        padding: 2rem 1rem !important;
+    }
+    
+    .privacy-hero h1 {
+        font-size: 2.25rem;
+    }
+    
+    .section-number {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+}

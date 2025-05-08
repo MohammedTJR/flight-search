@@ -1,3 +1,30 @@
+.cookies-banner {
+    z-index: 1060;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Modal de Cookies */
+.cookies-modal .form-switch .form-check-input {
+    width: 2.5em;
+    height: 1.5em;
+}
+
+.cookies-modal .form-switch {
+    padding-left: 3em;
+}
+
+.cookies-modal .form-check-input:checked {
+    background-color: #1e3a8a;
+    border-color: #1e3a8a;
+}
+
 footer {
     background-color: #061631;
 }

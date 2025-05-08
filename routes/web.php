@@ -29,6 +29,22 @@ Route::get('/ayuda', function () {
     return view('help');
 })->name('help');
 
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
+
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/politica-cookies', function () {
+    return view('partials.cookies-banner'); // Deberás crear esta vista
+})->name('cookies.policy');
+
 // Rutas para Social Auth
 Route::get('auth/{provider}', [SocialAuthController::class, 'redirectToProvider'])
     ->name('social.login');

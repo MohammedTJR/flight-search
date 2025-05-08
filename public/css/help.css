@@ -54,6 +54,19 @@
     border: 1px solid #e2e8f0;
 }
 
+.flight-status-badge {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-ontime { background-color: #28a745; }
+.status-delayed { background-color: #ffc107; }
+.status-cancelled { background-color: #dc3545; }
+.status-diverted { background-color: #17a2b8; }
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .help-hero {

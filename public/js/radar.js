@@ -4,6 +4,7 @@ let baseLayers = {};
 let markers = {};
 let flightPaths = {}; // Para almacenar trayectorias
 let selectedFlight = null;
+let followFlight = null; // ICAO24 del avión que se está siguiendo
 let updateTimer;
 let countdown = 60;
 let animationFrame; // Para manejar la animación
@@ -109,6 +110,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1000);
 });
 
+// Función para calcular la nueva posición geográfica
+function calculateNewPosition(lat, lng, velocity, heading, deltaTime) {
+    const R = 6371000; // Radio de la Tierra en metros
+    const distance = velocity * deltaTime; // Distancia recorrida en metros
+    const headingRad = heading * (Math.PI / 180); // Convertir a radianes
+
+    const latRad = lat * (Math.PI / 180);
+    const lngRad = lng * (Math.PI / 180);
+
+    const newLatRad = Math.asin(
+        Math.sin(latRad) * Math.cos(distance / R) +
+        Math.cos(latRad) * Math.sin(distance / R) * Math.cos(headingRad)
+    );
+
+    const newLngRad = lngRad + Math.atan2(
+        Math.sin(headingRad) * Math.sin(distance / R) * Math.cos(latRad),
+        Math.cos(distance / R) - Math.sin(latRad) * Math.sin(newLatRad)
+    );
+
+    const newLat = newLatRad * (180 / Math.PI);
+    const newLng = newLngRad * (180 / Math.PI);
+
+    return [newLat, newLng];
+}
 
 // Función de animación
 function animateFlights() {
@@ -130,21 +155,24 @@ function animateFlights() {
         const heading = flight[10];
 
         if (velocity && heading !== null) {
-            // Cálculos optimizados
-            const distanceDeg = velocity * deltaTime / 111320;
-            const headingRad = ((360 - heading + 90) % 360) * (Math.PI / 180);
-            const cosHeading = Math.cos(headingRad);
-            const sinHeading = Math.sin(headingRad);
-            const cosLat = Math.cos(marker.getLatLng().lat * (Math.PI / 180));
-
-            const newLat = marker.getLatLng().lat + distanceDeg * cosHeading;
-            const newLng = marker.getLatLng().lng + distanceDeg * sinHeading / (cosLat || 1); // Evitar división por 0
+            const [newLat, newLng] = calculateNewPosition(
+                marker.getLatLng().lat,
+                marker.getLatLng().lng,
+                velocity,
+                heading,
+                deltaTime
+            );
 
             marker.setLatLng([newLat, newLng]);
 
             // Actualizar datos de posición
             flight[5] = newLng;
             flight[6] = newLat;
+
+            // Si el avión está siendo seguido, mover el mapa
+            if (followFlight === icao24) {
+                map.setView([newLat, newLng]);
+            }
         }
     }
 
@@ -268,7 +296,10 @@ function updateFlights(flightData) {
                     if (iconElement) {
                         const planeIcon = iconElement.querySelector('.aircraft-icon');
                         if (planeIcon) {
-                            planeIcon.style.transform = `rotate(${trueTrack}deg)`;
+                            // Ajustar la rotación inicial si el ícono no apunta hacia arriba
+                            const adjustedRotation = trueTrack - 90; // Compensar si el ícono apunta hacia la derecha
+                            planeIcon.style.transform = `rotate(${adjustedRotation}deg)`;
+                            planeIcon.style.transformOrigin = 'center'; // Asegurar que la rotación sea desde el centro
                         }
                     }
                 }
@@ -289,7 +320,10 @@ function updateFlights(flightData) {
                     if (iconElement) {
                         const planeIcon = iconElement.querySelector('.aircraft-icon');
                         if (planeIcon) {
-                            planeIcon.style.transform = `rotate(${trueTrack}deg)`;
+                            // Ajustar la rotación inicial si el ícono no apunta hacia arriba
+                            const adjustedRotation = trueTrack - 90; // Compensar si el ícono apunta hacia la derecha
+                            planeIcon.style.transform = `rotate(${adjustedRotation}deg)`;
+                            planeIcon.style.transformOrigin = 'center'; // Asegurar que la rotación sea desde el centro
                         }
                     }
                 }
@@ -467,11 +501,14 @@ function closeFlightDetails() {
         markers[selectedFlight].getElement().querySelector('i').style.color = '#0d6efd';
         selectedFlight = null;
     }
+
+    followFlight = null; // Desactivar el seguimiento
 }
 
 function centerOnFlight(icao24) {
     if (markers[icao24]) {
         const position = markers[icao24].getLatLng();
-        map.setView(position, 10);
+            map.panTo(position); // Centrar el mapa en el avión sin cambiar el zoom
+        followFlight = icao24; // Activar el seguimiento del avión
     }
 }

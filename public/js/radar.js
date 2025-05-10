@@ -14,17 +14,17 @@ const mapLayers = {
     osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
     }),
-    
+
     esri: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles © Esri',
         maxZoom: 18
     }),
-    
-    opentopomap: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+
+    opentopomap: L.tileLayer('https://{s}.opentopomap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenTopoMap',
         maxZoom: 17
     }),
-    
+
     dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '© CartoDB'
     })
@@ -33,47 +33,47 @@ const mapLayers = {
 // Función para inicializar el mapa
 function initializeMap() {
     console.log('Inicializando mapa...'); // Verifica que se ejecuta
-    
+
     map = L.map('map').setView([40.416775, -3.703790], 6);
-    
+
     // Capa por defecto
     mapLayers.osm.addTo(map);
-    
+
     // Controlador del botón - versión más robusta
     const toggleBtn = document.getElementById('toggle-map-style');
     const optionsPanel = document.getElementById('map-style-options');
-    
+
     if (!toggleBtn || !optionsPanel) {
         console.error('Elementos del control de mapa no encontrados!');
         return;
     }
-    
-    toggleBtn.addEventListener('click', function(e) {
+
+    toggleBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         e.preventDefault();
         console.log('Botón clickeado');
         optionsPanel.classList.toggle('show');
     });
-    
+
     // Cierra al hacer clic fuera
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!optionsPanel.contains(e.target) && e.target !== toggleBtn) {
             optionsPanel.classList.remove('show');
         }
     });
-    
+
     // Selección de capa
     document.querySelectorAll('.map-option').forEach(option => {
-        option.addEventListener('click', function(e) {
+        option.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedLayer = this.dataset.layer;
             console.log('Capa seleccionada:', selectedLayer);
-            
+
             Object.values(mapLayers).forEach(layer => map.removeLayer(layer));
             mapLayers[selectedLayer].addTo(map);
-            
+
             optionsPanel.classList.remove('show');
-            
+
             // Actualiza el ícono del botón
             const iconClass = {
                 'osm': 'fa-map',
@@ -81,11 +81,11 @@ function initializeMap() {
                 'opentopomap': 'fa-mountain',
                 'dark': 'fa-moon'
             }[selectedLayer];
-            
+
             toggleBtn.innerHTML = `<i class="fas ${iconClass}"></i>`;
         });
     });
-    
+
     console.log('Mapa y controles inicializados correctamente');
 }
 
@@ -282,29 +282,31 @@ function updateFlights(flightData) {
             activeFlights.add(icao24);
 
             if (markers[icao24]) {
-                // Solo actualizar posición directamente si no hay velocidad o está en tierra
-                if (!velocity || flight[8]) {
-                    markers[icao24].setLatLng([latitude, longitude]);
-                }
+                // Actualizar posición del marcador
+                markers[icao24].setLatLng([latitude, longitude]);
 
                 // Actualizar datos de vuelo
                 markers[icao24].flightData = flight;
 
-                // Rotación
+                // Actualizar rotación del marcador
                 if (trueTrack !== null) {
                     const iconElement = markers[icao24].getElement();
                     if (iconElement) {
                         const planeIcon = iconElement.querySelector('.aircraft-icon');
                         if (planeIcon) {
-                            // Ajustar la rotación inicial si el ícono no apunta hacia arriba
                             const adjustedRotation = trueTrack - 90; // Compensar si el ícono apunta hacia la derecha
                             planeIcon.style.transform = `rotate(${adjustedRotation}deg)`;
-                            planeIcon.style.transformOrigin = 'center'; // Asegurar que la rotación sea desde el centro
+                            planeIcon.style.transformOrigin = 'center';
                         }
                     }
                 }
+
+                // Si el avión está seleccionado, actualizar el panel de detalles
+                if (selectedFlight === icao24) {
+                    showFlightDetails(flight); // Actualizar el contenido del panel
+                }
             } else {
-                // Crear nuevo marcador
+                // Crear nuevo marcador si no existe
                 const icon = L.divIcon({
                     html: '<i class="fas fa-plane aircraft-icon"></i>',
                     className: 'aircraft-marker',
@@ -320,10 +322,9 @@ function updateFlights(flightData) {
                     if (iconElement) {
                         const planeIcon = iconElement.querySelector('.aircraft-icon');
                         if (planeIcon) {
-                            // Ajustar la rotación inicial si el ícono no apunta hacia arriba
-                            const adjustedRotation = trueTrack - 90; // Compensar si el ícono apunta hacia la derecha
+                            const adjustedRotation = trueTrack - 90;
                             planeIcon.style.transform = `rotate(${adjustedRotation}deg)`;
-                            planeIcon.style.transformOrigin = 'center'; // Asegurar que la rotación sea desde el centro
+                            planeIcon.style.transformOrigin = 'center';
                         }
                     }
                 }
@@ -341,12 +342,6 @@ function updateFlights(flightData) {
                 });
 
                 markers[icao24] = marker;
-
-                // Inicializar trayectoria
-                flightPaths[icao24] = {
-                    positions: [[latitude, longitude]],
-                    timestamp: Date.now()
-                };
             }
         }
     });
@@ -356,7 +351,6 @@ function updateFlights(flightData) {
         if (!activeFlights.has(icao24)) {
             map.removeLayer(markers[icao24]);
             delete markers[icao24];
-            delete flightPaths[icao24];
 
             if (selectedFlight === icao24) {
                 closeFlightDetails();
@@ -385,35 +379,6 @@ function showFlightDetails(flight) {
     else if (flight[16] === 2) positionSource = 'MLAT';
     else if (flight[16] === 3) positionSource = 'FLARM';
 
-    // Interpretar categoría de aeronave
-    let category = 'Desconocida';
-    const categoryCode = flight[17];
-    if (categoryCode !== null) {
-        switch (categoryCode) {
-            case 0: category = 'Sin información'; break;
-            case 1: category = 'Sin información de categoría ADS-B'; break;
-            case 2: category = 'Ligero (< 15500 lbs)'; break;
-            case 3: category = 'Pequeño (15500 a 75000 lbs)'; break;
-            case 4: category = 'Grande (75000 a 300000 lbs)'; break;
-            case 5: category = 'Gran Vórtice (tipo B-757)'; break;
-            case 6: category = 'Pesado (> 300000 lbs)'; break;
-            case 7: category = 'Alto Rendimiento (> 5g y 400 kts)'; break;
-            case 8: category = 'Helicóptero'; break;
-            case 9: category = 'Planeador'; break;
-            case 10: category = 'Más ligero que el aire'; break;
-            case 11: category = 'Paracaidista'; break;
-            case 12: category = 'Ultraligero/Parapente'; break;
-            case 14: category = 'Vehículo Aéreo No Tripulado'; break;
-            case 15: category = 'Vehículo espacial/transatmosférico'; break;
-            case 16: category = 'Vehículo de Emergencia'; break;
-            case 17: category = 'Vehículo de Servicio'; break;
-            case 18: category = 'Obstáculo Puntual'; break;
-            case 19: category = 'Obstáculo en Grupo'; break;
-            case 20: category = 'Obstáculo Lineal'; break;
-            default: category = `Código: ${categoryCode}`; break;
-        }
-    }
-
     // Crear contenido HTML para el panel
     const detailsHTML = `
             <div class="flight-title">
@@ -434,10 +399,6 @@ function showFlightDetails(flight) {
                 <div class="detail-row">
                     <div class="detail-label">País:</div>
                     <div class="detail-value">${originCountry}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Categoría:</div>
-                    <div class="detail-value">${category}</div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">Squawk:</div>
@@ -508,7 +469,85 @@ function closeFlightDetails() {
 function centerOnFlight(icao24) {
     if (markers[icao24]) {
         const position = markers[icao24].getLatLng();
-            map.panTo(position); // Centrar el mapa en el avión sin cambiar el zoom
+        map.panTo(position); // Centrar el mapa en el avión sin cambiar el zoom
         followFlight = icao24; // Activar el seguimiento del avión
+    }
+}
+
+function searchFlight() {
+    const searchValue = document.getElementById('flight-search').value.trim().toLowerCase();
+
+    if (!searchValue) {
+        alert('Por favor, introduce un ICAO24 o Callsign para buscar.');
+        return;
+    }
+
+    // Buscar el avión en los marcadores
+    let found = false;
+    Object.keys(markers).forEach(icao24 => {
+        const flight = markers[icao24].flightData;
+        const callsign = flight[1] ? flight[1].trim().toLowerCase() : '';
+
+        if (icao24.toLowerCase() === searchValue || callsign === searchValue) {
+            // Centrar el mapa en el avión encontrado
+            const position = markers[icao24].getLatLng();
+            map.panTo(position);
+
+            // Mostrar detalles del vuelo
+            showFlightDetails(flight);
+
+            // Resaltar el marcador seleccionado
+            if (selectedFlight && markers[selectedFlight]) {
+                const prevIcon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
+                if (prevIcon) prevIcon.style.color = '#0d6efd'; // Restaurar color del marcador anterior
+            }
+
+            const currentIcon = markers[icao24].getElement().querySelector('.aircraft-icon');
+            if (currentIcon) currentIcon.style.color = '#ff4500'; // Resaltar el marcador actual
+
+            selectedFlight = icao24; // Actualizar el avión seleccionado
+            found = true;
+        }
+    });
+
+    if (!found) {
+        alert('No se encontró ningún avión con ese ICAO24 o Callsign.');
+    }
+}
+
+function filterSearchResults() {
+    const searchValue = document.getElementById('flight-search').value.trim().toLowerCase();
+    const resultsContainer = document.getElementById('search-results');
+    resultsContainer.innerHTML = ''; // Limpiar resultados previos
+
+    if (!searchValue) {
+        resultsContainer.style.display = 'none';
+        return;
+    }
+
+    const results = [];
+    Object.keys(markers).forEach(icao24 => {
+        const flight = markers[icao24].flightData;
+        const callsign = flight[1] ? flight[1].trim().toLowerCase() : '';
+
+        if (icao24.toLowerCase().includes(searchValue) || callsign.includes(searchValue)) {
+            results.push({ icao24, callsign });
+        }
+    });
+
+    if (results.length > 0) {
+        resultsContainer.style.display = 'block';
+        results.forEach(result => {
+            const resultDiv = document.createElement('div');
+            resultDiv.textContent = `${result.callsign || 'N/A'} (${result.icao24.toUpperCase()})`;
+            resultDiv.onclick = () => {
+                document.getElementById('flight-search').value = result.icao24; // Rellenar el campo de búsqueda
+                resultsContainer.style.display = 'none'; // Ocultar resultados
+                searchFlight(); // Realizar la búsqueda
+            };
+            resultsContainer.appendChild(resultDiv);
+        });
+    } else {
+        resultsContainer.style.display = 'none';
     }
 }

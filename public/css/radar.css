@@ -225,3 +225,41 @@
     font-size: 0.8rem;
     color: #6c757d;
 }
+
+.search-container {
+    position: relative; /* Asegura que los elementos hijos se posicionen en relación a este contenedor */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-container input {
+    width: 250px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-results {
+    position: absolute; /* Posiciona el contenedor de resultados en relación al contenedor padre */
+    top: 100%; /* Coloca el contenedor justo debajo del campo de búsqueda */
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%; /* Asegura que el ancho coincida con el campo de búsqueda */
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-results div {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.search-results div:hover {
+    background: #f8f9fa;
+}

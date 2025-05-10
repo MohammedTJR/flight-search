@@ -17,22 +17,32 @@
                 <h4 class="mb-0"><i class="fas fa-plane me-2"></i>Radar de Vuelos en Tiempo Real</h4>
                 <div id="last-update" class="text-muted small">Última actualización: --:--:--</div>
             </div>
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div id="total-flights" class="stat-value">0</div>
-                    <div class="stat-label">Vuelos</div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div id="total-flights" class="stat-value">0</div>
+                        <div class="stat-label">Vuelos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="total-countries" class="stat-value">0</div>
+                        <div class="stat-label">Países</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="avg-altitude" class="stat-value">0</div>
+                        <div class="stat-label">Alt. media (m)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="avg-speed" class="stat-value">0</div>
+                        <div class="stat-label">Vel. media (km/h)</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div id="total-countries" class="stat-value">0</div>
-                    <div class="stat-label">Países</div>
-                </div>
-                <div class="stat-card">
-                    <div id="avg-altitude" class="stat-value">0</div>
-                    <div class="stat-label">Alt. media (m)</div>
-                </div>
-                <div class="stat-card">
-                    <div id="avg-speed" class="stat-value">0</div>
-                    <div class="stat-label">Vel. media (km/h)</div>
+                <!-- Campo de búsqueda -->
+                <div class="search-container">
+                    <input type="text" id="flight-search" class="form-control" placeholder="Buscar por ICAO24 o Callsign" oninput="filterSearchResults()">
+                    <button class="btn btn-primary ms-2" onclick="searchFlight()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div id="search-results" class="search-results"></div> <!-- Contenedor para los resultados -->
                 </div>
             </div>
         </div>

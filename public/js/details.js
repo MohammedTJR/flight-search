@@ -31,6 +31,16 @@ function toggleFavorite(button) {
                 throw new Error(data.error || 'Error en la solicitud');
             }
 
+            // Verificar si estamos en la vista de detalles de favoritos
+            const isFavoriteDetailsPage = window.location.pathname.includes('/favorites/') && 
+                                window.location.pathname.includes('/details');
+
+            if (isFavoriteDetailsPage && !data.is_favorite) {
+                // Si estamos en detalles de favorito y acabamos de eliminarlo, redirigir
+                window.location.href = '/favorites';
+                return;
+            }
+
             // Actualizar estado del botón y formulario
             if (data.is_favorite) {
                 button.classList.remove('btn-outline-primary');
@@ -47,7 +57,11 @@ function toggleFavorite(button) {
             }
 
             showToast(data.message || 'Operación exitosa');
-            window.location.reload();
+
+            // Solo recargar si no es una eliminación desde detalles de favorito
+            if (!isFavoriteDetailsPage) {
+                window.location.reload();
+            }
         })
         .catch(error => {
             console.error('Error:', error);

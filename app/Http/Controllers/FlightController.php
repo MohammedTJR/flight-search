@@ -161,13 +161,23 @@ class FlightController extends Controller
 
     public function addFavorite(Request $request)
     {
+        Log::info('Datos recibidos para guardar en favoritos:', $request->all());
+
+        // Decodificar los campos JSON
+        $request->merge([
+            'flight_details' => json_decode($request->input('flight_details'), true),
+            'search_params' => json_decode($request->input('search_params'), true),
+        ]);
+
         $request->validate([
             'flight_id' => 'required',
             'origin' => 'required|size:3',
             'destination' => 'required|size:3',
             'departure_date' => 'required|date',
             'price' => 'required|numeric',
-            'airline' => 'required'
+            'airline' => 'required',
+            'flight_details' => 'required|array', // Detalles completos del vuelo
+            'search_params' => 'required|array'  // Parámetros de búsqueda
         ]);
 
         $existing = FavoriteFlight::where('user_id', auth()->id())
@@ -191,7 +201,9 @@ class FlightController extends Controller
             'destination' => $request->destination,
             'departure_date' => $request->departure_date,
             'price' => $request->price,
-            'airline' => $request->airline
+            'airline' => $request->airline,
+            'flight_details' => $request->flight_details, // Guardar detalles completos
+            'search_params' => $request->search_params  // Guardar parámetros de búsqueda
         ]);
 
         return response()->json([
@@ -252,40 +264,29 @@ class FlightController extends Controller
                 ->with('error', 'No hay API keys disponibles en este momento. Inténtalo más tarde.');
         }
 
-        $departure = $favoriteFlight->origin;
-        $arrival = $favoriteFlight->destination;
-        $date = $favoriteFlight->departure_date->format('Y-m-d');
+        // Recuperar los parámetros de búsqueda guardados
+        $searchParams = $favoriteFlight->search_params;
 
-        $searchParams = session()->get('search_params', []);
-        $adults = $searchParams['adults'] ?? 1;
-        $children = $searchParams['children'] ?? 0;
-        $infants_in_seat = $searchParams['infants_in_seat'] ?? 0;
-        $infants_on_lap = $searchParams['infants_on_lap'] ?? 0;
-        $travel_class = $searchParams['travel_class'] ?? 1;
-        $stops = 0;
+        if (!$searchParams) {
+            return redirect()->route('favorites.show')
+                ->with('error', 'No se encontraron los parámetros de búsqueda originales para este vuelo.');
+        }
 
-        session()->put('search_params', [
-            'adults' => $adults,
-            'children' => $children,
-            'infants_in_seat' => $infants_in_seat,
-            'infants_on_lap' => $infants_on_lap,
-            'travel_class' => $travel_class
-        ]);
-
+        // Construir la URL de búsqueda con los parámetros originales
         $url = "https://serpapi.com/search.json?"
             . "engine=google_flights"
-            . "&departure_id={$departure}"
-            . "&arrival_id={$arrival}"
-            . "&outbound_date={$date}"
+            . "&departure_id={$favoriteFlight->origin}"
+            . "&arrival_id={$favoriteFlight->destination}"
+            . "&outbound_date={$favoriteFlight->departure_date->format('Y-m-d')}"
             . "&type=2"
             . "&currency=EUR"
             . "&hl=es"
-            . "&adults={$adults}"
-            . "&children={$children}"
-            . "&infants_in_seat={$infants_in_seat}"
-            . "&infants_on_lap={$infants_on_lap}"
-            . "&travel_class={$travel_class}"
-            . "&stops={$stops}"
+            . "&adults={$searchParams['adults']}"
+            . "&children={$searchParams['children']}"
+            . "&infants_in_seat={$searchParams['infants_in_seat']}"
+            . "&infants_on_lap={$searchParams['infants_on_lap']}"
+            . "&travel_class={$searchParams['travel_class']}"
+            . "&stops=0"
             . "&api_key={$apiKey}";
 
         try {
@@ -294,25 +295,6 @@ class FlightController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json() ?? [];
-
-                // Verificar si hay errores de API key
-                if (
-                    isset($data['error']) && (
-                        strpos($data['error'], 'api_key') !== false ||
-                        strpos($data['error'], 'limit') !== false ||
-                        strpos($data['error'], 'quota') !== false
-                    )
-                ) {
-                    $this->apiKeyService->markKeyAsInvalid($apiKey);
-                    return $this->showFavoriteDetails($favoriteFlight); // Reintentar con otra clave
-                }
-
-                // Si hay otro tipo de error en la respuesta
-                if (isset($data['error'])) {
-                    Log::error("Error en la respuesta de la API: " . $data['error']);
-                    return redirect()->route('favorites.show')
-                        ->with('error', 'Error al buscar el vuelo: ' . $data['error']);
-                }
 
                 // Combinar todos los vuelos
                 $allFlights = array_merge($data['best_flights'] ?? [], $data['other_flights'] ?? []);
@@ -338,9 +320,6 @@ class FlightController extends Controller
                     return redirect()->route('favorites.show')
                         ->with('error', 'No se encontraron vuelos disponibles para esta ruta y fecha.');
                 }
-
-                // Almacenar el vuelo en la sesión para referencia futura
-                session(['flights' => $allFlights]);
 
                 // Verificar si el precio ha cambiado y actualizar en la base de datos
                 if (isset($flight['price']) && $flight['price'] != $favoriteFlight->price) {

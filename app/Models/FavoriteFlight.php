@@ -13,11 +13,15 @@ class FavoriteFlight extends Model
         'destination',
         'departure_date',
         'price',
-        'airline'
+        'airline',
+        'flight_details',
+        'search_params'
     ];
 
     protected $casts = [
         'departure_date' => 'date:Y-m-d',
+        'flight_details' => 'array',
+        'search_params' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

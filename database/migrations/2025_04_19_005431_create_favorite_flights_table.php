@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->date('departure_date');
             $table->decimal('price', 10, 2);
             $table->string('airline')->nullable();
+            $table->json('flight_details')->nullable(); // Detalles completos del vuelo
+            $table->json('search_params')->nullable();  // Parámetros de búsqueda
             $table->timestamps();
 
             $table->unique(['user_id', 'flight_id', 'airline', 'departure_date']);

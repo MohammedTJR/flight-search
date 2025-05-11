@@ -49,6 +49,10 @@
                             value="{{ date('Y-m-d', strtotime($flight['flights'][0]['departure_airport']['time'] ?? '')) }}">
                         <input type="hidden" name="price" value="{{ $flight['price'] ?? 0 }}">
                         <input type="hidden" name="airline" value="{{ $flight['flights'][0]['airline'] ?? '' }}">
+
+                        <input type="hidden" name="flight_details" value="{{ json_encode($flight) }}">
+                        <input type="hidden" name="search_params" value="{{ json_encode(session('search_params', [])) }}">
+
                         <button type="button" onclick="toggleFavorite(this)"
                             class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-primary' }} btn-sm">
                             <i class="{{ $isFavorite ? 'fas' : 'far' }} fa-heart"></i>

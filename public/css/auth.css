@@ -1,61 +1,229 @@
-.card {
-    border-radius: 10px;
+/* auth.css (actualizado) */
+/* Estilos base */
+:root {
+    --primary-color: #3b7ddd;
+    --primary-hover: #2f6bc5;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* Animaciones */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Estructura */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 16px;
     overflow: hidden;
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-    padding: 1.5rem;
-    background-color: #3b7ddd;
-}
-
-.card-body {
-    padding: 2rem;
-    background-color: #f8f9fa;
-}
-
-.form-control {
-    padding: 0.75rem 1rem;
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-}
-
-.btn-primary {
-    background-color: #3b7ddd;
-    border-color: #3b7ddd;
-    padding: 0.75rem;
-    font-weight: 500;
-}
-
-.alert {
-    border-radius: 5px;
-    margin-bottom: 1.5rem;
-}
-
-.text-center p {
-    margin-bottom: 0.5rem;
-    color: #6c757d;
-}
-
-.btn-outline-primary {
-    border-color: #3b7ddd;
-    color: #3b7ddd;
     transition: all 0.3s ease;
 }
 
-.btn-outline-primary:hover {
-    background-color: #3b7ddd;
-    color: white;
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
 }
 
-a {
-    color: #3b7ddd;
+.login-logo {
+    width: 70px;
+    height: auto;
+    animation: float 4s ease-in-out infinite;
+}
+
+/* Formulario */
+.form-floating > label {
+    color: #6c757d;
+    transition: all 0.2s ease;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+    padding: 1rem;
+    height: auto;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(59, 125, 221, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Botones */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn-primary:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+/* Botones sociales */
+.social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-decoration: none;
-    transition: color 0.3s ease;
 }
 
-a:hover {
-    color: #2f6bc5;
-    text-decoration: underline;
+.social-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.google-btn {
+    background: #fff;
+    color: #db4437;
+    border: 1px solid #eee;
+}
+
+.google-btn:hover {
+    background: #db4437;
+    color: #fff;
+}
+
+.github-btn {
+    background: #fff;
+    color: #333;
+    border: 1px solid #eee;
+}
+
+.github-btn:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* Divisor */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.divider::before {
+    margin-right: 1rem;
+}
+
+.divider::after {
+    margin-left: 1rem;
+}
+
+/* Alertas */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+/* Estilos para el campo de contraseña */
+.password-field {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    padding: 0.375rem;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+.password-toggle:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.form-floating input[type="password"] {
+    padding-right: 3rem;
+}
+
+/* Elimina los estilos antiguos que ya no necesitamos */
+.toggle-password {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .glass-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: white;
+    }
 }

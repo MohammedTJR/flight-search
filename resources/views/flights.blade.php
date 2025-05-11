@@ -115,33 +115,71 @@
                             <!-- Verifica si el vuelo tiene al menos un segmento de vuelo (flights[0] existe) -->
                             @if (isset($flight['flights'][0]))
                                 @php
-                                    // Extrae los detalles del primer segmento de vuelo.
-                                    $detalleVuelo = $flight['flights'][0];
-                                    // Formatea la hora de salida y llegada en formato HH:MM.
+                                    // Extrae los detalles del primer segmento para la salida
+                                    $primerSegmento = $flight['flights'][0];
+                                    // Obtiene el último segmento para la llegada real
+                                    $ultimoSegmento = end($flight['flights']);
 
-                                    $horaSalida = isset($detalleVuelo['departure_airport']['time']) ? date('H:i', strtotime($detalleVuelo['departure_airport']['time'])) : 'No disponible';
-                                    $horaLlegada = isset($detalleVuelo['arrival_airport']['time']) ? date('H:i', strtotime($detalleVuelo['arrival_airport']['time'])) : 'No disponible';
+                                    // Formatea la hora de salida del primer segmento
+                                    $horaSalida = isset($primerSegmento['departure_airport']['time'])
+                                        ? date('H:i', strtotime($primerSegmento['departure_airport']['time']))
+                                        : 'No disponible';
+
+                                    // Formatea la hora de llegada del último segmento
+                                    $horaLlegada = isset($ultimoSegmento['arrival_airport']['time'])
+                                        ? date('H:i', strtotime($ultimoSegmento['arrival_airport']['time']))
+                                        : 'No disponible';
+
+                                    // Calcular la diferencia de días
+                                    $fechaSalida = isset($primerSegmento['departure_airport']['time'])
+                                        ? \Carbon\Carbon::parse($primerSegmento['departure_airport']['time'])
+                                        : null;
+                                    $fechaLlegada = isset($ultimoSegmento['arrival_airport']['time'])
+                                        ? \Carbon\Carbon::parse($ultimoSegmento['arrival_airport']['time'])
+                                        : null;
+
+                                    $diasDiferencia = null;
+                                    if ($fechaSalida && $fechaLlegada) {
+                                        // Simplemente comparamos los días del mes
+                                        $diaSalida = $fechaSalida->day;
+                                        $diaLlegada = $fechaLlegada->day;
+
+                                        // Si el día de llegada es menor que el día de salida, significa que hemos cambiado de mes
+                                        if ($diaLlegada < $diaSalida) {
+                                            $diasDiferencia = 1; // llegada al día siguiente
+                                        } else {
+                                            $diasDiferencia = $diaLlegada - $diaSalida;
+                                        }
+                                    }
                                 @endphp
                                 <div class="col-md-6">
                                     <!-- Enlace que redirige a la página de detalles del vuelo -->
-                                    <a href="{{ isset($detalleVuelo['flight_number']) ? route('flight.show', ['id' => $detalleVuelo['flight_number']]) : '#' }}"
+                                    <a href="{{ isset($primerSegmento['flight_number']) ? route('flight.show', ['id' => $primerSegmento['flight_number']]) : '#' }}"
                                         class="text-decoration-none">
                                         <div class="card mb-4 shadow-sm clickable-card">
                                             <div class="card-body">
                                                 <div class="flight-header">
                                                     <h5 class="card-title">
-                                                        @if(isset($detalleVuelo['airline_logo']))
-                                                            <img src="{{ $detalleVuelo['airline_logo'] }}" alt="Logo" width="30">
+                                                        @if(isset($primerSegmento['airline_logo']))
+                                                            <img src="{{ $primerSegmento['airline_logo'] }}" alt="Logo" width="30">
                                                         @endif
-                                                        @if(isset($detalleVuelo['airline']))
-                                                            {{ $detalleVuelo['airline'] }}
+                                                        @if(isset($primerSegmento['airline']))
+                                                            {{ $primerSegmento['airline'] }}
                                                         @else
                                                             Aerolínea no disponible
                                                         @endif
                                                     </h5>
                                                     <div class="flight-times">
-                                                        {{ $horaSalida }} <i class="fa-solid fa-arrow-right"></i>
-                                                        {{ $horaLlegada }}
+                                                        {{ $horaSalida }} <i class="fa-solid fa-arrow-right"></i> {{ $horaLlegada }}
+                                                        @if($diasDiferencia === 1)
+                                                            <span class="text-info ms-2" title="Llega al día siguiente">
+                                                                <i class="fas fa-moon"></i> +1
+                                                            </span>
+                                                        @elseif($diasDiferencia === 2)
+                                                            <span class="text-info ms-2" title="Llega en dos días">
+                                                                <i class="fas fa-moon"></i> +2
+                                                            </span>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <p class="card-text">

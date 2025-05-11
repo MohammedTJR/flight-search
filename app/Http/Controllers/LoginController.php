@@ -23,6 +23,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
 
+            // Verificar si el email está verificado
+            if (Auth::user() instanceof MustVerifyEmail && !Auth::user()->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
             return redirect()->intended(route('home'))
                 ->with('success', '¡Bienvenido/a de nuevo!');
         }
@@ -33,17 +38,17 @@ class LoginController extends Controller
     }
 
     public function logout(Request $request)
-{
-    Auth::logout();
-    
-    $request->session()->invalidate();
-    
-    $request->session()->regenerateToken();
-    
-    $cookie = Cookie::forget(Auth::getRecallerName());
-    
-    return redirect('/')
-           ->withCookie($cookie)
-           ->with('status', 'Has cerrado sesión correctamente.');
-}
+    {
+        Auth::logout();
+        
+        $request->session()->invalidate();
+        
+        $request->session()->regenerateToken();
+        
+        $cookie = Cookie::forget(Auth::getRecallerName());
+        
+        return redirect('/')
+               ->withCookie($cookie)
+               ->with('status', 'Has cerrado sesión correctamente.');
+    }
 }

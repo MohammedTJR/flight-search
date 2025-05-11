@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\UserRegisteredMail;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Mail;
 
 class RegisterController extends Controller
 {
@@ -21,6 +21,7 @@ class RegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'terms' => 'required',
         ]);
 
         $user = User::create([
@@ -29,8 +30,11 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Mail::to($user->email)->send(new UserRegisteredMail($user));
+        event(new Registered($user));
 
-        return redirect()->route('login')->with('success', '¡Registro exitoso! Por favor inicia sesión.');
+        Auth::login($user); // Esto inicia sesión automáticamente
+
+        return redirect()->route('verification.notice')
+            ->with('success', '¡Registro exitoso! Por favor, verifica tu correo electrónico.');
     }
 }

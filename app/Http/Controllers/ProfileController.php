@@ -25,10 +25,25 @@ class ProfileController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'gender' => 'nullable|string|in:male,female,other,prefer_not_to_say',
+            'country' => 'nullable|string|max:100',
+            'currency' => 'nullable|string|max:3',
+            'language' => 'nullable|string|max:10',
+            'phone' => 'nullable|string|max:20',
+            'birth_date' => 'nullable|date',
+            'address' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $user->update($request->only('name', 'email'));
+        $data = $request->except('avatar');
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = '/storage/' . $path;
+        }
+
+        $user->update($data);
 
         return redirect()->route('profile.show')
             ->with('success', 'Perfil actualizado correctamente');

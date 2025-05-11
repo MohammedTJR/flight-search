@@ -1,81 +1,120 @@
-.profile-avatar {
-    margin-bottom: 1.5rem;
+/* Header del perfil */
+.profile-header {
+    background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    padding: 3rem 0;
+    margin-bottom: 2rem;
     position: relative;
+    overflow: visible;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+    opacity: 0.1;
+}
+
+/* Avatar */
+.profile-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    z-index: 5;
 }
 
 .profile-avatar img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border: 5px solid #f8f9fa;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
 
-.profile-avatar:hover img {
+.profile-avatar-edit {
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+.profile-avatar-edit img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar-edit:hover img {
     transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.card-header h3,
-.card-header h5 {
-    font-weight: 600;
-    color: #343a40;
-}
-
-.info-item {
-    margin-bottom: 1.2rem;
-}
-
-.info-item h6 {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: center;
-}
-
-.info-item p {
-    font-size: 1rem;
-    color: #495057;
-    padding-left: 1.8rem;
-}
-
-/* Estilos para el formulario */
-form {
-    max-width: 100%;
-}
-
-.form-label {
-    font-weight: 500;
-    color: #495057;
-}
-
-/* Efectos hover para las cards */
+/* Tarjetas de información */
 .card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .profile-avatar img {
-        width: 120px;
-        height: 120px;
-    }
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+}
 
-    .info-item p {
-        font-size: 0.95rem;
-    }
+/* Lista de información */
+.profile-info-list li {
+    transition: background-color 0.2s ease;
+    padding: 1rem 1.5rem;
+}
+
+.profile-info-list li:hover {
+    background-color: rgba(58, 123, 213, 0.05);
+}
+
+/* Formulario de edición */
+.profile-edit-container {
+    background-color: #f8fafc;
+    padding: 2rem 0;
+}
+
+/* Botones */
+.btn-profile {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    transition: all 1s ease;
+}
+
+.btn-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos hover para iconos */
+.profile-icon-hover {
+    transition: color 0.2s ease;
+}
+
+.profile-icon-hover:hover {
+    color: #3a7bd5;
 }
 
 /* Animaciones */
-.animate-fade-in {
+.fade-in {
     animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -88,5 +127,50 @@ form {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Toggle password */
+.toggle-password {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: #3a7bd5;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .profile-header {
+        text-align: center;
+    }
+
+    .profile-avatar {
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
     }
 }

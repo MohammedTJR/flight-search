@@ -27,6 +27,9 @@
                             <div class="favorite-airline-badge">
                                 <i class="fas fa-plane"></i> {{ $favorite->airline }}
                             </div>
+                            <div class="favorite-passengers-badge">
+                                <i class="fas fa-users"></i> {{ $favorite->adults + $favorite->children + $favorite->infants_in_seat + $favorite->infants_on_lap }}
+                            </div>
                         </div>
                         <div class="favorite-card-body">
                             <div class="favorite-info">

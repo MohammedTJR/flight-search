@@ -52,6 +52,10 @@
 
                         <input type="hidden" name="flight_details" value="{{ json_encode($flight) }}">
                         <input type="hidden" name="search_params" value="{{ json_encode(session('search_params', [])) }}">
+                        <input type="hidden" name="adults" value="{{ session('search_params.adults', 1) }}">
+                        <input type="hidden" name="children" value="{{ session('search_params.children', 0) }}">
+                        <input type="hidden" name="infants_in_seat" value="{{ session('search_params.infants_in_seat', 0) }}">
+                        <input type="hidden" name="infants_on_lap" value="{{ session('search_params.infants_on_lap', 0) }}">
 
                         <button type="button" onclick="toggleFavorite(this)"
                             class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-primary' }} btn-sm">

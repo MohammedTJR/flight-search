@@ -176,19 +176,27 @@ class FlightController extends Controller
             'departure_date' => 'required|date',
             'price' => 'required|numeric',
             'airline' => 'required',
-            'flight_details' => 'required|array', // Detalles completos del vuelo
-            'search_params' => 'required|array'  // Parámetros de búsqueda
+            'flight_details' => 'required|array',
+            'search_params' => 'required|array',
+            'adults' => 'required|integer|min:1',
+            'children' => 'required|integer|min:0',
+            'infants_in_seat' => 'required|integer|min:0',
+            'infants_on_lap' => 'required|integer|min:0',
         ]);
 
         $existing = FavoriteFlight::where('user_id', auth()->id())
             ->where('flight_id', $request->flight_id)
             ->where('airline', $request->airline)
             ->where('departure_date', $request->departure_date)
+            ->where('adults', $request->adults)
+            ->where('children', $request->children)
+            ->where('infants_in_seat', $request->infants_in_seat)
+            ->where('infants_on_lap', $request->infants_on_lap)
             ->first();
 
         if ($existing) {
             return response()->json([
-                'error' => 'Ya tienes este vuelo en favoritos',
+                'error' => 'Ya tienes este vuelo en favoritos para esta cantidad de pasajeros',
                 'id' => $existing->id,
                 'is_favorite' => true
             ], 409);
@@ -202,8 +210,12 @@ class FlightController extends Controller
             'departure_date' => $request->departure_date,
             'price' => $request->price,
             'airline' => $request->airline,
-            'flight_details' => $request->flight_details, // Guardar detalles completos
-            'search_params' => $request->search_params  // Guardar parámetros de búsqueda
+            'flight_details' => $request->flight_details,
+            'search_params' => $request->search_params,
+            'adults' => $request->adults,
+            'children' => $request->children,
+            'infants_in_seat' => $request->infants_in_seat,
+            'infants_on_lap' => $request->infants_on_lap,
         ]);
 
         return response()->json([

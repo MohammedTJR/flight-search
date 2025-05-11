@@ -15,7 +15,11 @@ class FavoriteFlight extends Model
         'price',
         'airline',
         'flight_details',
-        'search_params'
+        'search_params',
+        'adults',
+        'children',
+        'infants_in_seat',
+        'infants_on_lap'
     ];
 
     protected $casts = [

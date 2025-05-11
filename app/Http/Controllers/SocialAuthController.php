@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\UserRegisteredMail;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -57,6 +57,11 @@ class SocialAuthController extends Controller
                         'provider_id' => $socialUser->getId(),
                         'avatar' => $socialUser->getAvatar(),
                     ]);
+                    
+                    // Disparar evento Registered para enviar email de verificación
+                    event(new Registered($user));
+                    
+                    // Enviar email de bienvenida
                     Mail::to($user->email)->send(new UserRegisteredMail($user));
                 }
             }

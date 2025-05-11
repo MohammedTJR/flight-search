@@ -169,5 +169,54 @@ jQuery.noConflict();
                 }); e.preventDefault();
             }
         });
+
+        function updateQuantity(id, delta, event) {
+            // Prevenir que el clic cierre el dropdown
+            if (event) {
+                event.stopPropagation();
+            }
+
+            const input = document.getElementById(id);
+            const newValue = parseInt(input.value) + delta;
+
+            if (newValue >= parseInt(input.min) && newValue <= parseInt(input.max)) {
+                input.value = newValue;
+            }
+
+            // Verificar el total de pasajeros
+            const total = getTotalPassengers();
+            if (total > 9) {
+                input.value = parseInt(input.value) - delta;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Límite excedido',
+                    text: 'El número máximo de pasajeros es 9'
+                });
+            }
+        }
+
+        function getTotalPassengers() {
+            return parseInt(document.getElementById('adultos').value) +
+                parseInt(document.getElementById('ninos').value) +
+                parseInt(document.getElementById('bebes_asiento').value) +
+                parseInt(document.getElementById('bebes_regazo').value);
+        }
+
+        function actualizarPasajeros() {
+            const total = getTotalPassengers();
+            const btnText = document.querySelector('[data-bs-toggle="dropdown"] span');
+            btnText.innerHTML = `<i class="fas fa-users me-2"></i>${total} Pasajero${total !== 1 ? 's' : ''}`;
+
+            // Cerrar el dropdown
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            const dropdown = bootstrap.Dropdown.getInstance(dropdownMenu.previousElementSibling);
+            if (dropdown) {
+                dropdown.hide();
+            }
+        }
+
+        // Asignar las funciones a los botones
+        window.updateQuantity = updateQuantity;
+        window.actualizarPasajeros = actualizarPasajeros;
     });
 })(jQuery);

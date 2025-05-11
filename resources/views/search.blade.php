@@ -34,44 +34,85 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Pasajeros:</label>
-                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Seleccionar Pasajeros
+                        <button type="button"
+                            class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <span><i class="fas fa-users me-2"></i>Seleccionar Pasajeros</span>
+                            <i class="fas fa-chevron-down"></i>
                         </button>
-                        <div class="dropdown-menu w-100">
-                            <div class="d-flex p-3">
-                                <div class="me-3">
-                                    <label>Adultos (12+ años)</label>
-                                    <select id="adultos" name="adults" class="form-select">
-                                        @for ($i = 1; $i <= 9; $i++)
-                                            <option value="{{ $i }}">{{ $i }} Adulto(s)</option>
-                                        @endfor
-                                    </select>
+                        <div class="dropdown-menu p-4" data-bs-auto-close="outside">
+                            <div class="passenger-type mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><i class="fas fa-user me-2"></i>Adultos</strong>
+                                        <div class="text-muted small">(12+ años)</div>
+                                    </div>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('adultos', -1, event)">-</button>
+                                        <input type="number" id="adultos" name="adults" value="1" min="1" max="9" readonly>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('adultos', 1, event)">+</button>
+                                    </div>
                                 </div>
-                                <div class="me-3">
-                                    <label>Niños (2-11 años)</label>
-                                    <select id="ninos" name="children" class="form-select">
-                                        @for ($i = 0; $i <= 9; $i++)
-                                            <option value="{{ $i }}">{{ $i }} Niño(s)</option>
-                                        @endfor
-                                    </select>
+                            </div>
+
+                            <div class="passenger-type mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><i class="fas fa-child me-2"></i>Niños</strong>
+                                        <div class="text-muted small">(2-11 años)</div>
+                                    </div>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('ninos', -1, event)">-</button>
+                                        <input type="number" id="ninos" name="children" value="0" min="0" max="9" readonly>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('ninos', 1, event)">+</button>
+                                    </div>
                                 </div>
-                                <div class="me-3">
-                                    <label>Bebés (con asiento, 0-1 año)</label>
-                                    <select id="bebes_asiento" name="infants_in_seat" class="form-select">
-                                        @for ($i = 0; $i <= 9; $i++)
-                                            <option value="{{ $i }}">{{ $i }} Bebé(s)</option>
-                                        @endfor
-                                    </select>
+                            </div>
+
+                            <div class="passenger-type mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><i class="fas fa-baby me-2"></i>Bebés con asiento</strong>
+                                        <div class="text-muted small">(0-1 año)</div>
+                                    </div>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('bebes_asiento', -1, event)">-</button>
+                                        <input type="number" id="bebes_asiento" name="infants_in_seat" value="0" min="0"
+                                            max="9" readonly>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('bebes_asiento', 1, event)">+</button>
+                                    </div>
                                 </div>
-                                <div class="me-3">
-                                    <label>Bebés (en regazo, 0-1 año)</label>
-                                    <select id="bebes_regazo" name="infants_on_lap" class="form-select">
-                                        @for ($i = 0; $i <= 9; $i++)
-                                            <option value="{{ $i }}">{{ $i }} Bebé(s)</option>
-                                        @endfor
-                                    </select>
+                            </div>
+
+                            <div class="passenger-type mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><i class="fas fa-baby-carriage me-2"></i>Bebés en regazo</strong>
+                                        <div class="text-muted small">(0-1 año)</div>
+                                    </div>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('bebes_regazo', -1, event)">-</button>
+                                        <input type="number" id="bebes_regazo" name="infants_on_lap" value="0" min="0"
+                                            max="9" readonly>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="updateQuantity('bebes_regazo', 1, event)">+</button>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div class="border-top pt-3">
+                                <div class="text-muted small mb-2">
+                                    <i class="fas fa-info-circle me-1"></i>Máximo 9 pasajeros en total
+                                </div>
+                                <button type="button" class="btn btn-primary w-100"
+                                    onclick="actualizarPasajeros()">Aplicar</button>
                             </div>
                         </div>
                     </div>

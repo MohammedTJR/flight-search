@@ -60,7 +60,7 @@
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle me-2"></i> <strong>Importante:</strong> Al utilizar FlyLow, aceptas estos Términos y Condiciones en su totalidad. Si no estás de acuerdo, no utilices nuestro servicio.
                         </div>
-                        <p>Los presentes Términos y Condiciones regulan el uso del sitio web <strong>FlyLow</strong> (en adelante, "el Servicio"), operado por <strong>MOTJR & Ruth V.M</strong> (en adelante, "nosotros", "nuestro" o "la Empresa").</p>
+                        <p>Los presentes Términos y Condiciones regulan el uso del sitio web <strong>FlyLow</strong> (en adelante, "el Servicio"), operado por <strong>MOTJR</strong> (en adelante, "nosotros", "nuestro" o "la Empresa").</p>
                     </section>
 
                     <!-- 1. Definiciones -->
@@ -428,7 +428,7 @@
                                 <h4 class="fw-bold mt-4 mb-3">8.3 Contacto</h4>
                                 <p>Para cuestiones legales:</p>
                                 <address>
-                                    <strong>MOTJR & Ruth V.M</strong><br>
+                                    <strong>MOTJR</strong><br>
                                     Calle de la Compañía 5, 28014 Madrid<br>
                                     <i class="fas fa-envelope me-2"></i> legal@flylow.com<br>
                                     <i class="fas fa-phone-alt me-2"></i> +34 900 123 456

@@ -108,7 +108,7 @@
                             <span class="section-number me-3">1</span>
                             Introducción
                         </h2>
-                        <p>En <strong>FlyLow</strong> (operado por MOTJR & Ruth V.M), protegemos tu privacidad conforme al <strong>RGPD (UE) 2016/679</strong> y <strong>LOPDGDD 3/2018</strong>. Esta política explica:</p>
+                        <p>En <strong>FlyLow</strong> (operado por MOTJR), protegemos tu privacidad conforme al <strong>RGPD (UE) 2016/679</strong> y <strong>LOPDGDD 3/2018</strong>. Esta política explica:</p>
                         <ul>
                             <li>Qué información recopilamos y por qué</li>
                             <li>Cómo utilizamos y compartimos tu información</li>

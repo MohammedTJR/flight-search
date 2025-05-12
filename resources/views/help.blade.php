@@ -290,7 +290,7 @@
                         <p class="lead mb-4">Nuestros expertos en vuelos pueden ayudarte a encontrar la mejor opción para tu
                             próximo viaje.</p>
                         <div class="d-flex flex-wrap gap-3">
-                            <a href="#" class="btn btn-primary px-4">
+                            <a href="javascript:void(Tawk_API.toggle())" class="btn btn-primary px-4">
                                 <i class="fas fa-comments me-2"></i> Chat en vivo
                             </a>
                             <a href="mailto:ayuda@flylow.com" class="btn btn-outline-dark px-4">
@@ -318,5 +318,28 @@
                 });
             });
         });
+
+        // Configuración de Tawk.to con autenticación automática
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+
+        @auth
+            Tawk_API.onLoad = function() {
+                // Configurar datos del usuario autenticado
+                Tawk_API.setAttributes({
+                    'name': '{{ Auth::user()->name }}',
+                    'email': '{{ Auth::user()->email }}',
+                    'hash': '{{ hash_hmac("sha256", Auth::user()->email, "tu_clave_secreta") }}'
+                }, function (error) { });
+            };
+        @endauth
+
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/{{ env("TAWKTO_PROPERTY_ID") }}/{{ env("TAWKTO_WIDGET_ID") }}';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
     </script>
 @endsection

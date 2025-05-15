@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AirportsController;
 use App\Http\Controllers\FlightController;
+use App\Http\Controllers\FlightTrackingController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
@@ -97,6 +98,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('/radar', [RadarController::class, 'index'])->name('radar');
+
+Route::prefix('tracked-flights')->group(function () {
+    Route::get('/', [FlightTrackingController::class, 'index'])->name('flight.tracking.index');
+    Route::get('/add', [FlightTrackingController::class, 'showFlightForm'])->name('flight.tracking.form');
+    Route::post('/add', [FlightTrackingController::class, 'trackFlight'])->name('flight.tracking.submit');
+    Route::post('/{id}/refresh', [FlightTrackingController::class, 'refreshFlight'])->name('flight.tracking.refresh');
+    Route::delete('/{id}', [FlightTrackingController::class, 'destroy'])->name('flight.tracking.destroy');
+});
 
 Route::prefix('api/radar')->group(function () {
     Route::get('/', [RadarController::class, 'getFlights']);

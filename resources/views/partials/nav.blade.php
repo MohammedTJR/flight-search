@@ -10,9 +10,14 @@
         <!-- Menú de navegación -->
         <ul class="nav nav-pills align-items-center">
             <!-- Enlace al Radar (versión desktop) -->
+            <li class="nav-item">
+                <a href="{{ route('flight.tracking.index') }}"
+                    class="nav-link {{ request()->routeIs('flight.tracking.*') ? 'active' : '' }}">
+                    <i class="fas fa-plane me-2"></i>Mis Vuelos
+                </a>
+            </li>
             <li class="nav-item d-none d-lg-block">
-                <a href="{{ route('radar') }}"
-                    class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
+                <a href="{{ route('radar') }}" class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
                     <i class="fas fa-satellite-dish me-2"></i>Radar en vivo
                 </a>
             </li>
@@ -76,8 +81,7 @@
             @else
                 <!-- Enlace al Radar para usuarios no autenticados (versión móvil) -->
                 <li class="nav-item d-lg-none">
-                    <a href="{{ route('radar') }}"
-                        class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
+                    <a href="{{ route('radar') }}" class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
                         <i class="fas fa-satellite-dish me-2"></i>Radar
                     </a>
                 </li>

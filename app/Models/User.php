@@ -71,6 +71,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(FavoriteFlight::class);
     }
 
+    public function trackedFlights()
+    {
+        return $this->hasMany(TrackedFlight::class);
+    }
+
     /**
      * Send the email verification notification.
      *

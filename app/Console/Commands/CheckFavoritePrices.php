@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\CheckFlightPriceJob;
 use App\Models\FavoriteFlight;
 use Illuminate\Console\Command;
+use Illuminate\Console\Scheduling\Schedule;
 
 class CheckFavoritePrices extends Command
 {
@@ -36,5 +37,15 @@ class CheckFavoritePrices extends Command
         }
 
         $this->info('Price check jobs have been dispatched successfully.');
+        
+        return Command::SUCCESS;
+    }
+
+    public function schedule(Schedule $schedule)
+    {
+        return $schedule->command(static::class)
+                       ->everyFourHours()
+                       ->withoutOverlapping()
+                       ->appendOutputTo(storage_path('logs/price-checks.log'));
     }
 }

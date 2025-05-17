@@ -40,12 +40,4 @@ class CheckFavoritePrices extends Command
         
         return Command::SUCCESS;
     }
-
-    public function schedule(Schedule $schedule)
-    {
-        return $schedule->command(static::class)
-                       ->everyFourHours()
-                       ->withoutOverlapping()
-                       ->appendOutputTo(storage_path('logs/price-checks.log'));
-    }
 }

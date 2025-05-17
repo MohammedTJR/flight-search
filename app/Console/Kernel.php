@@ -7,10 +7,16 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    protected function schedule(Schedule $schedule)
+    /**
+     * Define the application's command schedule.
+     */
+    protected function schedule(Schedule $schedule): void
     {
-        // Ejecutar la comprobación de precios cada 6 horas
-        $schedule->command('flights:check-prices')->everyFourHours();
+        // Check prices every 4 hours
+        $schedule->command('flights:check-prices')
+                ->everyFourHours()
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/price-checks.log'));
     }
 
     // ...existing code...

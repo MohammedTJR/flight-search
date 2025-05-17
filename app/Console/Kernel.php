@@ -4,7 +4,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Console\Commands\CheckFavoritePrices;
 
 class Kernel extends ConsoleKernel
 {
@@ -13,11 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command(CheckFavoritePrices::class)
+        // Use the command signature instead of the class name
+        $schedule->command('flights:check-prices')
+                ->name('Check Flight Prices')  // Add a readable name
                 ->everyFourHours()
                 ->withoutOverlapping()
-                ->appendOutputTo(storage_path('logs/price-checks.log'))
-                ->emailOutputOnFailure(env('MAIL_FROM_ADDRESS'));
+                ->appendOutputTo(storage_path('logs/price-checks.log'));
     }
 
     /**
@@ -26,7 +26,6 @@ class Kernel extends ConsoleKernel
     protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
 

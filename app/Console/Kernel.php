@@ -19,5 +19,13 @@ class Kernel extends ConsoleKernel
                 ->appendOutputTo(storage_path('logs/price-checks.log'));
     }
 
-    // ...existing code...
+    /**
+     * Register the commands for the application.
+     */
+    protected function commands(): void
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
+    }
 }

@@ -11,7 +11,7 @@
 @section('titulo_pagina', 'FlyLow')
 
 @section('contenido')
-    <div class="container-fluid p-0">
+    <div class="container-fluid p-0 search-page">
         <div class="text-center mb-4">
             <img src="{{ asset('img/banner.jpg') }}" class="img-fluid banner" alt="FlyLow Banner" style="height:20rem">
         </div>
@@ -36,8 +36,12 @@
                         <label class="form-label">Pasajeros:</label>
                         <button type="button"
                             class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <span><i class="fas fa-users me-2"></i>Seleccionar Pasajeros</span>
+                            data-bs-toggle="dropdown"
+                            data-bs-placement="bottom"
+                            title="1 Adulto"
+                            style="min-height: 40px;"
+                            aria-expanded="false">
+                            <span><i class="fas fa-users me-2"></i>Seleccionar pasajeros</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu p-4" data-bs-auto-close="outside">

@@ -95,17 +95,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/favorites', [FlightController::class, 'showFavorites'])->name('favorites.show');
 
     Route::get('/favorites/{favoriteFlight}/details', [FlightController::class, 'showFavoriteDetails'])->name('favorites.details');
+    
+    Route::prefix('tracked-flights')->group(function () {
+        Route::get('/', [FlightTrackingController::class, 'index'])->name('flight.tracking.index');
+        Route::get('/add', [FlightTrackingController::class, 'showFlightForm'])->name('flight.tracking.form');
+        Route::post('/add', [FlightTrackingController::class, 'trackFlight'])->name('flight.tracking.submit');
+        Route::post('/{id}/refresh', [FlightTrackingController::class, 'refreshFlight'])->name('flight.tracking.refresh');
+        Route::delete('/{id}', [FlightTrackingController::class, 'destroy'])->name('flight.tracking.destroy');
+    });
 });
 
 Route::get('/radar', [RadarController::class, 'index'])->name('radar');
 
-Route::prefix('tracked-flights')->group(function () {
-    Route::get('/', [FlightTrackingController::class, 'index'])->name('flight.tracking.index');
-    Route::get('/add', [FlightTrackingController::class, 'showFlightForm'])->name('flight.tracking.form');
-    Route::post('/add', [FlightTrackingController::class, 'trackFlight'])->name('flight.tracking.submit');
-    Route::post('/{id}/refresh', [FlightTrackingController::class, 'refreshFlight'])->name('flight.tracking.refresh');
-    Route::delete('/{id}', [FlightTrackingController::class, 'destroy'])->name('flight.tracking.destroy');
-});
+
 
 Route::prefix('api/radar')->group(function () {
     Route::get('/', [RadarController::class, 'getFlights']);

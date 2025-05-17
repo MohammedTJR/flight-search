@@ -54,9 +54,9 @@
             <div class="col-lg-3 col-md-6">
                 <h5 class="fw-bold mb-3">Contacto</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i>info@flylow.com</li>
+                    <li class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i>info@flylow.es</li>
                     <li class="mb-2"><i class="fas fa-phone me-2 text-primary"></i>+34 900 123 456</li>
-                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Madrid, España</li>
+                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Gandía, Valencia</li>
                 </ul>
             </div>
         </div>

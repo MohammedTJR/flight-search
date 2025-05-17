@@ -33,6 +33,7 @@ footer .social-links a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -41,7 +42,6 @@ footer .social-links a {
 }
 
 footer .social-links a:hover {
-    background-color: #0d6efd;
     transform: translateY(-3px);
 }
 
@@ -71,4 +71,8 @@ footer a:hover {
 
 footer .text-primary {
     color: #0d6efd !important;
+}
+
+.logout-button {
+    border: none !important;
 }

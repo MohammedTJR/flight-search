@@ -18,9 +18,9 @@
     <title>@yield('titulo_pagina')</title>
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
-<body class="bg-light d-flex flex-column min-vh-100"> <!-- Añade estas clases -->
+<body class="bg-light d-flex flex-column min-vh-100">
     @include('partials.cookies-banner')
-    <div class="flex-grow-1"> <!-- Este div crecerá para empujar el footer hacia abajo -->
+    <div class="flex-grow-1">
         @include('partials.nav')
         @yield('contenido')
     </div>

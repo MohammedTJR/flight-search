@@ -54,9 +54,21 @@
             <div class="col-lg-3 col-md-6">
                 <h5 class="fw-bold mb-3">Contacto</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i>info@flylow.es</li>
-                    <li class="mb-2"><i class="fas fa-phone me-2 text-primary"></i>+34 900 123 456</li>
-                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Gandía, Valencia</li>
+                    <li class="mb-2">
+                        <a href="mailto:info@flylow.es" class="text-light text-decoration-none">
+                            <i class="fas fa-envelope me-2 text-primary"></i>info@flylow.es
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="tel:+34900123456" class="text-light text-decoration-none">
+                            <i class="fas fa-phone me-2 text-primary"></i>+34 900 123 456
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://maps.google.com/?q=Gandia,Valencia" target="_blank" class="text-light text-decoration-none">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>Gandía, Valencia
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

@@ -241,17 +241,26 @@
 }
 
 .search-results {
-    position: absolute; /* Posiciona el contenedor de resultados en relación al contenedor padre */
-    top: 100%; /* Coloca el contenedor justo debajo del campo de búsqueda */
+    position: absolute;
+    top: 100%;
     left: 0;
     background: white;
     border: 1px solid #ddd;
     border-radius: 4px;
     max-height: 200px;
     overflow-y: auto;
-    width: 100%; /* Asegura que el ancho coincida con el campo de búsqueda */
+    width: 100%;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Ocultar el borde cuando está vacío */
+    border: none;
+    display: none; /* Por defecto estará oculto */
+}
+
+/* Mostrar el borde solo cuando tenga contenido */
+.search-results:not(:empty) {
+    border: 1px solid #ddd;
+    display: block;
 }
 
 .search-results div {

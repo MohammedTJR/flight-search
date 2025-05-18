@@ -76,6 +76,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(TrackedFlight::class);
     }
 
+    public function searchHistory()
+    {
+        return $this->hasMany(SearchHistory::class)->latest();
+    }
+
     /**
      * Send the email verification notification.
      *

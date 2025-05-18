@@ -75,6 +75,21 @@ class FlightController extends Controller
             'travel_class' => $travel_class
         ]);
 
+        // Si el usuario está autenticado, guardar la búsqueda
+        if (auth()->check()) {
+            auth()->user()->searchHistory()->create([
+                'origin' => $departure,
+                'destination' => $arrival,
+                'departure_date' => $date,
+                'adults' => $adults,
+                'children' => $children,
+                'infants_in_seat' => $infants_in_seat,
+                'infants_on_lap' => $infants_on_lap,
+                'travel_class' => $travel_class,
+                'stops' => $stops == 1
+            ]);
+        }
+
         try {
             // Realiza la solicitud GET a la API
             $response = Http::get($url);

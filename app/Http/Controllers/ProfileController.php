@@ -63,4 +63,25 @@ class ProfileController extends Controller
         return redirect()->route('profile.show')
             ->with('success', 'Contraseña actualizada correctamente');
     }
+
+    public function loadMoreHistory(Request $request)
+    {
+        $page = $request->input('page', 1);
+        $perPage = 5;
+
+        $searchHistory = auth()->user()
+            ->searchHistory()
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('profile.partials.search-history-items', compact('searchHistory'))->render(),
+                'hasMore' => $searchHistory->count() == $perPage
+            ]);
+        }
+
+        return redirect()->route('profile.show');
+    }
 }

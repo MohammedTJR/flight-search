@@ -102,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{id}/refresh', [FlightTrackingController::class, 'refreshFlight'])->name('flight.tracking.refresh');
         Route::delete('/{id}', [FlightTrackingController::class, 'destroy'])->name('flight.tracking.destroy');
     });
+
+    Route::get('/profile/history', [ProfileController::class, 'loadMoreHistory'])->name('profile.history');
 });
 
 Route::get('/radar', [RadarController::class, 'index'])->name('radar');

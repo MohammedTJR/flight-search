@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Services\ImageService;
+use Illuminate\Support\Facades\Artisan;
 
 class FlightController extends Controller
 {
@@ -263,15 +264,17 @@ class FlightController extends Controller
 
     public function showFavorites()
     {
+        // Primero ejecutamos el comando de limpieza
+        Artisan::call('favorites:delete-expired');
+        
+        // Luego obtenemos los favoritos actualizados
         $favorites = auth()->user()->favoriteFlights()->latest()->get();
 
         $imageService = app(ImageService::class);
 
         foreach ($favorites as $favorite) {
             $airport = Airport::where('iata', $favorite->destination)->first();
-
             $cityName = $airport ? $airport->city : $favorite->destination;
-
             $favorite->destination_image = $imageService->getCityImage($cityName);
         }
 

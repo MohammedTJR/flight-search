@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\FavoriteFlight;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class DeleteExpiredFavoriteFlights extends Command
 {
@@ -27,9 +28,18 @@ class DeleteExpiredFavoriteFlights extends Command
      */
     public function handle()
     {
-        $count = FavoriteFlight::where('departure_date', '<', Carbon::now())
-            ->delete();
+        try {
+            $count = FavoriteFlight::where('departure_date', '<', Carbon::now())
+                ->delete();
 
-        $this->info("Se eliminaron {$count} vuelos favoritos expirados.");
+            Log::info("Se eliminaron {$count} vuelos favoritos expirados.");
+            $this->info("Se eliminaron {$count} vuelos favoritos expirados.");
+            
+            return Command::SUCCESS;
+        } catch (\Exception $e) {
+            Log::error("Error en DeleteExpiredFavoriteFlights: " . $e->getMessage());
+            $this->error($e->getMessage());
+            return Command::FAILURE;
+        }
     }
 }

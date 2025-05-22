@@ -18,6 +18,9 @@ class Kernel extends ConsoleKernel
                 ->everyFourHours()
                 ->withoutOverlapping()
                 ->appendOutputTo(storage_path('logs/price-checks.log'));
+
+        // Ejecutar cada hora
+        $schedule->command('favorites:delete-expired')->hourly();
     }
 
     /**

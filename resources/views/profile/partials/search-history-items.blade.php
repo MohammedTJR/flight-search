@@ -1,4 +1,4 @@
-@php
+ @php
     $travelClasses = [
         '1' => 'Económica',
         '2' => 'Económica Premium',

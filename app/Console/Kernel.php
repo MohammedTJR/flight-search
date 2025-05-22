@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -17,10 +18,24 @@ class Kernel extends ConsoleKernel
                 ->name('Check Flight Prices')  // Add a readable name
                 ->everyFourHours()
                 ->withoutOverlapping()
-                ->appendOutputTo(storage_path('logs/price-checks.log'));
+                ->appendOutputTo(storage_path('logs/price-checks.log'))
+                ->before(function () {
+                    Log::info('Iniciando verificación de precios');
+                })
+                ->after(function () {
+                    Log::info('Verificación de precios completada');
+                });
 
         // Ejecutar cada hora
-        $schedule->command('favorites:delete-expired')->hourly();
+        $schedule->command('favorites:delete-expired')
+                ->hourly()
+                ->appendOutputTo(storage_path('logs/favorites-cleanup.log'))
+                ->before(function () {
+                    Log::info('Iniciando limpieza de favoritos');
+                })
+                ->after(function () {
+                    Log::info('Limpieza de favoritos completada');
+                });
     }
 
     /**

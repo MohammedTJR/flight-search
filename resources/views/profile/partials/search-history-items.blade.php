@@ -1,3 +1,12 @@
+@php
+    $travelClasses = [
+        '1' => 'Económica',
+        '2' => 'Económica Premium',
+        '3' => 'Business',
+        '4' => 'Primera clase'
+    ];
+@endphp
+
 @foreach($searchHistory as $search)
     <div class="search-history-item mb-3 p-3 border rounded shadow-sm bg-white hover-effect">
         <div class="d-flex justify-content-between align-items-start">
@@ -57,7 +66,7 @@
 
                     <div class="badge bg-light text-dark border">
                         <i class="fas fa-chair me-1"></i>
-                        {{ ucfirst(str_replace('_', ' ', $search->travel_class)) }}
+                        {{ $travelClasses[$search->travel_class] ?? 'No especificada' }}
                     </div>
 
                     <div class="badge bg-light text-dark border">

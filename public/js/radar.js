@@ -360,6 +360,15 @@ function updateFlights(flightData) {
     });
 }
 
+function togglePanel() {
+    const panel = document.getElementById('flight-details-panel');
+    if (panel.classList.contains('show')) {
+        closeFlightDetails();
+    } else {
+        panel.classList.add('show');
+    }
+}
+
 function showFlightDetails(flight) {
     const icao24 = flight[0];
     const callsign = flight[1] ? flight[1].trim() : 'N/A';
@@ -381,73 +390,73 @@ function showFlightDetails(flight) {
 
     // Crear contenido HTML para el panel
     const detailsHTML = `
-            <div class="flight-title">
-                <h4><i class="fas fa-plane me-2"></i>${callsign}</h4>
-                <p class="mb-0 text-muted">${icao24.toUpperCase()} - ${originCountry}</p>
-            </div>
+        <div class="flight-title">
+            <h4><i class="fas fa-plane me-2"></i>${callsign}</h4>
+            <p class="mb-0 text-muted">${icao24.toUpperCase()} - ${originCountry}</p>
+        </div>
 
-            <div class="info-section">
-                <h5><i class="fas fa-info-circle me-2"></i>Información General</h5>
-                <div class="detail-row">
-                    <div class="detail-label">ICAO24:</div>
-                    <div class="detail-value">${icao24.toUpperCase()}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Callsign:</div>
-                    <div class="detail-value">${callsign}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">País:</div>
-                    <div class="detail-value">${originCountry}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Squawk:</div>
-                    <div class="detail-value">${squawk}</div>
-                </div>
+        <div class="info-section">
+            <h5><i class="fas fa-info-circle me-2"></i>Información General</h5>
+            <div class="detail-row">
+                <div class="detail-label">ICAO24:</div>
+                <div class="detail-value">${icao24.toUpperCase()}</div>
             </div>
+            <div class="detail-row">
+                <div class="detail-label">Callsign:</div>
+                <div class="detail-value">${callsign}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">País:</div>
+                <div class="detail-value">${originCountry}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Squawk:</div>
+                <div class="detail-value">${squawk}</div>
+            </div>
+        </div>
 
-            <div class="info-section">
-                <h5><i class="fas fa-chart-line me-2"></i>Datos de Vuelo</h5>
-                <div class="detail-row">
-                    <div class="detail-label">Altitud:</div>
-                    <div class="detail-value">${altitude}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Velocidad:</div>
-                    <div class="detail-value">${velocity}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Dirección:</div>
-                    <div class="detail-value">${heading}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Tasa Vertical:</div>
-                    <div class="detail-value">${verticalRate}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">En tierra:</div>
-                    <div class="detail-value">${onGround}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Fuente de datos:</div>
-                    <div class="detail-value">${positionSource}</div>
-                </div>
+        <div class="info-section">
+            <h5><i class="fas fa-chart-line me-2"></i>Datos de Vuelo</h5>
+            <div class="detail-row">
+                <div class="detail-label">Altitud:</div>
+                <div class="detail-value">${altitude}</div>
             </div>
+            <div class="detail-row">
+                <div class="detail-label">Velocidad:</div>
+                <div class="detail-value">${velocity}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Dirección:</div>
+                <div class="detail-value">${heading}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Tasa Vertical:</div>
+                <div class="detail-value">${verticalRate}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">En tierra:</div>
+                <div class="detail-value">${onGround}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Fuente de datos:</div>
+                <div class="detail-value">${positionSource}</div>
+            </div>
+        </div>
 
-            <div class="info-section">
-                <h5><i class="fas fa-clock me-2"></i>Tiempo</h5>
-                <div class="detail-row">
-                    <div class="detail-label">Última actualización:</div>
-                    <div class="detail-value">${lastUpdate}</div>
-                </div>
+        <div class="info-section">
+            <h5><i class="fas fa-clock me-2"></i>Tiempo</h5>
+            <div class="detail-row">
+                <div class="detail-label">Última actualización:</div>
+                <div class="detail-value">${lastUpdate}</div>
             </div>
+        </div>
 
-            <div class="mt-4">
-                <button class="btn btn-outline-primary w-100" onclick="centerOnFlight('${icao24}')">
-                    <i class="fas fa-search-location me-2"></i>Centrar en el mapa
-                </button>
-            </div>
-        `;
+        <div class="mt-4">
+            <button class="btn btn-outline-primary w-100" onclick="centerOnFlight('${icao24}')">
+                <i class="fas fa-search-location me-2"></i>Centrar en el mapa
+            </button>
+        </div>
+    `;
 
     // Actualizar contenido y mostrar panel
     document.getElementById('flight-details-content').innerHTML = detailsHTML;
@@ -551,3 +560,13 @@ function filterSearchResults() {
         resultsContainer.style.display = 'none';
     }
 }
+
+// Añadir detección de touch para móviles
+document.addEventListener('DOMContentLoaded', function() {
+    // Mejorar la interacción táctil
+    if ('ontouchstart' in window) {
+        document.querySelectorAll('.aircraft-marker').forEach(marker => {
+            marker.style.touchAction = 'manipulation';
+        });
+    }
+});

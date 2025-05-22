@@ -73,6 +73,9 @@
             </div>
         </div>
         <div id="flight-details-panel">
+            <div class="panel-header" onclick="togglePanel()">
+                <i class="fas fa-chevron-up"></i>
+            </div>
             <i class="fas fa-times close-panel" onclick="closeFlightDetails()"></i>
             <div id="flight-details-content">
                 <div class="text-center py-5">

@@ -17,7 +17,6 @@ class SocialAuthController extends Controller
 
     public function redirectToProvider($provider)
     {
-        // Verificar si el proveedor es válido
         if (!in_array($provider, $this->providers)) {
             return redirect()->route('login')
                 ->with('error', 'Proveedor de autenticación no soportado.');
@@ -31,16 +30,13 @@ class SocialAuthController extends Controller
         try {
             $socialUser = Socialite::driver($provider)->user();
 
-            // Buscar usuario por provider_id
             $user = User::where('provider_id', $socialUser->getId())
                 ->where('provider', $provider)
                 ->first();
 
-            // Si no existe, buscar por email
             if (!$user) {
                 $user = User::where('email', $socialUser->getEmail())->first();
 
-                // Si existe un usuario con ese email, actualizamos sus datos de provider
                 if ($user) {
                     $user->update([
                         'provider' => $provider,
@@ -48,7 +44,6 @@ class SocialAuthController extends Controller
                         'avatar' => $socialUser->getAvatar(),
                     ]);
                 } else {
-                    // Si no existe, crear un nuevo usuario
                     $user = User::create([
                         'name' => $socialUser->getName(),
                         'email' => $socialUser->getEmail(),
@@ -58,10 +53,8 @@ class SocialAuthController extends Controller
                         'avatar' => $socialUser->getAvatar(),
                     ]);
                     
-                    // Disparar evento Registered para enviar email de verificación
                     event(new Registered($user));
                     
-                    // Enviar email de bienvenida
                     Mail::to($user->email)->send(new UserRegisteredMail($user));
                 }
             }

@@ -403,7 +403,7 @@
                         <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
                         <h3 class="fw-bold mb-3">¿Tienes preguntas sobre privacidad?</h3>
                         <p class="lead mb-4">Nuestro Delegado de Protección de Datos está disponible para resolver tus dudas.</p>
-                        <a href="mailto:dpo@flylow.com" class="btn btn-primary px-4 me-2">
+                        <a href="mailto:info@flylow.com" class="btn btn-primary px-4 me-2">
                             <i class="fas fa-envelope me-2"></i> Contactar DPO
                         </a>
                         <a href="{{ route('help') }}" class="btn btn-outline-primary px-4">

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserRegisteredMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Mail;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
@@ -32,7 +33,7 @@ class RegisterController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user); // Esto inicia sesión automáticamente
+        Mail::to($user->email)->send(new UserRegisteredMail($user));
 
         return redirect()->route('verification.notice')
             ->with('success', '¡Registro exitoso! Por favor, verifica tu correo electrónico.');

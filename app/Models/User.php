@@ -66,6 +66,63 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    protected $attributes = [
+        'notification_preferences' => '{"price_alerts":true,"alert_frequency":"daily"}',
+        'travel_preferences' => '{"preferred_class":"economy","direct_flights":false}'
+    ];
+    
+    /**
+     * Get default notification preferences
+     *
+     * @return array
+     */
+    public function getDefaultNotificationPreferences(): array
+    {
+        return [
+            'price_alerts' => true,
+            'alert_frequency' => 'daily',
+            'analytics_cookies' => false,
+            'marketing_cookies' => false,
+            'enable_chat' => true,
+            'chat_notifications' => false
+        ];
+    }
+
+    /**
+     * Get default travel preferences
+     *
+     * @return array
+     */
+    public function getDefaultTravelPreferences(): array
+    {
+        return [
+            'preferred_class' => 'economy',
+            'direct_flights' => false
+        ];
+    }
+
+    /**
+     * Get notification preferences with defaults
+     *
+     * @return array
+     */
+    public function getNotificationPreferencesAttribute($value)
+    {
+        $preferences = json_decode($value, true) ?? [];
+        return array_merge($this->getDefaultNotificationPreferences(), $preferences);
+    }
+
+    /**
+     * Get travel preferences with defaults
+     *
+     * @return array
+     */
+    public function getTravelPreferencesAttribute($value)
+    {
+        $preferences = json_decode($value, true) ?? [];
+        return array_merge($this->getDefaultTravelPreferences(), $preferences);
+    }
+
     public function favoriteFlights()
     {
         return $this->hasMany(FavoriteFlight::class);

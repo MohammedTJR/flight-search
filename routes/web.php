@@ -10,6 +10,7 @@ use App\Http\Controllers\RadarController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\PreferencesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -94,7 +95,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/favorites', [FlightController::class, 'showFavorites'])->name('favorites.show');
 
     Route::get('/favorites/{favoriteFlight}/details', [FlightController::class, 'showFavoriteDetails'])->name('favorites.details');
-    
+
     Route::prefix('tracked-flights')->group(function () {
         Route::get('/', [FlightTrackingController::class, 'index'])->name('flight.tracking.index');
         Route::get('/add', [FlightTrackingController::class, 'showFlightForm'])->name('flight.tracking.form');
@@ -104,6 +105,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/profile/history', [ProfileController::class, 'loadMoreHistory'])->name('profile.history');
+    Route::post('/profile/preferences', [PreferencesController::class, 'update'])
+        ->name('profile.preferences.update')
+        ->middleware(['auth', 'verified']);
 });
 
 Route::get('/radar', [RadarController::class, 'index'])->name('radar');

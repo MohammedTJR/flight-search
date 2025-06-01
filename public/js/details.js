@@ -1,114 +1,132 @@
+function showAlert(message, isError = false) {
+    // Crear el elemento de alerta
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert ${isError ? 'alert-danger' : 'alert-success'} alert-dismissible fade show`;
+    alertDiv.setAttribute('role', 'alert');
+
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    // Insertar la alerta al principio del contenedor
+    const container = document.querySelector('.container');
+    const header = container.querySelector('header');
+    container.insertBefore(alertDiv, header);
+
+    // Hacer scroll hacia arriba
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Autoclose después de 3 segundos
+    setTimeout(() => {
+        const bsAlert = new bootstrap.Alert(alertDiv);
+        bsAlert.close();
+    }, 3000);
+}
+
 function toggleFavorite(button) {
     const form = button.closest('form');
     const url = form.action;
-    let method = form.method;
+    const method = form.querySelector('input[name="_method"]') ? 'DELETE' : 'POST';
 
     // Mostrar indicador de carga
     button.disabled = true;
+    const originalContent = button.innerHTML;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
 
-    // Configurar la solicitud según el método
+    // Preparar datos del formulario
+    const formData = new FormData(form);
+
+    // Configurar la solicitud
     const requestOptions = {
-        method: method,
+        method: 'POST', // Siempre POST, Laravel maneja _method internamente
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
+            'Accept': 'application/json'
+        },
+        body: formData
     };
 
-    // Solo incluir body para POST/PUT/PATCH
-    if (method !== 'GET' && method !== 'HEAD') {
-        const formData = Object.fromEntries(new FormData(form));
-        requestOptions.body = JSON.stringify(formData);
-    }
+    console.log('Enviando solicitud a:', url);
+    console.log('Método:', method);
+    console.log('FormData:', Object.fromEntries(formData));
 
     fetch(url, requestOptions)
         .then(async response => {
-            const data = await response.json();
+            console.log('Respuesta recibida:', response.status);
 
             if (!response.ok) {
-                throw new Error(data.error || 'Error en la solicitud');
+                const errorText = await response.text();
+                console.error('Error response:', errorText);
+                throw new Error(`Error ${response.status}: ${errorText}`);
             }
 
+            const data = await response.json();
+            console.log('Datos recibidos:', data);
+
             // Verificar si estamos en la vista de detalles de favoritos
-            const isFavoriteDetailsPage = window.location.pathname.includes('/favorites/') && 
-                                window.location.pathname.includes('/details');
+            const isFavoriteDetailsPage = window.location.pathname.includes('/favorites/') &&
+                window.location.pathname.includes('/details');
 
             if (isFavoriteDetailsPage && !data.is_favorite) {
                 // Si estamos en detalles de favorito y acabamos de eliminarlo, redirigir
-                window.location.href = '/favorites';
+                showAlert(data.message || 'Favorito eliminado', false);
+                setTimeout(() => {
+                    window.location.href = '/favorites';
+                }, 1500);
                 return;
             }
 
-            // Actualizar estado del botón y formulario
-            if (data.is_favorite) {
-                button.classList.remove('btn-outline-primary');
-                button.classList.add('btn-danger');
-                button.innerHTML = '<i class="fas fa-heart"></i> Quitar de favoritos';
-                form.method = 'DELETE';
-                form.action = `/favorites/${data.id}`;
-            } else {
-                button.classList.remove('btn-danger');
-                button.classList.add('btn-outline-primary');
-                button.innerHTML = '<i class="far fa-heart"></i> Guardar como favorito';
-                form.method = 'POST';
-                form.action = '/favorites';
-            }
+            // Mostrar mensaje de éxito
+            showAlert(data.message || 'Operación exitosa', false);
 
-            showToast(data.message || 'Operación exitosa');
-
-            // Solo recargar si no es una eliminación desde detalles de favorito
-            if (!isFavoriteDetailsPage) {
+            // Recargar la página para actualizar el estado
+            setTimeout(() => {
                 window.location.reload();
-            }
+            }, 1500);
+
         })
         .catch(error => {
-            console.error('Error:', error);
-            showToast(error.message, true);
-        })
-        .finally(() => {
+            console.error('Error completo:', error);
+            showAlert('Error: ' + error.message, true);
+
+            // Restaurar botón en caso de error
+            button.innerHTML = originalContent;
             button.disabled = false;
         });
 }
 
-function showToast(message, isError = false) {
-    const toastEl = document.querySelector('.toast');
-    if (!toastEl) return;
+// Inicialización cuando el DOM está listo
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM listo, inicializando componentes...');
 
-    const toastBody = toastEl.querySelector('.toast-body');
-    toastBody.textContent = message;
+    // Inicializar dropdowns
+    const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+    console.log('Dropdowns encontrados:', dropdownElementList.length);
 
-    toastEl.classList.remove(isError ? 'bg-success' : 'bg-danger');
-    toastEl.classList.add(isError ? 'bg-danger' : 'bg-success');
-
-    const toast = new bootstrap.Toast(toastEl);
-    toast.show();
-}
-
-// Función para mostrar notificaciones que funciona con o sin Bootstrap
-function showNotification(message, isError = false) {
-    // Intentar usar Bootstrap Toast si está disponible
-    if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
-        const toastEl = document.querySelector('.toast');
-        if (toastEl) {
-            const toastBody = toastEl.querySelector('.toast-body');
-            if (toastBody) toastBody.textContent = message;
-
-            // Cambiar color si es error
-            if (isError) {
-                toastEl.classList.remove('bg-success');
-                toastEl.classList.add('bg-danger');
-            } else {
-                toastEl.classList.remove('bg-danger');
-                toastEl.classList.add('bg-success');
+    if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
+        dropdownElementList.forEach(dropdownToggleEl => {
+            try {
+                new bootstrap.Dropdown(dropdownToggleEl);
+                console.log('Dropdown inicializado correctamente');
+            } catch (e) {
+                console.error('Error inicializando dropdown:', e);
             }
-
-            new bootstrap.Toast(toastEl).show();
-            return;
-        }
+        });
+    } else {
+        console.error('Bootstrap no está disponible');
     }
 
-    // Fallback a alert básico si Bootstrap no está disponible
-    alert(message);
+    // Inicializar tooltips si existen
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    if (tooltipTriggerList.length > 0 && typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+});
+
+// Función de respaldo para mostrar notificaciones
+function showNotification(message, isError = false) {
+    showAlert(message, isError);
 }

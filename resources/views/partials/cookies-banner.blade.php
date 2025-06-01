@@ -167,18 +167,6 @@
                 analytics: false,
                 marketing: false
             };
-
-            // Cargar Google Analytics solo si está permitido
-            if (preferences.analytics) {
-                console.log('Cargando cookies de análisis...');
-                // Aquí iría tu código de Google Analytics
-            }
-
-            // Cargar cookies de marketing solo si está permitido
-            if (preferences.marketing) {
-                console.log('Cargando cookies de marketing...');
-                // Aquí iría tu código de Facebook Pixel, Google Ads, etc.
-            }
         }
 
         // Cargar cookies al iniciar (si hay preferencias)

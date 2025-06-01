@@ -47,13 +47,8 @@ function toggleFavorite(button) {
         body: formData
     };
 
-    console.log('Enviando solicitud a:', url);
-    console.log('Método:', method);
-    console.log('FormData:', Object.fromEntries(formData));
-
     fetch(url, requestOptions)
         .then(async response => {
-            console.log('Respuesta recibida:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -62,7 +57,6 @@ function toggleFavorite(button) {
             }
 
             const data = await response.json();
-            console.log('Datos recibidos:', data);
 
             // Verificar si estamos en la vista de detalles de favoritos
             const isFavoriteDetailsPage = window.location.pathname.includes('/favorites/') &&
@@ -98,17 +92,14 @@ function toggleFavorite(button) {
 
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM listo, inicializando componentes...');
 
     // Inicializar dropdowns
     const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
-    console.log('Dropdowns encontrados:', dropdownElementList.length);
 
     if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
         dropdownElementList.forEach(dropdownToggleEl => {
             try {
                 new bootstrap.Dropdown(dropdownToggleEl);
-                console.log('Dropdown inicializado correctamente');
             } catch (e) {
                 console.error('Error inicializando dropdown:', e);
             }

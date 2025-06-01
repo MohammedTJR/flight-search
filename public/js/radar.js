@@ -32,7 +32,6 @@ const mapLayers = {
 
 // Función para inicializar el mapa
 function initializeMap() {
-    console.log('Inicializando mapa...'); // Verifica que se ejecuta
 
     map = L.map('map').setView([40.416775, -3.703790], 6);
 
@@ -51,7 +50,6 @@ function initializeMap() {
     toggleBtn.addEventListener('click', function (e) {
         e.stopPropagation();
         e.preventDefault();
-        console.log('Botón clickeado');
         optionsPanel.classList.toggle('show');
     });
 
@@ -67,7 +65,6 @@ function initializeMap() {
         option.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedLayer = this.dataset.layer;
-            console.log('Capa seleccionada:', selectedLayer);
 
             Object.values(mapLayers).forEach(layer => map.removeLayer(layer));
             mapLayers[selectedLayer].addTo(map);
@@ -86,7 +83,6 @@ function initializeMap() {
         });
     });
 
-    console.log('Mapa y controles inicializados correctamente');
 }
 
 // Inicializar el mapa

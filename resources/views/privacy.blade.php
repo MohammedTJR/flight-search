@@ -296,7 +296,7 @@
                                         <div class="p-3 border rounded bg-light h-100">
                                             <h5 class="fw-bold"><i class="fas fa-cookie me-2"></i> Cookies</h5>
                                             <p class="mb-0">Gestiona tus preferencias en cualquier momento:</p>
-                                            <button class="btn btn-sm btn-outline-primary mt-2" id="openCookieSettings">Abrir configuración</button>
+                                            <a href="{{ route('profile.show') }}" class="btn btn-sm btn-outline-primary mt-2">Abrir configuración</a>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -420,12 +420,6 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Abrir configuración de cookies
-    document.getElementById('openCookieSettings')?.addEventListener('click', function() {
-        // Implementa tu función para abrir el modal/panel de cookies
-        console.log('Abrir configuración de cookies');
-    });
-    
     // Smooth scroll para anclas
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {

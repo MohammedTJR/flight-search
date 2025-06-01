@@ -14,77 +14,15 @@
                 <div class="container py-4">
                     <h1 class="display-4 fw-bold mb-3">Preguntas Frecuentes</h1>
                     <p class="lead mb-4">Encuentra respuestas rápidas sobre cómo usar FlyLow</p>
-
-                    <!-- Search Bar -->
-                    <div class="search-faq mx-auto" style="max-width: 600px;">
-                        <div class="input-group shadow-lg">
-                            <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control form-control-lg border-0"
-                                placeholder="Buscar en preguntas frecuentes..." id="faqSearch">
-                            <button class="btn btn-primary px-4" type="button">Buscar</button>
-                        </div>
-                        <div class="popular-tags mt-3">
-                            <a href="#comparacion" class="btn btn-sm btn-outline-light me-2">Comparación</a>
-                            <a href="#favoritos" class="btn btn-sm btn-outline-light me-2">Favoritos</a>
-                            <a href="#tracker" class="btn btn-sm btn-outline-light me-2">Flight Tracker</a>
-                            <a href="#cuenta" class="btn btn-sm btn-outline-light">Cuenta</a>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Main Content -->
             <div class="row g-4">
-                <!-- Sidebar Navigation -->
-                <div class="col-lg-3">
-                    <div class="faq-sidebar card border-0 shadow-sm sticky-top" style="top: 20px;">
-                        <div class="card-body">
-                            <h5 class="fw-bold mb-3"><i class="fas fa-list-ul me-2"></i> Categorías</h5>
-                            <ul class="nav flex-column">
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="#comparacion">
-                                        <i class="fas fa-exchange-alt me-2"></i> Comparación
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#favoritos">
-                                        <i class="fas fa-heart me-2"></i> Favoritos
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#tracker">
-                                        <i class="fas fa-plane me-2"></i> Flight Tracker
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#cuenta">
-                                        <i class="fas fa-user me-2"></i> Cuenta
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#pagos">
-                                        <i class="fas fa-credit-card me-2"></i> Pagos
-                                    </a>
-                                </li>
-                            </ul>
-
-                            <hr class="my-4">
-
-                            <h5 class="fw-bold mb-3"><i class="fas fa-question-circle me-2"></i> ¿No encuentras?</h5>
-                            <a href="{{ route('help') }}" class="btn btn-outline-primary w-100 mb-2">
-                                <i class="fas fa-envelope me-2"></i> Contactar soporte
-                            </a>
-                            <a href="javascript:void(Tawk_API.toggle())" class="btn btn-outline-secondary w-100">
-                                <i class="fas fa-comments me-2"></i> Chat en vivo
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- FAQ Content -->
-                <div class="col-lg-9">
+                <div class="col-12">
                     <!-- Comparación Section -->
-                    <section id="comparacion" class="mb-5 pb-4">
+                    <section id="comparacion" class="mb-5">
                         <div class="d-flex align-items-center mb-4">
                             <div class="icon-wrapper bg-primary bg-opacity-10 p-3 rounded-3 me-3">
                                 <i class="fas fa-exchange-alt fa-lg text-primary"></i>
@@ -145,7 +83,7 @@
                     </section>
 
                     <!-- Favoritos Section -->
-                    <section id="favoritos" class="mb-5 pb-4">
+                    <section id="favoritos" class="mb-5">
                         <div class="d-flex align-items-center mb-4">
                             <div class="icon-wrapper bg-danger bg-opacity-10 p-3 rounded-3 me-3">
                                 <i class="fas fa-heart fa-lg text-danger"></i>
@@ -194,7 +132,7 @@
                     </section>
 
                     <!-- Flight Tracker Section -->
-                    <section id="tracker" class="mb-5 pb-4">
+                    <section id="tracker" class="mb-5">
                         <div class="d-flex align-items-center mb-4">
                             <div class="icon-wrapper bg-info bg-opacity-10 p-3 rounded-3 me-3">
                                 <i class="fas fa-plane fa-lg text-info"></i>
@@ -246,6 +184,135 @@
                         </div>
                     </section>
 
+                    <section id="cuenta" class="mb-5">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-wrapper bg-success bg-opacity-10 p-3 rounded-3 me-3">
+                                <i class="fas fa-user fa-lg text-success"></i>
+                            </div>
+                            <h2 class="mb-0">Cuenta de Usuario</h2>
+                        </div>
+
+                        <div class="accordion faq-accordion" id="accordionCuenta">
+                            <!-- Item 1 -->
+                            <div class="accordion-item border-0 mb-3 rounded-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapseCuenta1">
+                                        ¿Cómo cambio mi contraseña?
+                                    </button>
+                                </h3>
+                                <div id="collapseCuenta1" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionCuenta">
+                                    <div class="accordion-body">
+                                        <p>Para cambiar tu contraseña:</p>
+                                        <ol>
+                                            <li>Ve a "Mi cuenta" > "Configuración de seguridad"</li>
+                                            <li>Haz clic en "Cambiar contraseña"</li>
+                                            <li>Ingresa tu contraseña actual y la nueva</li>
+                                            <li>Confirma los cambios</li>
+                                        </ol>
+                                        <div class="alert alert-light mt-3">
+                                            <i class="fas fa-shield-alt text-success me-2"></i> Recomendamos usar una
+                                            contraseña fuerte con al menos 8 caracteres, incluyendo números y símbolos.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="accordion-item border-0 mb-3 rounded-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapseCuenta2">
+                                        ¿Cómo elimino mi cuenta?
+                                    </button>
+                                </h3>
+                                <div id="collapseCuenta2" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionCuenta">
+                                    <div class="accordion-body">
+                                        <p>Puedes eliminar tu cuenta siguiendo estos pasos:</p>
+                                        <ol>
+                                            <li>Ve a "Configuración de la cuenta"</li>
+                                            <li>Selecciona "Eliminar cuenta"</li>
+                                            <li>Confirma tu decisión</li>
+                                        </ol>
+                                        <p class="mb-0"><i class="fas fa-exclamation-triangle text-warning me-2"></i> Esta
+                                            acción es irreversible y eliminará todos tus datos, favoritos y alertas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Pagos Section -->
+                    <section id="pagos" class="mb-5">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-wrapper bg-warning bg-opacity-10 p-3 rounded-3 me-3">
+                                <i class="fas fa-credit-card fa-lg text-warning"></i>
+                            </div>
+                            <h2 class="mb-0">Pagos y Facturación</h2>
+                        </div>
+
+                        <div class="accordion faq-accordion" id="accordionPagos">
+                            <!-- Item 1 -->
+                            <div class="accordion-item border-0 mb-3 rounded-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapsePagos1">
+                                        ¿Qué métodos de pago aceptan?
+                                    </button>
+                                </h3>
+                                <div id="collapsePagos1" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionPagos">
+                                    <div class="accordion-body">
+                                        <p>Aceptamos los siguientes métodos de pago:</p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h5 class="fw-bold">Tarjetas</h5>
+                                                <ul>
+                                                    <li>Visa</li>
+                                                    <li>Mastercard</li>
+                                                    <li>American Express</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5 class="fw-bold">Otros métodos</h5>
+                                                <ul>
+                                                    <li>PayPal</li>
+                                                    <li>Transferencia bancaria</li>
+                                                    <li>Google Pay/Apple Pay</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="accordion-item border-0 mb-3 rounded-3 shadow-sm">
+                                <h3 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapsePagos2">
+                                        ¿Cómo obtengo un recibo o factura?
+                                    </button>
+                                </h3>
+                                <div id="collapsePagos2" class="accordion-collapse collapse"
+                                    data-bs-parent="#accordionPagos">
+                                    <div class="accordion-body">
+                                        <p>Para obtener tu factura:</p>
+                                        <ol>
+                                            <li>Inicia sesión en tu cuenta</li>
+                                            <li>Ve a "Historial de pagos"</li>
+                                            <li>Haz clic en "Descargar factura" junto al pago deseado</li>
+                                        </ol>
+                                        <p class="mb-0"><i class="fas fa-envelope text-info me-2"></i> También recibirás una
+                                            copia por email automáticamente después de cada pago.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Contacto Final -->
                     <div class="card border-0 shadow-sm mt-5 bg-gradient-primary text-white overflow-hidden">
                         <div class="card-body p-5 position-relative">
@@ -279,32 +346,6 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Filtrado de FAQs
-            const faqSearch = document.getElementById('faqSearch');
-            if (faqSearch) {
-                faqSearch.addEventListener('input', function () {
-                    const searchTerm = this.value.toLowerCase();
-                    const accordionItems = document.querySelectorAll('.accordion-item');
-
-                    accordionItems.forEach(item => {
-                        const question = item.querySelector('.accordion-button').textContent.toLowerCase();
-                        const answer = item.querySelector('.accordion-body').textContent.toLowerCase();
-
-                        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
-                            item.style.display = 'block';
-                            // Abre el acordeón si coincide
-                            const collapse = item.querySelector('.accordion-collapse');
-                            if (!collapse.classList.contains('show')) {
-                                const bsCollapse = new bootstrap.Collapse(collapse, { toggle: false });
-                                bsCollapse.show();
-                            }
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-                }); // Cerrar paréntesis y punto y coma aquí
-            }
-
             // Scroll suave para anclas
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
@@ -319,7 +360,7 @@
                 });
             });
 
-            // Configuración avanzada de Tawk.to con autenticación
+            // Configuración avanzada de Tawk.to
             var Tawk_API = Tawk_API || {};
 
             @auth

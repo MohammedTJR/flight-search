@@ -24,28 +24,12 @@
                     <div class="d-flex flex-wrap gap-3">
                         <a href="#definiciones" class="btn btn-outline-light">Definiciones</a>
                         <a href="#uso-servicio" class="btn btn-outline-light">Uso del Servicio</a>
-                        <a href="#responsabilidades" class="btn btn-outline-light">Responsabilidades</a>
+                        <a href="#limitacion" class="btn btn-outline-light">Responsabilidades</a>
                     </div>
                 </div>
                 <div class="col-lg-4 mt-4 mt-lg-0 text-center">
                     <img src="{{ asset('img/terms-document.png') }}" alt="Documento legal" class="img-fluid" style="max-height: 200px;">
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Navigation -->
-    <div class="container sticky-top bg-white shadow-sm">
-        <div class="terms-navigation py-3">
-            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                <a href="#definiciones" class="btn btn-sm btn-outline-primary">1. Definiciones</a>
-                <a href="#uso-servicio" class="btn btn-sm btn-outline-primary">2. Uso del Servicio</a>
-                <a href="#reservas" class="btn btn-sm btn-outline-primary">3. Reservas</a>
-                <a href="#precios" class="btn btn-sm btn-outline-primary">4. Precios</a>
-                <a href="#propiedad" class="btn btn-sm btn-outline-primary">5. Propiedad Intelectual</a>
-                <a href="#limitacion" class="btn btn-sm btn-outline-primary">6. Limitación de Responsabilidad</a>
-                <a href="#modificaciones" class="btn btn-sm btn-outline-primary">7. Modificaciones</a>
-                <a href="#ley-aplicable" class="btn btn-sm btn-outline-primary">8. Ley Aplicable</a>
             </div>
         </div>
     </div>
@@ -429,30 +413,13 @@
                                 <p>Para cuestiones legales:</p>
                                 <address>
                                     <strong>MOTJR</strong><br>
-                                    Calle de la Compañía 5, 28014 Madrid<br>
-                                    <i class="fas fa-envelope me-2"></i> legal@flylow.com<br>
+                                    Gandia, Valencia<br>
+                                    <i class="fas fa-envelope me-2"></i> info@flylow.com<br>
                                     <i class="fas fa-phone-alt me-2"></i> +34 900 123 456
                                 </address>
                             </div>
                         </div>
                     </section>
-
-                    <!-- Acceptance -->
-                    <div class="card border-primary mt-5">
-                        <div class="card-body text-center p-4">
-                            <h3 class="fw-bold mb-3">Aceptación de Términos</h3>
-                            <p class="mb-4">Al utilizar FlyLow, confirmas que:</p>
-                            <ol class="text-start mb-4">
-                                <li>Has leído y comprendido estos Términos</li>
-                                <li>Aceptas cumplir con todas las disposiciones</li>
-                                <li>Reconoces que FlyLow es un servicio de comparación</li>
-                            </ol>
-                            <button class="btn btn-primary px-4" disabled>
-                                <i class="fas fa-check-circle me-2"></i> Confirmo mi aceptación
-                            </button>
-                            <p class="small text-muted mt-2">(El uso continuado del Servicio constituye aceptación)</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -463,18 +430,6 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Sticky navigation
-    const termsNav = document.querySelector('.terms-navigation');
-    if (termsNav) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 200) {
-                termsNav.classList.add('sticky-nav');
-            } else {
-                termsNav.classList.remove('sticky-nav');
-            }
-        });
-    }
-    
     // Smooth scroll for anchors
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {

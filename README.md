@@ -1,6 +1,6 @@
 # Flylow.es - Comparador de Precios de Vuelos
 
-![Logo Flylow]([https://via.placeholder.com/200x50?text=Flylow.es](https://flylow.es/img/favicon.png))
+![Logo Flylow](https://flylow.es/img/favicon.png)
 
 ## Introducción
 

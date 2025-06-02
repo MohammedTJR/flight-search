@@ -10,6 +10,26 @@ let countdown = 60;
 let animationFrame; // Para manejar la animación
 let lastUpdateTime = 0;
 
+function isMobileDevice() {
+    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+}
+
+function shouldShowMobileWarning() {
+    return !localStorage.getItem('mobileWarningShown');
+}
+
+function showMobileWarningIfNeeded() {
+    if (isMobileDevice() && shouldShowMobileWarning()) {
+        const overlay = document.getElementById('mobile-warning-overlay');
+        overlay.style.display = 'flex';
+
+        document.getElementById('mobile-warning-close').addEventListener('click', function () {
+            overlay.style.display = 'none';
+            localStorage.setItem('mobileWarningShown', 'true');
+        });
+    }
+}
+
 const mapLayers = {
     osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
@@ -87,6 +107,7 @@ function initializeMap() {
 
 // Inicializar el mapa
 document.addEventListener('DOMContentLoaded', function () {
+    showMobileWarningIfNeeded();
     initializeMap();
     fetchFlights();
 
@@ -558,7 +579,7 @@ function filterSearchResults() {
 }
 
 // Añadir detección de touch para móviles
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Mejorar la interacción táctil
     if ('ontouchstart' in window) {
         document.querySelectorAll('.aircraft-marker').forEach(marker => {

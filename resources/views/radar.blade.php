@@ -38,7 +38,8 @@
                 </div>
                 <!-- Campo de búsqueda -->
                 <div class="search-container">
-                    <input type="text" id="flight-search" class="form-control" placeholder="Buscar por ICAO24 o Callsign" oninput="filterSearchResults()">
+                    <input type="text" id="flight-search" class="form-control" placeholder="Buscar por ICAO24 o Callsign"
+                        oninput="filterSearchResults()">
                     <button class="btn btn-primary ms-2" onclick="searchFlight()">
                         <i class="fas fa-search"></i>
                     </button>
@@ -95,6 +96,24 @@
             <span class="visually-hidden">Cargando...</span>
         </div>
         <p>Cargando datos de vuelos en tiempo real...</p>
+    </div>
+
+    <div id="mobile-warning-overlay" class="mobile-warning-overlay" style="display: none;">
+        <div class="mobile-warning-container">
+            <div class="mobile-warning-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Aviso importante
+            </div>
+            <div class="mobile-warning-content">
+                El radar de vuelos no está optimizado para dispositivos móviles pequeños. Para una mejor experiencia, te
+                recomendamos abrirlo en un navegador de escritorio o en una tablet.
+                <br><br>
+                Puedes seguir usando la aplicación en tu móvil, pero algunas funciones podrían no funcionar correctamente.
+            </div>
+            <button id="mobile-warning-close" class="mobile-warning-button">
+                Entendido
+            </button>
+        </div>
     </div>
 @endsection
 

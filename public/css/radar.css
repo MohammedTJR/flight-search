@@ -1,16 +1,20 @@
 #map {
-    height: calc(100vh - 180px); /* Ajustado para considerar ambos headers */
+    height: calc(100vh - 180px);
+    /* Ajustado para considerar ambos headers */
     width: 100%;
     z-index: 1;
     margin-top: 0;
-    position: relative; /* Importante: hace que el posicionamiento absoluto de los controles sea relativo a este elemento */
+    position: relative;
+    /* Importante: hace que el posicionamiento absoluto de los controles sea relativo a este elemento */
 }
 
 #map-controls {
     position: absolute;
-    top: 10px; /* Posicionado con respecto al contenedor del mapa */
+    top: 10px;
+    /* Posicionado con respecto al contenedor del mapa */
     right: 10px;
-    z-index: 999; /* Por encima del mapa pero por debajo del panel de detalles */
+    z-index: 999;
+    /* Por encima del mapa pero por debajo del panel de detalles */
     background: transparent;
 }
 
@@ -25,7 +29,7 @@
     border-radius: 4px;
     padding: 8px;
     cursor: pointer;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     width: 40px;
     height: 40px;
     display: flex;
@@ -51,7 +55,7 @@
     top: 45px;
     background: white;
     border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     width: 180px;
     z-index: 1002;
 }
@@ -62,8 +66,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .map-option {
@@ -91,10 +102,12 @@
 
 #flight-details-panel {
     position: fixed;
-    top: 130px; /* Ajustado para considerar ambos headers */
+    top: 130px;
+    /* Ajustado para considerar ambos headers */
     right: -400px;
     width: 380px;
-    height: calc(100vh - 180px); /* Ajustado para considerar ambos headers */
+    height: calc(100vh - 180px);
+    /* Ajustado para considerar ambos headers */
     background-color: white;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -163,8 +176,10 @@
 }
 
 .aircraft-icon {
-    transform-origin: center center; /* Asegura que la rotación sea desde el centro */
-    transition: transform 0.1s linear; /* Suaviza la rotación */
+    transform-origin: center center;
+    /* Asegura que la rotación sea desde el centro */
+    transition: transform 0.1s linear;
+    /* Suaviza la rotación */
     color: #0d6efd;
     font-size: 20px;
     display: inline-block;
@@ -227,7 +242,8 @@
 }
 
 .search-container {
-    position: relative; /* Asegura que los elementos hijos se posicionen en relación a este contenedor */
+    position: relative;
+    /* Asegura que los elementos hijos se posicionen en relación a este contenedor */
     display: flex;
     align-items: center;
     gap: 10px;
@@ -254,7 +270,8 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     /* Ocultar el borde cuando está vacío */
     border: none;
-    display: none; /* Por defecto estará oculto */
+    display: none;
+    /* Por defecto estará oculto */
 }
 
 /* Mostrar el borde solo cuando tenga contenido */
@@ -273,39 +290,108 @@
     background: #f8f9fa;
 }
 
+/* Alert personalizado para móviles */
+.mobile-warning-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.mobile-warning-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.mobile-warning-title {
+    color: #d9534f;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-warning-content {
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.mobile-warning-button {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mobile-warning-button:hover {
+    background-color: #0b5ed7;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Media queries para móviles */
 @media (max-width: 768px) {
     #map {
-        height: calc(100vh - 220px); /* Más espacio para el mapa */
+        height: calc(100vh - 220px);
+        /* Más espacio para el mapa */
     }
-    
+
     .radar-header {
         padding: 8px 10px;
     }
-    
+
     .stats-container {
         gap: 8px;
         justify-content: space-between;
         margin-bottom: 10px;
     }
-    
+
     .stat-card {
         min-width: 80px;
         padding: 6px 8px;
     }
-    
+
     .stat-value {
         font-size: 1rem;
     }
-    
+
     .search-container {
         width: 100%;
     }
-    
+
     .search-container input {
         width: 100%;
     }
-    
+
     /* Panel de detalles para móviles */
     #flight-details-panel {
         top: auto;
@@ -318,12 +404,12 @@
         box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
         transition: bottom 0.3s ease-in-out;
     }
-    
+
     #flight-details-panel.show {
         bottom: 0;
         right: auto;
     }
-    
+
     /* Cabecera deslizable del panel */
     .panel-header {
         padding: 10px;
@@ -332,7 +418,7 @@
         border-bottom: 1px solid #eee;
         position: relative;
     }
-    
+
     .panel-header:after {
         content: "";
         display: block;
@@ -342,19 +428,19 @@
         border-radius: 2px;
         margin: 8px auto 0;
     }
-    
+
     /* Contenido desplazable */
     #flight-details-content {
         height: calc(100% - 50px);
         overflow-y: auto;
         padding-bottom: 20px;
     }
-    
+
     /* Botón de cerrar ajustado para móviles */
     .close-panel {
         top: 5px;
         right: 5px;
-        background: rgba(255,255,255,0.8);
+        background: rgba(255, 255, 255, 0.8);
         border-radius: 50%;
         width: 30px;
         height: 30px;
@@ -362,14 +448,14 @@
         align-items: center;
         justify-content: center;
     }
-    
+
     /* Ajustes para los controles del mapa en móviles */
     #map-controls {
         top: auto;
         bottom: 20px;
         right: 10px;
     }
-    
+
     .refresh-info {
         bottom: 80px;
         left: 10px;
@@ -384,15 +470,15 @@
         min-width: 70px;
         padding: 4px 6px;
     }
-    
+
     .stat-value {
         font-size: 0.9rem;
     }
-    
+
     .stat-label {
         font-size: 0.7rem;
     }
-    
+
     #flight-details-panel {
         height: 65vh;
         bottom: -65vh;

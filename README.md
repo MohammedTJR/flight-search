@@ -1,4 +1,4 @@
-# Flylow.es - Comparador de Precios de Vuelos
+# Flylow.es - Comparador precios de vuelos
 
 ![Logo Flylow](https://flylow.es/img/favicon.png)
 

@@ -78,7 +78,7 @@ APP_NAME="FlyLow"
 
 ```shell script
 composer install
-   npm install
+npm install
 ```
 
 
@@ -95,7 +95,7 @@ php artisan key:generate
 
 ```shell script
 php artisan migrate
-   php artisan db:seed
+php artisan db:seed
 ```
 
 
@@ -127,7 +127,13 @@ La aplicación estará disponible en http://localhost:8000
 - **Permisos de carpetas**
 ```shell script
 chmod -R 777 storage
-  chmod -R 777 bootstrap/cache
+chmod -R 777 bootstrap/cache
+```
+
+- **Acceso a los archivos que se suben**
+```shell script
+rm -rf public/storage
+php artisan storage:link
 ```
 
 
@@ -140,9 +146,9 @@ Si encuentra problemas durante la instalación:
 - **Limpiar cachés**:
 ```shell script
 php artisan config:clear
-  php artisan cache:clear
-  php artisan view:clear
-  php artisan route:clear
+php artisan cache:clear
+php artisan view:clear
+php artisan route:clear
 ```
 
 

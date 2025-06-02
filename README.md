@@ -11,8 +11,6 @@ Flylow.es es una plataforma web diseñada para facilitar la comparación de prec
 - Integración con radar aéreo en tiempo real
 - Historial de precios con análisis de tendencias
 
-![Interfaz de búsqueda](https://via.placeholder.com/800x400?text=Interfaz+de+B%C3%BAsqueda)
-
 Este proyecto ha sido desarrollado como parte del módulo de Proyecto Integrado del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web (DAW), representando una solución realista y útil con potencial de crecimiento en el mercado digital actual.
 
 ## Principales Características
@@ -24,8 +22,6 @@ Este proyecto ha sido desarrollado como parte del módulo de Proyecto Integrado 
 - **Alertas personalizables** de bajadas de precio
 - **Diseño responsive** para todos los dispositivos
 
-![Resultados de búsqueda](https://via.placeholder.com/800x500?text=Resultados+de+B%C3%BAsqueda)
-
 ## Guía de Instalación Local
 
 ### Requisitos Previos
@@ -35,8 +31,6 @@ Este proyecto ha sido desarrollado como parte del módulo de Proyecto Integrado 
 - Node.js y npm
 - MySQL 5.7 o superior
 - Git (opcional)
-
-![Diagrama de arquitectura](https://via.placeholder.com/600x300?text=Arquitectura+del+Sistema)
 
 ### Proceso de Instalación
 
@@ -80,8 +74,6 @@ APP_NAME="FlyLow"
 ```
 
 
-![Configuración del entorno](https://via.placeholder.com/600x300?text=Configuraci%C3%B3n+del+Entorno)
-
 4. **Instalar dependencias**
 
 ```shell script
@@ -107,8 +99,6 @@ php artisan migrate
 ```
 
 
-![Estructura de base de datos](https://via.placeholder.com/600x400?text=Estructura+DB)
-
 7. **Compilar assets**
 
    Para desarrollo:
@@ -131,8 +121,6 @@ php artisan serve
 
 
 La aplicación estará disponible en http://localhost:8000
-
-![Panel de control](https://via.placeholder.com/800x400?text=Panel+de+Control)
 
 ### Configuración Adicional
 
@@ -161,7 +149,5 @@ php artisan config:clear
 - **Verificar versiones** de PHP y Node.js
 - **Comprobar credenciales** de la base de datos
 - **Ajustar permisos** de archivos y carpetas
-
-![FAQ y Ayuda](https://via.placeholder.com/800x400?text=Secci%C3%B3n+de+Ayuda)
 
 Para más información o soporte, contacte con el desarrollador: Mohammed Said Touijar.

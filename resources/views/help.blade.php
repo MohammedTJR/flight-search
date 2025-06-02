@@ -280,7 +280,26 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card border-0 shadow-sm mt-4 bg-light">
+                    <div class="card-body p-4 text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            <i class="fas fa-info-circle fa-lg text-primary me-2"></i>
+                            <h5 class="mb-0 fw-bold">Nota importante sobre este proyecto</h5>
+                        </div>
+                        <p class="mb-0">
+                            Esta aplicación forma parte de un Proyecto de Fin de Ciclo (PFC).
+                            El contenido combina <strong>funcionalidades reales implementadas</strong>,
+                            <strong>características planificadas para desarrollo futuro</strong>
+                            y <strong>elementos ficticios</strong> con fines demostrativos.
+                            Algunos de los datos mostrados son simulados y no representan servicios reales.
+                        </p>
+                    </div>
+                </div>
             </div>
+
+
+
 
             <!-- Contact Help Section -->
             <div class="contact-help bg-light p-5 rounded-3 mb-5">

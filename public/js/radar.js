@@ -40,7 +40,7 @@ const mapLayers = {
         maxZoom: 18
     }),
 
-    opentopomap: L.tileLayer('https://{s}.title.opentopomap.org/{z}/{x}/{y}.png', {
+    opentopomap: L.tileLayer('https://{s}.opentopomap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenTopoMap',
         maxZoom: 17
     }),

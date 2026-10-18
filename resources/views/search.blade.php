@@ -1,7 +1,7 @@
 @extends('plantilla')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/search.css') }}?v={{ filemtime(public_path('css/search.css')) }}">
 @endsection
 
 @section('script')
@@ -200,7 +200,7 @@
 
     @section('scripts')
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-        <script src="{{ asset('js/search.js') }}"></script>
+        <script src="{{ asset('js/search.js') }}?v={{ filemtime(public_path('js/search.js')) }}"></script>
     @endsection
 
 @endsection

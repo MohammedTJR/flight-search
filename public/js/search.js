@@ -160,6 +160,16 @@ jQuery.noConflict();
 
         $('#departure_date').val(tomorrowFormatted);
 
+        // Intercambiar origen y destino
+        $('#swap-airports').on('click', function () {
+            var $departure = $('#departure');
+            var $arrival = $('#arrival');
+            var tmp = $departure.val();
+            $departure.val($arrival.val());
+            $arrival.val(tmp);
+            $('#departure-dropdown, #arrival-dropdown').hide();
+        });
+
         $('#flight-form').submit(function (e) {
             var adultos = parseInt($('#adultos').val());
             var ninos = parseInt($('#ninos').val());

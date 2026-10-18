@@ -11,35 +11,43 @@
 @section('titulo_pagina', 'FlyLow')
 
 @section('contenido')
-    <div class="container-fluid p-0 search-page">
-        <div class="text-center mb-4">
-            <img src="{{ asset('img/banner.jpg') }}" class="img-fluid banner" alt="FlyLow Banner" style="height:20rem">
+    <section class="hero"
+        style="background-image: linear-gradient(to bottom, rgba(10, 31, 56, 0.70) 0%, rgba(10, 31, 56, 0.72) 50%, rgba(10, 31, 56, 0.88) 100%), url('{{ asset('img/banner.jpg') }}');">
+        <div class="hero-content">
+            <h1 class="hero-title animate__animated animate__fadeInDown">Encuentra tu próximo vuelo al mejor precio</h1>
+            <p class="hero-subtitle animate__animated animate__fadeInUp">
+                Compara cientos de aerolíneas y agencias en un solo lugar
+            </p>
+            <div class="hero-badges animate__animated animate__fadeInUp">
+                <span class="hero-badge"><i class="fas fa-circle-check"></i>Comparación imparcial</span>
+                <span class="hero-badge"><i class="fas fa-bolt"></i>Precios en tiempo real</span>
+                <span class="hero-badge"><i class="fas fa-gift"></i>Gratis y sin registro</span>
+            </div>
         </div>
-    </div>
-    <div class="container mt-5 mb-5">
-        <h1 class="text-center">Buscar Vuelos</h1>
-        <div class="card shadow p-4">
+    </section>
+
+    <div class="container search-page">
+        <div class="card search-card shadow-lg">
+            <h2 class="search-card-title"><i class="fas fa-magnifying-glass me-2"></i>Buscar vuelos</h2>
             <form action="/flights" method="GET" id="flight-form">
-                <div class="row mb-3">
+                <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">Escalas:</label>
+                        <label class="form-label"><i class="fas fa-route me-2"></i>Escalas</label>
                         <div class="btn-group w-100" role="group">
                             <input type="radio" class="btn-check" name="stops" id="con_escalas" value="0" checked>
-                            <label class="btn btn-outline-primary border border-secondary w-50" for="con_escalas">Con
-                                escalas</label>
+                            <label class="btn btn-outline-primary w-50" for="con_escalas">Con escalas</label>
                             <input type="radio" class="btn-check" name="stops" id="directo" value="1">
-                            <label class="btn btn-outline-primary border border-secondary w-50"
-                                for="directo">Directo</label>
+                            <label class="btn btn-outline-primary w-50" for="directo">Directo</label>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Pasajeros:</label>
+                        <label class="form-label"><i class="fas fa-users me-2"></i>Pasajeros</label>
                         <button type="button"
                             class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
                             data-bs-toggle="dropdown"
                             data-bs-placement="bottom"
                             title="1 Adulto"
-                            style="min-height: 40px;"
+                            style="min-height: 48px;"
                             aria-expanded="false">
                             <span><i class="fas fa-users me-2"></i>Seleccionar pasajeros</span>
                             <i class="fas fa-chevron-down"></i>
@@ -122,10 +130,9 @@
                     </div>
                 </div>
 
-                <div class="row mb-3">
-
+                <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">Clase:</label>
+                        <label class="form-label"><i class="fas fa-chair me-2"></i>Clase</label>
                         <select name="travel_class" class="form-select">
                             <option value="1">Económica</option>
                             <option value="2">Económica Premium</option>
@@ -134,28 +141,60 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Fecha de salida:</label>
+                        <label class="form-label"><i class="fas fa-calendar-day me-2"></i>Fecha de salida</label>
                         <input type="date" name="date" id="departure_date" class="form-control" required>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 input-container">
-                        <label class="form-label">Origen:</label>
-                        <input type="text" id="departure" name="departure" class="form-control" required autocomplete="off">
+                <div class="od-row">
+                    <div class="od-field input-container">
+                        <label class="form-label"><i class="fas fa-plane-departure me-2"></i>Origen</label>
+                        <input type="text" id="departure" name="departure" class="form-control"
+                            placeholder="Ciudad o aeropuerto de salida" required autocomplete="off">
                         <div id="departure-dropdown" class="autocomplete-dropdown"></div>
                     </div>
-                    <div class="col-md-6 input-container">
-                        <label class="form-label">Destino:</label>
-                        <input type="text" id="arrival" name="arrival" class="form-control" required autocomplete="off">
+                    <button type="button" id="swap-airports" class="swap-btn"
+                        title="Intercambiar origen y destino" aria-label="Intercambiar origen y destino">
+                        <i class="fas fa-right-left"></i>
+                    </button>
+                    <div class="od-field input-container">
+                        <label class="form-label"><i class="fas fa-plane-arrival me-2"></i>Destino</label>
+                        <input type="text" id="arrival" name="arrival" class="form-control"
+                            placeholder="Ciudad o aeropuerto de destino" required autocomplete="off">
                         <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
                     </div>
                 </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 search-submit">
+                        <i class="fas fa-magnifying-glass me-2"></i>Buscar vuelos
+                    </button>
                 </div>
             </form>
+        </div>
+
+        <div class="row benefits g-4 mt-1">
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="fas fa-scale-balanced"></i></div>
+                    <h3 class="benefit-title">Compara en segundos</h3>
+                    <p class="benefit-text">Precios de cientos de aerolíneas y agencias, lado a lado.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="fas fa-satellite-dish"></i></div>
+                    <h3 class="benefit-title">Radar en vivo</h3>
+                    <p class="benefit-text">Sigue los vuelos en tiempo real sobre el mapa.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="fas fa-bell"></i></div>
+                    <h3 class="benefit-title">Alertas de precio</h3>
+                    <p class="benefit-text">Te avisamos cuando baja el precio de tus vuelos favoritos.</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -163,5 +202,5 @@
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
         <script src="{{ asset('js/search.js') }}"></script>
     @endsection
-    
+
 @endsection

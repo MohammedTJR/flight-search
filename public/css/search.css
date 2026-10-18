@@ -1,50 +1,293 @@
-.banner {
-    width: 100%;
-    height: 20rem;
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* ===================== Marca ===================== */
+:root {
+    --brand: #0b7a9e;
+    --brand-rgb: 11, 122, 158;
+    --brand-dark: #095f7c;
 }
 
+/* ===================== Hero ===================== */
+.hero {
+    position: relative;
+    min-height: 440px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-content {
+    max-width: 760px;
+    width: 100%;
+    padding: 2.5rem 1.25rem 7rem;
+    text-align: center;
+    color: #fff;
+}
+
+.hero-title {
+    font-weight: 700;
+    font-size: clamp(1.9rem, 4.5vw, 3.1rem);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 22px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    font-weight: 400;
+    opacity: 0.95;
+    margin-bottom: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 16px rgba(0, 0, 0, 0.5);
+}
+
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1rem;
+    margin-top: 1.5rem;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 2rem;
+    backdrop-filter: blur(4px);
+}
+
+.hero-badge i {
+    color: #5fd3ea;
+}
+
+/* ============ Tarjeta de búsqueda superpuesta ============ */
+.search-page {
+    position: relative;
+    z-index: 2;
+    margin-top: -5.5rem;
+    margin-bottom: 4rem;
+}
+
+.search-card {
+    border: none;
+    border-radius: 1rem;
+    padding: 2rem;
+    background: #fff;
+}
+
+.search-card-title {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: var(--brand);
+    margin-bottom: 1.75rem;
+}
+
+.search-card .form-label {
+    font-weight: 600;
+    color: #344054;
+    margin-bottom: 0.4rem;
+}
+
+/* Inputs y selects */
+.search-card .form-control,
+.search-card .form-select {
+    border: 1px solid #d0d5dd;
+    border-radius: 0.6rem;
+    padding: 0.65rem 0.85rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-card .form-control:focus,
+.search-card .form-select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 0.2rem rgba(var(--brand-rgb), 0.15);
+}
+
+.search-card .form-control::placeholder {
+    color: #98a2b3;
+}
+
+/* Botón de pasajeros a la misma altura visual que los inputs */
+.search-card .btn-group .btn,
+.search-card [data-bs-toggle="dropdown"] {
+    border-radius: 0.6rem;
+}
+
+.search-card .btn-group .btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.search-card .btn-group .btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Botón buscar */
+.search-submit {
+    border-radius: 0.7rem;
+    padding: 0.85rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.3);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.search-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(var(--brand-rgb), 0.38);
+}
+
+/* ============ Intercambiar origen / destino ============ */
+.od-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.od-field {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.swap-btn {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 2px;
+    border-radius: 50%;
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    color: var(--brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.1);
+    transition: transform 0.2s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.swap-btn:hover {
+    background: var(--brand);
+    color: #fff;
+    transform: rotate(180deg);
+}
+
+@media (max-width: 767.98px) {
+    .od-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .swap-btn {
+        align-self: center;
+        margin: 0.25rem 0;
+        transform: rotate(90deg);
+    }
+
+    .swap-btn:hover {
+        transform: rotate(270deg);
+    }
+}
+
+/* ===================== Ventajas ===================== */
+.benefits {
+    margin-top: 2.5rem;
+}
+
+.benefit-card {
+    height: 100%;
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(16, 24, 40, 0.12);
+}
+
+.benefit-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--brand-rgb), 0.1);
+    color: var(--brand);
+    font-size: 1.45rem;
+    margin-bottom: 1rem;
+}
+
+.benefit-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1d2939;
+    margin-bottom: 0.4rem;
+}
+
+.benefit-text {
+    color: #667085;
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+@media (max-width: 575.98px) {
+    .search-card {
+        padding: 1.5rem 1.15rem;
+    }
+
+    .search-page {
+        margin-top: -4rem;
+    }
+}
+
+/* ===================== Autocompletado ===================== */
 .autocomplete-dropdown {
     position: absolute;
     z-index: 9999;
     background-color: #fff;
-    border: 1px solid #ccc;
+    border: 1px solid #d0d5dd;
+    border-radius: 0.6rem;
     width: 100%;
-    max-height: 200px;
+    max-height: 220px;
     overflow-y: auto;
     display: none;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.12);
 }
 
 .autocomplete-dropdown div {
-    padding: 8px;
+    padding: 0.6rem 0.85rem;
     cursor: pointer;
 }
 
 .autocomplete-dropdown div:hover {
-    background-color: #f0f0f0;
+    background-color: rgba(var(--brand-rgb), 0.08);
 }
 
 .input-container {
     position: relative;
 }
 
-input,
-select,
-button {
-    border: 1px solid gray !important;
-    border-radius: 5px;
-    padding: 8px;
-}
-
-/* Estilos para el selector de pasajeros */
+/* ============ Selector de pasajeros ============ */
 .search-page .dropdown-menu {
-    /* Eliminar el width fijo */
     width: auto;
-    min-width: 100%; /* Asegura que como mínimo tenga el ancho del botón */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 0.5rem; /* Añade un pequeño espacio entre el botón y el dropdown */
+    min-width: 100%;
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.15);
+    margin-top: 0.5rem;
 }
 
 .search-page .dropdown-menu .p-4 {
@@ -65,9 +308,9 @@ button {
 .search-page .dropdown-menu .quantity-selector input {
     width: 40px;
     text-align: center;
-    border: 1px solid #dee2e6 !important;
-    border-radius: 4px;
-    padding: 4px !important;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 4px;
     background-color: #fff;
 }
 
@@ -80,16 +323,16 @@ button {
 .quantity-selector input {
     width: 40px;
     text-align: center;
-    border: 1px solid #dee2e6 !important;
-    border-radius: 4px;
-    padding: 4px !important;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 4px;
     background-color: #fff;
 }
 
 .quantity-selector button {
     width: 32px;
     height: 32px;
-    padding: 0 !important;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;

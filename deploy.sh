@@ -2,39 +2,77 @@
 #
 # Script de despliegue de FlyLow en producción.
 # Lo ejecuta GitHub Actions por SSH tras cada push a main
-# (después de hacer `git pull`). También se puede lanzar a mano.
+# (el workflow hace `git pull` ANTES de llamar a este script).
+#
+# Optimizado: solo ejecuta cada paso si los ficheros relevantes
+# cambiaron en el último pull, para que los despliegues sean rápidos.
 #
 set -euo pipefail
 
 cd /var/www/flight-search
 
-echo "==> Rama y commit actual"
+echo "==> Commit desplegado"
 git log --oneline -1
 
-# Dependencias PHP (solo si composer está disponible)
-if command -v composer >/dev/null 2>&1; then
-    echo "==> composer install"
-    composer install --no-dev --optimize-autoloader --no-interaction
+# Ficheros cambiados en el último pull (HEAD@{1} = estado previo al pull).
+# Si no se puede determinar, se hace un despliegue completo por seguridad.
+CHANGED="$(git diff --name-only 'HEAD@{1}' HEAD 2>/dev/null || true)"
+if [ -z "$CHANGED" ]; then
+    echo "   (no se detectaron cambios concretos; despliegue completo)"
+    FULL=1
 else
-    echo "!! composer no encontrado, se omite (instálalo si cambian dependencias PHP)"
+    FULL=0
+    echo "   Cambios:"
+    echo "$CHANGED" | sed 's/^/     - /'
 fi
 
-# Dependencias Node + compilación de assets (vite es devDependency, por eso se instala todo)
-echo "==> npm ci + build"
-npm ci
-npm run build
+changed() { [ "$FULL" = "1" ] || echo "$CHANGED" | grep -qE "$1"; }
 
-# Migraciones de base de datos (si las hay)
-echo "==> migraciones"
-php artisan migrate --force
+# --- Dependencias PHP: solo si cambió composer.lock/json ---
+if changed '^composer\.(json|lock)$'; then
+    if command -v composer >/dev/null 2>&1; then
+        echo "==> composer install"
+        composer install --no-dev --optimize-autoloader --no-interaction
+    else
+        echo "!! composer no encontrado, se omite"
+    fi
+else
+    echo "==> composer: sin cambios, se omite"
+fi
 
-# Cachés de Laravel
+# --- Assets: build solo si cambiaron las fuentes de Vite o sus configs ---
+NEED_BUILD=0
+if changed '^(resources/(sass|js)/|vite\.config\.js|tailwind\.config\.js|postcss\.config\.js|package(-lock)?\.json)'; then
+    NEED_BUILD=1
+fi
+
+if [ "$NEED_BUILD" = "1" ]; then
+    # npm install incremental si cambiaron las dependencias o falta node_modules
+    if changed '^package(-lock)?\.json$' || [ ! -d node_modules ]; then
+        echo "==> npm install"
+        npm install --no-audit --no-fund
+    fi
+    echo "==> npm run build"
+    npm run build
+else
+    echo "==> assets: sin cambios, no se recompila"
+fi
+
+# --- Migraciones: solo si hay cambios en database/migrations ---
+if changed '^database/migrations/'; then
+    echo "==> migraciones"
+    php artisan migrate --force
+else
+    echo "==> migraciones: sin cambios, se omite"
+fi
+
+# --- Cachés de Laravel (baratas, siempre) ---
 echo "==> cachés"
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Recargar PHP-FPM para limpiar opcache y servir el código nuevo
+# --- Recargar PHP-FPM para limpiar opcache ---
 echo "==> recargar php-fpm"
 systemctl reload php8.3-fpm 2>/dev/null || true
 

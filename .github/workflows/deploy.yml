@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch: {}
 
+# Evita que dos despliegues se solapen; los encola en orden.
+concurrency:
+  group: deploy-produccion
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: Desplegar por SSH

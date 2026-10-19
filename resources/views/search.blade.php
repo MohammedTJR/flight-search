@@ -52,12 +52,12 @@
                             <span><i class="fas fa-users me-2"></i>Seleccionar pasajeros</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
-                        <div class="dropdown-menu p-4" data-bs-auto-close="outside">
+                        <div class="dropdown-menu passenger-menu" data-bs-auto-close="outside">
                             <div class="passenger-type mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong><i class="fas fa-user me-2"></i>Adultos</strong>
-                                        <div class="text-muted small">(12+ años)</div>
+                                        <span class="passenger-age">12+ años</span>
                                     </div>
                                     <div class="quantity-selector">
                                         <button type="button" class="btn btn-outline-secondary btn-sm"
@@ -73,7 +73,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong><i class="fas fa-child me-2"></i>Niños</strong>
-                                        <div class="text-muted small">(2-11 años)</div>
+                                        <span class="passenger-age">2-11 años</span>
                                     </div>
                                     <div class="quantity-selector">
                                         <button type="button" class="btn btn-outline-secondary btn-sm"
@@ -89,7 +89,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong><i class="fas fa-baby me-2"></i>Bebés con asiento</strong>
-                                        <div class="text-muted small">(0-1 año)</div>
+                                        <span class="passenger-age">0-1 año</span>
                                     </div>
                                     <div class="quantity-selector">
                                         <button type="button" class="btn btn-outline-secondary btn-sm"
@@ -106,7 +106,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong><i class="fas fa-baby-carriage me-2"></i>Bebés en regazo</strong>
-                                        <div class="text-muted small">(0-1 año)</div>
+                                        <span class="passenger-age">0-1 año</span>
                                     </div>
                                     <div class="quantity-selector">
                                         <button type="button" class="btn btn-outline-secondary btn-sm"
@@ -149,8 +149,9 @@
                 <div class="od-row">
                     <div class="od-field input-container">
                         <label class="form-label"><i class="fas fa-plane-departure me-2"></i>Origen</label>
-                        <input type="text" id="departure" name="departure" class="form-control"
+                        <input type="text" id="departure" class="form-control"
                             placeholder="Ciudad o aeropuerto de salida" required autocomplete="off">
+                        <input type="hidden" name="departure" id="departure_code">
                         <div id="departure-dropdown" class="autocomplete-dropdown"></div>
                     </div>
                     <button type="button" id="swap-airports" class="swap-btn"
@@ -159,8 +160,9 @@
                     </button>
                     <div class="od-field input-container">
                         <label class="form-label"><i class="fas fa-plane-arrival me-2"></i>Destino</label>
-                        <input type="text" id="arrival" name="arrival" class="form-control"
+                        <input type="text" id="arrival" class="form-control"
                             placeholder="Ciudad o aeropuerto de destino" required autocomplete="off">
+                        <input type="hidden" name="arrival" id="arrival_code">
                         <div id="arrival-dropdown" class="autocomplete-dropdown"></div>
                     </div>
                 </div>

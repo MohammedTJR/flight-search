@@ -19,15 +19,29 @@ class RadarController extends Controller
     /**
      * Obtener datos de vuelos (API)
      */
-    public function getFlights()
+    public function getFlights(Request $request)
     {
-        return Cache::remember('opensky_flights', 60, function () {
+        // Bounding box del área visible enviado por el cliente (con valores por
+        // defecto para España). Se recorta a los rangos válidos del mundo.
+        $lamin = max(-90.0, min(90.0, (float) $request->query('lamin', 35.0)));
+        $lamax = max(-90.0, min(90.0, (float) $request->query('lamax', 44.0)));
+        $lomin = max(-180.0, min(180.0, (float) $request->query('lomin', -10.0)));
+        $lomax = max(-180.0, min(180.0, (float) $request->query('lomax', 5.0)));
+
+        // Clave de caché por zona (redondeada) para agrupar peticiones similares
+        // y respetar el límite de la API de OpenSky.
+        $key = 'opensky_' . implode('_', array_map(
+            fn ($v) => round($v, 1),
+            [$lamin, $lamax, $lomin, $lomax]
+        ));
+
+        return Cache::remember($key, 30, function () use ($lamin, $lamax, $lomin, $lomax) {
             try {
                 $response = Http::timeout(15)->get('https://opensky-network.org/api/states/all', [
-                    'lamin' => 35.0,
-                    'lamax' => 44.0,
-                    'lomin' => -10.0,
-                    'lomax' => 5.0
+                    'lamin' => $lamin,
+                    'lamax' => $lamax,
+                    'lomin' => $lomin,
+                    'lomax' => $lomax,
                 ]);
 
                 if ($response->successful()) {
@@ -45,6 +59,57 @@ class RadarController extends Controller
                 ];
             }
         });
+    }
+
+    /**
+     * Obtener la ruta (origen/destino) de un vuelo a partir de su callsign,
+     * usando la base de datos pública de rutas adsbdb.com. Se cachea 6h.
+     */
+    public function getRoute($callsign)
+    {
+        $callsign = strtoupper(trim($callsign));
+
+        if ($callsign === '') {
+            return response()->json(['route' => null]);
+        }
+
+        $route = Cache::remember('route_' . $callsign, 21600, function () use ($callsign) {
+            try {
+                $resp = Http::timeout(10)->get("https://api.adsbdb.com/v0/callsign/{$callsign}");
+
+                if ($resp->successful()) {
+                    $fr = $resp->json()['response']['flightroute'] ?? null;
+                    if ($fr && isset($fr['origin'], $fr['destination'])) {
+                        return [
+                            'origin' => $this->mapAirport($fr['origin']),
+                            'destination' => $this->mapAirport($fr['destination']),
+                        ];
+                    }
+                }
+
+                return null;
+            } catch (\Exception $e) {
+                return null;
+            }
+        });
+
+        return response()->json(['route' => $route]);
+    }
+
+    /**
+     * Normaliza los datos de un aeropuerto devueltos por adsbdb.
+     */
+    private function mapAirport(array $a): array
+    {
+        return [
+            'name' => $a['name'] ?? null,
+            'iata' => $a['iata_code'] ?? null,
+            'icao' => $a['icao_code'] ?? null,
+            'municipality' => $a['municipality'] ?? null,
+            'country' => $a['country_iso_name'] ?? null,
+            'lat' => $a['latitude'] ?? null,
+            'lng' => $a['longitude'] ?? null,
+        ];
     }
 
     /**

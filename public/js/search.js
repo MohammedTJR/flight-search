@@ -50,8 +50,8 @@ jQuery.noConflict();
                         // Actualiza el campo de salida con el aeropuerto más cercano.
                         $('#departure').val(closestAirport.name + ' (' + closestAirport
                             .city + ', ' + closestAirport.iata + ')');
-                        // Almacena el código IATA del aeropuerto más cercano en un campo oculto.
-                        $("input[name='departure']").val(closestAirport.iata);
+                        // Guarda solo el código IATA en el campo oculto (lo que se envía).
+                        $('#departure_code').val(closestAirport.iata);
                     });
                 } else {
                     // Muestra un mensaje de error si la geolocalización no es soportada.
@@ -97,6 +97,8 @@ jQuery.noConflict();
 
         $('#departure').on('input', function () {
             var searchText = $(this).val().toLowerCase();
+            // Al teclear se invalida la selección previa: el código se fija solo al elegir de la lista.
+            $('#departure_code').val('');
 
             if (searchText.length > 0) {
                 $('#departure-dropdown').show();
@@ -116,6 +118,7 @@ jQuery.noConflict();
 
         $('#arrival').on('input', function () {
             var searchText = $(this).val().toLowerCase();
+            $('#arrival_code').val('');
 
             if (searchText.length > 0) {
                 $('#arrival-dropdown').show();
@@ -134,21 +137,15 @@ jQuery.noConflict();
         });
 
         $(document).on('click', '#departure-dropdown div', function () {
-            var selectedText = $(this).text();
-            var inputId = 'departure';
-            $('#' + inputId).val(selectedText);
+            $('#departure').val($(this).text());              // nombre completo (visible)
+            $('#departure_code').val($(this).data('iata'));   // solo el código (se envía)
             $('#departure-dropdown').hide();
-
-            $("input[name='departure']").val($(this).data('iata'));
         });
 
         $(document).on('click', '#arrival-dropdown div', function () {
-            var selectedText = $(this).text();
-            var inputId = 'arrival';
-            $('#' + inputId).val(selectedText);
+            $('#arrival').val($(this).text());                // nombre completo (visible)
+            $('#arrival_code').val($(this).data('iata'));     // solo el código (se envía)
             $('#arrival-dropdown').hide();
-
-            $("input[name='arrival']").val($(this).data('iata'));
         });
 
         let today = new Date().toISOString().split('T')[0];
@@ -160,17 +157,34 @@ jQuery.noConflict();
 
         $('#departure_date').val(tomorrowFormatted);
 
-        // Intercambiar origen y destino
+        // Intercambiar origen y destino (texto visible y código oculto)
         $('#swap-airports').on('click', function () {
-            var $departure = $('#departure');
-            var $arrival = $('#arrival');
-            var tmp = $departure.val();
-            $departure.val($arrival.val());
-            $arrival.val(tmp);
+            var $d = $('#departure'), $a = $('#arrival');
+            var tmpText = $d.val();
+            $d.val($a.val());
+            $a.val(tmpText);
+
+            var $dc = $('#departure_code'), $ac = $('#arrival_code');
+            var tmpCode = $dc.val();
+            $dc.val($ac.val());
+            $ac.val(tmpCode);
+
             $('#departure-dropdown, #arrival-dropdown').hide();
         });
 
         $('#flight-form').submit(function (e) {
+            // Debe haberse seleccionado origen y destino de la lista (para tener el código IATA).
+            if (!$('#departure_code').val() || !$('#arrival_code').val()) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Selecciona el origen y el destino de la lista de sugerencias.',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
             var adultos = parseInt($('#adultos').val());
             var ninos = parseInt($('#ninos').val());
             var bebesAsiento = parseInt($('#bebes_asiento').val());
@@ -259,21 +273,7 @@ jQuery.noConflict();
             }
         }
 
-        // Ajustar el dropdown al abrir
-        $('[data-bs-toggle="dropdown"]').on('shown.bs.dropdown', function () {
-            const button = $(this);
-            const dropdown = $(this).next('.dropdown-menu');
-            dropdown.css('width', button.outerWidth());
-        });
-
-        // Reajustar en caso de cambio de tamaño de ventana
-        $(window).resize(function () {
-            const activeDropdown = $('.dropdown-menu.show');
-            if (activeDropdown.length) {
-                const button = activeDropdown.prev('[data-bs-toggle="dropdown"]');
-                activeDropdown.css('width', button.outerWidth());
-            }
-        });
+        // El ancho del desplegable lo controla el CSS (ancho fijo compacto)
 
         // Asignar las funciones a los botones
         window.updateQuantity = updateQuantity;

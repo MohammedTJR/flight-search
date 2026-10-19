@@ -5,10 +5,56 @@ let markers = {};
 let flightPaths = {}; // Para almacenar trayectorias
 let selectedFlight = null;
 let followFlight = null; // ICAO24 del avión que se está siguiendo
+let routeFlown = null;     // Tramo recorrido (origen -> avión)
+let routeRemain = null;    // Tramo restante (avión -> destino)
+let routeMarkers = [];     // Marcadores de los aeropuertos de la ruta
+let currentRoute = null;   // Datos de la ruta actual {origin, destination}
+let flightTrail = [];      // Posiciones reales observadas del avión (giros reales)
+let trailIcao = null;      // ICAO24 al que pertenece flightTrail
+const routeCache = {};     // Caché de rutas por callsign (evita repetir peticiones)
+let currentRouteCallsign = null; // Callsign cuya ruta se está mostrando
+let routeDrawnFor = null;  // Callsign cuya ruta ya está dibujada (evita redibujar)
 let updateTimer;
 let countdown = 60;
 let animationFrame; // Para manejar la animación
 let lastUpdateTime = 0;
+
+// --- Radar mundial: carga por zona visible ---
+const MIN_ZOOM_FOR_FLIGHTS = 6; // Por debajo de este zoom no se dibujan aviones
+const MAX_FLIGHTS = 1200;        // Tope de seguridad de marcadores por carga
+let moveDebounce = null;
+
+// Elimina todos los marcadores del mapa
+function clearAllMarkers() {
+    Object.keys(markers).forEach(icao24 => {
+        map.removeLayer(markers[icao24]);
+        delete markers[icao24];
+    });
+    if (selectedFlight) {
+        closeFlightDetails();
+        selectedFlight = null;
+    }
+}
+
+// Muestra/oculta el aviso de "acércate para ver vuelos"
+function toggleZoomHint(show) {
+    let hint = document.getElementById('zoom-hint');
+    if (show) {
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.id = 'zoom-hint';
+            hint.innerHTML = '<i class="fas fa-magnifying-glass-plus me-2"></i>Acércate para ver los vuelos de la zona';
+            hint.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:1000;' +
+                'background:rgba(10,31,56,0.85);color:#fff;padding:0.55rem 1rem;border-radius:2rem;' +
+                'font-size:0.9rem;display:flex;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,0.25);' +
+                'pointer-events:none;white-space:nowrap;';
+            document.getElementById('map').appendChild(hint);
+        }
+        hint.style.display = 'flex';
+    } else if (hint) {
+        hint.style.display = 'none';
+    }
+}
 
 function isMobileDevice() {
     return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
@@ -57,6 +103,15 @@ function initializeMap() {
 
     // Capa por defecto
     mapLayers.osm.addTo(map);
+
+    // Al mover o hacer zoom, recargar los aviones del nuevo área visible (con debounce)
+    map.on('moveend', function () {
+        clearTimeout(moveDebounce);
+        moveDebounce = setTimeout(function () {
+            countdown = 60;
+            fetchFlights();
+        }, 1000);
+    });
 
     // Controlador del botón - versión más robusta
     const toggleBtn = document.getElementById('toggle-map-style');
@@ -193,29 +248,69 @@ function animateFlights() {
         }
     }
 
+    // Recolocar la ruta para que pase por la posición actual del avión
+    if (currentRoute && selectedFlight) {
+        updateRouteGeometry();
+    }
+
     animationFrame = requestAnimationFrame(animateFlights);
 }
 
-// Modificar fetchFlights para limpiar la animación previa
+// Carga los vuelos del área visible (o avisa si el zoom es demasiado bajo)
 function fetchFlights() {
-    if (Object.keys(markers).length === 0) {
-        document.getElementById('loading-overlay').style.display = 'flex';
-    }
-
     // Cancelar animación previa para evitar acumulación
     if (animationFrame) {
         cancelAnimationFrame(animationFrame);
     }
 
-    fetch('/api/radar')
+    // Zoom mínimo: con el mundo entero habría demasiados aviones, así que
+    // por debajo del umbral no se cargan y se muestra un aviso.
+    if (map.getZoom() < MIN_ZOOM_FOR_FLIGHTS) {
+        // Quitar todos los aviones salvo el seleccionado/seguido, para no perderlo
+        // ni su ruta al alejar el zoom (p. ej. para ver el trayecto completo).
+        Object.keys(markers).forEach(icao24 => {
+            if (icao24 !== selectedFlight && icao24 !== followFlight) {
+                map.removeLayer(markers[icao24]);
+                delete markers[icao24];
+            }
+        });
+        updateStatistics(Object.keys(markers).map(k => markers[k].flightData));
+        document.getElementById('loading-overlay').style.display = 'none';
+        toggleZoomHint(true);
+        // Mantener la animación (y la ruta) si queda algún avión
+        lastUpdateTime = performance.now();
+        animateFlights();
+        return;
+    }
+    toggleZoomHint(false);
+
+    if (Object.keys(markers).length === 0) {
+        document.getElementById('loading-overlay').style.display = 'flex';
+    }
+
+    // Bounding box del área visible, recortado a rangos válidos del mundo
+    const b = map.getBounds();
+    const lamin = Math.max(-90, b.getSouth());
+    const lamax = Math.min(90, b.getNorth());
+    const lomin = Math.max(-180, b.getWest());
+    const lomax = Math.min(180, b.getEast());
+    const url = `/api/radar?lamin=${lamin.toFixed(4)}&lamax=${lamax.toFixed(4)}` +
+        `&lomin=${lomin.toFixed(4)}&lomax=${lomax.toFixed(4)}`;
+
+    fetch(url)
         .then(response => {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
         })
         .then(data => {
             if (data.error) throw new Error(data.error);
-            updateFlights(data.states || []);
-            updateStatistics(data.states || []);
+            // Tope de seguridad por si una zona muy densa devuelve demasiados
+            let states = data.states || [];
+            if (states.length > MAX_FLIGHTS) {
+                states = states.slice(0, MAX_FLIGHTS);
+            }
+            updateFlights(states);
+            updateStatistics(states);
             document.getElementById('loading-overlay').style.display = 'none';
 
             const now = new Date();
@@ -305,6 +400,16 @@ function updateFlights(flightData) {
                 // Actualizar datos de vuelo
                 markers[icao24].flightData = flight;
 
+                // Registrar la posición real del avión seleccionado (giros reales)
+                if (icao24 === selectedFlight) {
+                    if (trailIcao !== selectedFlight) {
+                        flightTrail = [];
+                        trailIcao = selectedFlight;
+                    }
+                    flightTrail.push([latitude, longitude]);
+                    if (flightTrail.length > 300) flightTrail.shift();
+                }
+
                 // Actualizar rotación del marcador
                 if (trueTrack !== null) {
                     const iconElement = markers[icao24].getElement();
@@ -366,13 +471,11 @@ function updateFlights(flightData) {
     // Eliminar marcadores inactivos
     Object.keys(markers).forEach(icao24 => {
         if (!activeFlights.has(icao24)) {
+            // No eliminar el avión seleccionado o seguido aunque no venga en los
+            // datos del área visible: así no se pierde al hacer zoom o refrescar.
+            if (icao24 === selectedFlight || icao24 === followFlight) return;
             map.removeLayer(markers[icao24]);
             delete markers[icao24];
-
-            if (selectedFlight === icao24) {
-                closeFlightDetails();
-                selectedFlight = null;
-            }
         }
     });
 }
@@ -384,6 +487,127 @@ function togglePanel() {
     } else {
         panel.classList.add('show');
     }
+}
+
+// Quita la ruta (tramos y marcadores de aeropuertos) del mapa
+function clearRoute() {
+    if (routeFlown) { map.removeLayer(routeFlown); routeFlown = null; }
+    if (routeRemain) { map.removeLayer(routeRemain); routeRemain = null; }
+    routeMarkers.forEach(m => map.removeLayer(m));
+    routeMarkers = [];
+    currentRoute = null;
+    flightTrail = [];
+    trailIcao = null;
+    routeDrawnFor = null;
+}
+
+// Dibuja la ruta en dos tramos (origen -> avión -> destino) con los aeropuertos
+function drawRoute(route) {
+    clearRoute();
+    if (!route || !route.origin || !route.destination) return;
+
+    const o = route.origin, d = route.destination;
+    if (o.lat == null || o.lng == null || d.lat == null || d.lng == null) return;
+
+    currentRoute = route;
+
+    // Tramo recorrido (origen -> giros reales -> avión): línea sólida
+    routeFlown = L.polyline([], { color: '#0b7a9e', weight: 3, opacity: 0.9 }).addTo(map);
+    // Tramo restante (avión -> destino): discontinua y más tenue
+    routeRemain = L.polyline([], {
+        color: '#0b7a9e', weight: 2.5, opacity: 0.55, dashArray: '8, 8'
+    }).addTo(map);
+
+    [[o, 'Origen'], [d, 'Destino']].forEach(([ap, label]) => {
+        const m = L.circleMarker([ap.lat, ap.lng], {
+            radius: 6, color: '#0b7a9e', fillColor: '#fff', fillOpacity: 1, weight: 2
+        }).addTo(map);
+        m.bindTooltip(`${label}: ${ap.name || ap.iata || ''}`, { direction: 'top' });
+        routeMarkers.push(m);
+    });
+
+    updateRouteGeometry();
+}
+
+// Recoloca los tramos para que la ruta pase por la posición actual del avión
+function updateRouteGeometry() {
+    if (!currentRoute || !routeFlown || !routeRemain) return;
+
+    const o = currentRoute.origin, d = currentRoute.destination;
+    const m = selectedFlight && markers[selectedFlight];
+
+    if (m) {
+        const p = m.getLatLng();
+        // Recorrido: origen -> giros reales observados -> avión
+        routeFlown.setLatLngs([[o.lat, o.lng], ...flightTrail, [p.lat, p.lng]]);
+        // Restante: avión -> destino
+        routeRemain.setLatLngs([[p.lat, p.lng], [d.lat, d.lng]]);
+    } else {
+        // Sin avión localizado: línea directa origen -> destino
+        routeFlown.setLatLngs([[o.lat, o.lng], [d.lat, d.lng]]);
+        routeRemain.setLatLngs([]);
+    }
+}
+
+// HTML de la sección de ruta para el panel de detalles
+function renderRouteSection(route) {
+    if (route === 'loading') {
+        return '<div class="text-muted small"><i class="fas fa-spinner fa-spin me-2"></i>Buscando ruta...</div>';
+    }
+    if (!route) {
+        return '<div class="text-muted small"><i class="fas fa-circle-info me-2"></i>Ruta no disponible para este vuelo.</div>';
+    }
+    const ap = (a) => `${a.name || 'Aeropuerto'}${a.iata ? ' (' + a.iata + ')' : ''}` +
+        (a.municipality ? `<div class="text-muted small">${a.municipality}${a.country ? ', ' + a.country : ''}</div>` : '');
+    return `
+        <div class="detail-row">
+            <div class="detail-label"><i class="fas fa-plane-departure me-2"></i>Origen:</div>
+            <div class="detail-value">${ap(route.origin)}</div>
+        </div>
+        <div class="detail-row">
+            <div class="detail-label"><i class="fas fa-plane-arrival me-2"></i>Destino:</div>
+            <div class="detail-value">${ap(route.destination)}</div>
+        </div>`;
+}
+
+// Carga (y cachea) la ruta de un callsign, actualiza el panel y dibuja la línea
+function loadRoute(callsign) {
+    callsign = (callsign || '').trim();
+    currentRouteCallsign = callsign;
+
+    const apply = (route) => {
+        // Si el usuario ya cambió de avión, no pisar el panel
+        if (currentRouteCallsign !== callsign) return;
+        const section = document.getElementById('route-section');
+        if (section) section.innerHTML = renderRouteSection(route);
+        // Dibujar la ruta solo en una selección nueva, no en cada refresco del
+        // panel (así no se borra el rastro de giros reales acumulado).
+        if (routeDrawnFor !== callsign) {
+            drawRoute(route);
+            routeDrawnFor = route ? callsign : null;
+        }
+    };
+
+    if (!callsign || callsign === 'N/A') {
+        apply(null);
+        return;
+    }
+
+    if (routeCache[callsign] !== undefined) {
+        apply(routeCache[callsign]);
+        return;
+    }
+
+    fetch(`/api/radar/route/${encodeURIComponent(callsign)}`)
+        .then(r => r.ok ? r.json() : { route: null })
+        .then(data => {
+            routeCache[callsign] = data.route || null;
+            apply(routeCache[callsign]);
+        })
+        .catch(() => {
+            routeCache[callsign] = null;
+            apply(null);
+        });
 }
 
 function showFlightDetails(flight) {
@@ -410,6 +634,11 @@ function showFlightDetails(flight) {
         <div class="flight-title">
             <h4><i class="fas fa-plane me-2"></i>${callsign}</h4>
             <p class="mb-0 text-muted">${icao24.toUpperCase()} - ${originCountry}</p>
+        </div>
+
+        <div class="info-section">
+            <h5><i class="fas fa-route me-2"></i>Ruta</h5>
+            <div id="route-section">${renderRouteSection('loading')}</div>
         </div>
 
         <div class="info-section">
@@ -478,6 +707,9 @@ function showFlightDetails(flight) {
     // Actualizar contenido y mostrar panel
     document.getElementById('flight-details-content').innerHTML = detailsHTML;
     document.getElementById('flight-details-panel').classList.add('show');
+
+    // Cargar la ruta origen -> destino (por callsign) y dibujarla en el mapa
+    loadRoute(callsign);
 }
 
 function closeFlightDetails() {
@@ -490,6 +722,8 @@ function closeFlightDetails() {
     }
 
     followFlight = null; // Desactivar el seguimiento
+    currentRouteCallsign = null;
+    clearRoute(); // Quitar la ruta del mapa
 }
 
 function centerOnFlight(icao24) {

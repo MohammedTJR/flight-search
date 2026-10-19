@@ -116,5 +116,6 @@ Route::get('/radar', [RadarController::class, 'index'])->name('radar');
 
 Route::prefix('api/radar')->group(function () {
     Route::get('/', [RadarController::class, 'getFlights']);
+    Route::get('/route/{callsign}', [RadarController::class, 'getRoute']);
     Route::get('/{icao24}', [RadarController::class, 'getFlightDetails']);
 });

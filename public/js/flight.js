@@ -1,83 +1,91 @@
 document.addEventListener("DOMContentLoaded", function () {
     const { priceData, priceLevel, priceRange } = window.flightPrices;
 
-    // Formatea el nivel de precio con la primera letra en mayúscula
-    const level = priceLevel.charAt(0).toUpperCase() + priceLevel.slice(1);
-    document.getElementById("priceLevel").innerText = level;
-    const priceLevelElement = document.getElementById("priceLevel");
-    let color;
+    // Nivel de precio (la API lo devuelve en inglés): etiqueta en español, color y modificador de estilo
+    const niveles = {
+        low: { texto: "Bajo", color: "#10b981", icono: "fa-arrow-trend-down", clase: "is-low" },
+        typical: { texto: "Habitual", color: "#f59e0b", icono: "fa-minus", clase: "is-typical" },
+        high: { texto: "Alto", color: "#ef4444", icono: "fa-arrow-trend-up", clase: "is-high" },
+    };
+    const nivel = niveles[String(priceLevel).toLowerCase()];
+    let color = "#0ea5e9";
 
-    // Asigna color e ícono según el nivel de precios
-    if (level === "Low") {
-        color = "green";
-        const downIcon = document.createElement("i");
-        downIcon.classList.add("fa-solid", "fa-arrow-trend-down");
-        downIcon.style.color = "#00ff00";
-        priceLevelElement.appendChild(document.createTextNode(" "));
-        priceLevelElement.appendChild(downIcon);
-    } else if (level === "Typical") {
-        color = "orange";
-        const icon = document.createElement("i");
-        icon.classList.add("fa-solid", "fa-minus");
-        icon.style.color = "#ff6600";
-        priceLevelElement.appendChild(document.createTextNode(" "));
-        priceLevelElement.appendChild(icon);
-    } else if (level === "High") {
-        color = "red";
-        const upIcon = document.createElement("i");
-        upIcon.classList.add("fa-solid", "fa-arrow-trend-up");
-        upIcon.style.color = "#ff0000";
-        priceLevelElement.appendChild(document.createTextNode(" "));
-        priceLevelElement.appendChild(upIcon);
+    const priceLevelElement = document.getElementById("priceLevel");
+    if (priceLevelElement) {
+        if (nivel) {
+            color = nivel.color;
+            priceLevelElement.textContent = nivel.texto + " ";
+            const icon = document.createElement("i");
+            icon.classList.add("fa-solid", nivel.icono);
+            priceLevelElement.appendChild(icon);
+            const pill = document.getElementById("priceLevelPill");
+            if (pill) pill.classList.add(nivel.clase);
+        } else {
+            priceLevelElement.textContent = priceLevel;
+        }
     }
 
     // Muestra el rango de precios o un mensaje si no hay datos
-    document.getElementById("priceRange").innerText = priceRange.length === 2 ?
-        `${priceRange[0]} - ${priceRange[1]}` : "No disponible";
-
-    if (priceData.length === 0) {
-        console.warn("No hay datos de precios.");
-        return; // Evita ejecutar el gráfico si no hay datos
+    const priceRangeElement = document.getElementById("priceRange");
+    if (priceRangeElement) {
+        priceRangeElement.textContent = priceRange.length === 2 ?
+            `${priceRange[0]} - ${priceRange[1]}` : "No disponible";
     }
 
-    let currentIndex = priceData.length - 1;
+    const canvas = document.getElementById("priceChart");
+    if (!canvas || priceData.length === 0) {
+        return; // Sin gráfico o sin datos de precios
+    }
 
     // Formatea las fechas de los datos de precios
     const labels = priceData.map(entry => {
         const date = new Date(entry[0] * 1000);
-        return date.toLocaleDateString();
+        return date.toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
     });
-
     const prices = priceData.map(entry => entry[1]);
 
-    // Renderiza el gráfico de precios
-    const ctx = document.getElementById("priceChart").getContext("2d");
-    let chart = new Chart(ctx, {
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, "rgba(14, 165, 233, 0.25)");
+    gradient.addColorStop(1, "rgba(14, 165, 233, 0)");
+
+    new Chart(ctx, {
         type: "line",
         data: {
-            labels: labels.slice(0, currentIndex + 1),
+            labels: labels,
             datasets: [{
-                label: "Precio Histórico (€)",
-                data: prices.slice(0, currentIndex + 1),
+                label: "Precio histórico (€)",
+                data: prices,
                 borderColor: color,
-                backgroundColor: "rgba(0, 0, 255, 0.1)",
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                tension: 0.35,
                 fill: true
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: "index" },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#060d19",
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: { label: item => `${item.parsed.y} €` }
+                }
+            },
             scales: {
                 x: {
-                    title: {
-                        display: true,
-                        text: "Fecha"
-                    }
+                    grid: { display: false },
+                    ticks: { maxTicksLimit: 8, color: "#64748b" }
                 },
                 y: {
-                    title: {
-                        display: true,
-                        text: "Precio (€)"
-                    }
+                    grid: { color: "#e2e8f0" },
+                    ticks: { color: "#64748b", callback: value => `${value} €` }
                 }
             }
         }

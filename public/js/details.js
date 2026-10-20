@@ -9,18 +9,16 @@ function showAlert(message, isError = false) {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
 
-    // Insertar la alerta al principio del contenedor
-    const container = document.querySelector('.container');
-    const header = container.querySelector('header');
-    container.insertBefore(alertDiv, header);
+    // Insertar la alerta en la zona de avisos de la cabecera
+    document.getElementById('alert-area').appendChild(alertDiv);
 
     // Hacer scroll hacia arriba
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Autoclose después de 3 segundos
+    // Autoclose después de 3 segundos (Bootstrap no se expone como global: se quita con la transición CSS)
     setTimeout(() => {
-        const bsAlert = new bootstrap.Alert(alertDiv);
-        bsAlert.close();
+        alertDiv.classList.remove('show');
+        setTimeout(() => alertDiv.remove(), 200);
     }, 3000);
 }
 
@@ -90,32 +88,8 @@ function toggleFavorite(button) {
         });
 }
 
-// Inicialización cuando el DOM está listo
-document.addEventListener('DOMContentLoaded', function () {
-
-    // Inicializar dropdowns
-    const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
-
-    if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
-        dropdownElementList.forEach(dropdownToggleEl => {
-            try {
-                new bootstrap.Dropdown(dropdownToggleEl);
-            } catch (e) {
-                console.error('Error inicializando dropdown:', e);
-            }
-        });
-    } else {
-        console.error('Bootstrap no está disponible');
-    }
-
-    // Inicializar tooltips si existen
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    if (tooltipTriggerList.length > 0 && typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-        tooltipTriggerList.forEach(tooltipTriggerEl => {
-            new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }
-});
+// Los desplegables y los avisos descartables los inicializa solo la API de datos de Bootstrap
+// (data-bs-*): Bootstrap no se expone como global, así que no hace falta inicializarlos a mano.
 
 // Función de respaldo para mostrar notificaciones
 function showNotification(message, isError = false) {

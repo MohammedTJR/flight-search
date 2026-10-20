@@ -1,15 +1,46 @@
 @extends('plantilla')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/detalles.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/detalles.css') }}?v={{ filemtime(public_path('css/detalles.css')) }}">
 @endsection
 
 @section('titulo_pagina', 'Detalles del Vuelo')
 
 @section('contenido')
-    <div class="container mt-5">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Detalles del Vuelo</h1>
+    @php
+        $segmentos = array_values($flight['flights'] ?? []);
+        $primero = $segmentos[0] ?? [];
+        $ultimo = $segmentos ? $segmentos[count($segmentos) - 1] : [];
+        $escalas = array_values($flight['layovers'] ?? []);
+
+        $fmtDur = fn($m) => intdiv((int) $m, 60) . 'h ' . str_pad((int) $m % 60, 2, '0', STR_PAD_LEFT) . 'min';
+        $fmtHora = fn($t) => $t ? date('H:i', strtotime($t)) : '—';
+        $fmtDia = fn($t) => $t
+            ? str_replace('.', '', \Carbon\Carbon::parse($t)->locale('es')->translatedFormat('j M Y'))
+            : '';
+
+        $origen = $primero['departure_airport'] ?? [];
+        $destino = $ultimo['arrival_airport'] ?? [];
+        $aerolineas = collect($segmentos)->pluck('airline')->filter()->unique()->values();
+        $numeroVuelo = $primero['flight_number'] ?? 'N/A';
+        $logo = $flight['airline_logo'] ?? ($primero['airline_logo'] ?? null);
+
+        if (count($escalas) === 0) {
+            $resumenEscalas = 'Directo';
+        } elseif (count($escalas) === 1) {
+            $resumenEscalas = '1 en ' . ($escalas[0]['id'] ?? $escalas[0]['name'] ?? '—')
+                . (isset($escalas[0]['duration']) ? ' (' . $fmtDur($escalas[0]['duration']) . ')' : '');
+        } else {
+            $resumenEscalas = count($escalas) . ': ' . collect($escalas)->map(fn($e) => $e['id'] ?? $e['name'] ?? '—')->implode(', ');
+        }
+
+        $carbono = $flight['carbon_emissions'] ?? null;
+        $opciones = collect($bookingOptions ?? []);
+        $precioMinOpcion = $opciones->map(fn($o) => $o['together']['price'] ?? null)->filter()->min();
+    @endphp
+
+    <div class="dt-wrap">
+        <div id="alert-area">
             @if(session()->has('price_changed'))
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <strong>¡El precio ha cambiado!</strong> El precio anterior era €{{ session('price_changed')['old_price'] }}
@@ -17,7 +48,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
-            <div class="d-flex align-items-center gap-2">
+        </div>
+
+        <header class="dt-head">
+            <div>
+                <a href="javascript:history.back()" class="dt-back"><i class="fas fa-arrow-left"></i>Volver a los resultados</a>
+                <h1>Detalles del vuelo <span>{{ $numeroVuelo }}</span></h1>
+            </div>
+
+            <div class="dt-actions">
                 @auth
                     @php
                         $favorite = auth()->user()->favoriteFlights()
@@ -54,178 +93,253 @@
                         <input type="hidden" name="infants_on_lap" value="{{ session('search_params.infants_on_lap', 0) }}">
 
                         <button type="button" onclick="toggleFavorite(this)"
-                            class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-primary' }} btn-sm">
+                            class="dt-btn {{ $isFavorite ? 'dt-btn--danger' : '' }}">
                             <i class="{{ $isFavorite ? 'fas' : 'far' }} fa-heart"></i>
                             {{ $isFavorite ? 'Quitar de favoritos' : 'Guardar como favorito' }}
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm">
-                        <i class="far fa-heart"></i> Guardar como favorito
+                    <a href="{{ route('login') }}" class="dt-btn">
+                        <i class="far fa-heart"></i>Guardar como favorito
                     </a>
                 @endauth
-                <a href="javascript:history.back()" class="btn btn-secondary btn-sm">
-                    Volver
-                </a>
+                <a href="{{ route('radar') }}" class="dt-btn dt-btn--dark"><i class="fas fa-satellite-dish"></i>Ver en radar</a>
             </div>
         </header>
 
-        <section class="card shadow p-4 mb-4">
-            <h3 class="text-center mb-4">
-                Vuelo {{ $flight['flights'][0]['flight_number'] ?? 'N/A' }}
-            </h3>
-            <div class="row align-items-center">
-                <div class="col-md-3 text-center">
-                    <img src="{{ $flight['airline_logo'] ?? '' }}" alt="Logo aerolínea" class="img-fluid" width="100">
-                    <p class="mt-2">
-                        <i class="fas fa-tag"></i> <strong>Precio:</strong> €{{ $flight['price'] ?? 'N/A' }}
-                    </p>
+        {{-- Resumen --}}
+        <section class="dt-card dt-hero">
+            <div class="dt-hero-top">
+                <div class="dt-hero-airline">
+                    @if ($logo)
+                        <img src="{{ $logo }}" alt="Logo de {{ $aerolineas->first() }}" width="56" height="56">
+                    @else
+                        <span class="dt-logo-fallback"><i class="fas fa-plane"></i></span>
+                    @endif
+                    <div>
+                        <h2>{{ $aerolineas->implode(' + ') ?: 'Aerolínea no disponible' }}
+                            <small>({{ $numeroVuelo }})</small></h2>
+                        <p>{{ $origen['name'] ?? '' }} ({{ $origen['id'] ?? '—' }}) → {{ $destino['name'] ?? '' }} ({{ $destino['id'] ?? '—' }})</p>
+                    </div>
                 </div>
-                <div class="col-md-9">
-                    <p><i class="fas fa-plane-departure"></i> <strong>Aerolínea:</strong>
-                        {{ $flight['flights'][0]['airline'] ?? 'N/A' }}</p>
-                    <p><i class="fas fa-clock"></i> <strong>Duración total:</strong>
-                        {{ intdiv($flight['total_duration'] ?? 0, 60) }}h {{ ($flight['total_duration'] ?? 0) % 60 }}min
-                    </p>
+
+                <div class="dt-hero-price">
+                    <span>Precio</span>
+                    <strong>{{ $flight['price'] ?? 'N/A' }}<em>€</em></strong>
+                    @if ($opciones->isNotEmpty())
+                        <a href="#reservas" class="dt-btn dt-btn--dark">Ver opciones de reserva</a>
+                    @endif
+                </div>
+            </div>
+
+            <div class="dt-tiles">
+                <div class="dt-tile">
+                    <i class="far fa-clock"></i>
+                    <div><small>Duración total</small><strong>{{ $fmtDur($flight['total_duration'] ?? 0) }}</strong></div>
+                </div>
+                <div class="dt-tile">
+                    <i class="fas fa-route"></i>
+                    <div><small>Escalas</small><strong>{{ $resumenEscalas }}</strong></div>
+                </div>
+                <div class="dt-tile">
+                    <i class="fas fa-plane-departure"></i>
+                    <div><small>Salida</small><strong>{{ $fmtHora($origen['time'] ?? null) }} · {{ $fmtDia($origen['time'] ?? null) }}</strong></div>
+                </div>
+                <div class="dt-tile">
+                    <i class="fas fa-plane-arrival"></i>
+                    <div><small>Llegada</small><strong>{{ $fmtHora($destino['time'] ?? null) }} · {{ $fmtDia($destino['time'] ?? null) }}</strong></div>
                 </div>
             </div>
         </section>
 
-        <section class="card shadow p-4 mb-4">
-            <h4><i class="fas fa-info-circle"></i> Detalles del Vuelo</h4>
-            @foreach ($flight['flights'] as $segmento)
-                <div class="mb-3 p-3 border rounded">
-                    <h5>{{ $segmento['airline'] ?? 'N/A' }} ({{ $segmento['flight_number'] ?? 'N/A' }})</h5>
-                    <p>
-                        <i class="fas fa-plane-departure"></i>
-                        <strong>Salida:</strong>
-                        {{ $segmento['departure_airport']['name'] ?? 'N/A' }}
-                        ({{ $segmento['departure_airport']['id'] ?? 'N/A' }})
-                        -
-                        {{ !empty($segmento['departure_airport']['time']) ? date('H:i - d/m', strtotime($segmento['departure_airport']['time'])) : 'N/A' }}
-                    </p>
-                    <p>
-                        <i class="fas fa-plane-arrival"></i>
-                        <strong>Llegada:</strong>
-                        {{ $segmento['arrival_airport']['name'] ?? 'N/A' }}
-                        ({{ $segmento['arrival_airport']['id'] ?? 'N/A' }})
-                        -
-                        {{ !empty($segmento['arrival_airport']['time']) ? date('H:i - d/m', strtotime($segmento['arrival_airport']['time'])) : 'N/A' }}
-                    </p>
-                    <p><i class="fas fa-clock"></i> <strong>Duración:</strong>
-                        {{ intdiv($segmento['duration'] ?? 0, 60) }}h {{ ($segmento['duration'] ?? 0) % 60 }}min</p>
-                    <p><i class="fas fa-chair"></i> <strong>Clase:</strong> {{ $segmento['travel_class'] ?? 'N/A' }}
-                    </p>
-                    <p><i class="fas fa-plane"></i> <strong>Avión:</strong> {{ $segmento['airplane'] ?? 'N/A' }}</p>
-                    <p><i class="fas fa-running"></i> <strong>Espacio para piernas:</strong>
-                        {{ $segmento['legroom'] ?? 'N/A' }}</p>
-                    <p><i class="fas fa-gift"></i> <strong>Extras:</strong>
-                        {{ implode(', ', $segmento['extensions'] ?? []) }}</p>
-                </div>
-            @endforeach
+        {{-- Itinerario --}}
+        <section class="dt-card">
+            <div class="dt-section-head">
+                <h3><i class="fas fa-route"></i>Itinerario</h3>
+                <span>Horarios en hora local de cada aeropuerto</span>
+            </div>
+
+            <ol class="dt-timeline">
+                @foreach ($segmentos as $i => $segmento)
+                    <li class="dt-segment">
+                        <div class="dt-segment-head">
+                            <span class="dt-segment-tag">Segmento {{ $i + 1 }}</span>
+                            <strong>{{ $segmento['airline'] ?? 'N/A' }} · Vuelo {{ $segmento['flight_number'] ?? 'N/A' }}</strong>
+                            @if (!empty($segmento['travel_class']))<span class="dt-segment-class">Clase {{ $segmento['travel_class'] }}</span>@endif
+                        </div>
+
+                        <div class="dt-leg">
+                            <div class="dt-leg-end">
+                                <strong>{{ $fmtHora($segmento['departure_airport']['time'] ?? null) }}</strong>
+                                <span class="dt-leg-day">{{ $fmtDia($segmento['departure_airport']['time'] ?? null) }}</span>
+                                <p>{{ $segmento['departure_airport']['name'] ?? 'N/A' }} ({{ $segmento['departure_airport']['id'] ?? 'N/A' }})</p>
+                            </div>
+                            <div class="dt-leg-mid">
+                                <span>{{ $fmtDur($segmento['duration'] ?? 0) }} de vuelo</span>
+                                <div class="dt-leg-bar"><i class="fas fa-plane"></i></div>
+                                @if (!empty($segmento['overnight']))<small>Vuelo nocturno</small>@endif
+                            </div>
+                            <div class="dt-leg-end dt-leg-end--right">
+                                <strong>{{ $fmtHora($segmento['arrival_airport']['time'] ?? null) }}</strong>
+                                <span class="dt-leg-day">{{ $fmtDia($segmento['arrival_airport']['time'] ?? null) }}</span>
+                                <p>{{ $segmento['arrival_airport']['name'] ?? 'N/A' }} ({{ $segmento['arrival_airport']['id'] ?? 'N/A' }})</p>
+                            </div>
+                        </div>
+
+                        <div class="dt-facts">
+                            <div><small>Aeronave</small><strong>{{ $segmento['airplane'] ?? 'N/A' }}</strong></div>
+                            <div><small>Espacio para piernas</small><strong>{{ $segmento['legroom'] ?? 'N/A' }}</strong></div>
+                        </div>
+
+                        @if (!empty($segmento['extensions']))
+                            <ul class="dt-chips">
+                                @foreach ($segmento['extensions'] as $extra)
+                                    <li>{{ $extra }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        @if (isset($escalas[$i]) && $i < count($segmentos) - 1)
+                            @php $escala = $escalas[$i]; @endphp
+                            <div class="dt-layover">
+                                <i class="fas fa-person-walking-luggage"></i>
+                                <div>
+                                    <strong>Escala de {{ $fmtDur($escala['duration'] ?? 0) }} en {{ $escala['name'] ?? ($escala['id'] ?? '') }}@if(!empty($escala['id'])) ({{ $escala['id'] }})@endif</strong>
+                                    @if (!empty($escala['overnight']))<small>Escala con noche incluida</small>@endif
+                                </div>
+                            </div>
+                        @endif
+                    </li>
+                @endforeach
+            </ol>
         </section>
 
+        {{-- Opciones de reserva --}}
+        @if ($opciones->isNotEmpty())
+            <section class="dt-card" id="reservas">
+                <div class="dt-section-head">
+                    <h3><i class="fas fa-cart-shopping"></i>Opciones de reserva</h3>
+                    <span>{{ $opciones->count() }} {{ $opciones->count() === 1 ? 'proveedor' : 'proveedores' }}</span>
+                </div>
 
-        <!-- Sección de opciones de reserva mejorada -->
-        @if(!empty($bookingOptions))
-            <section class="card shadow p-4 mb-4">
-                <h4 class="mb-4"><i class="fas fa-shopping-cart"></i> Opciones de Reserva</h4>
+                <div class="dt-booking">
+                    @foreach($opciones as $option)
+                        @php
+                            $o = $option['together'] ?? [];
+                            $precioOpcion = $o['price'] ?? null;
+                        @endphp
+                        <div class="dt-option {{ $precioOpcion !== null && $precioOpcion === $precioMinOpcion ? 'is-best' : '' }}">
+                            <div class="dt-option-provider">
+                                @if(!empty($o['airline_logos']))
+                                    <img src="{{ $o['airline_logos'][0] }}" alt="{{ $o['book_with'] ?? '' }}" width="40" height="40" loading="lazy">
+                                @else
+                                    <span class="dt-logo-fallback dt-logo-fallback--sm"><i class="fas fa-store"></i></span>
+                                @endif
+                                <div>
+                                    <strong>{{ $o['book_with'] ?? 'Proveedor' }}
+                                        @if ($precioOpcion !== null && $precioOpcion === $precioMinOpcion)<span class="dt-best">Mejor precio</span>@endif
+                                    </strong>
+                                    @if(isset($o['option_title']))<small>{{ $o['option_title'] }}</small>@endif
+                                </div>
+                            </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Proveedor</th>
-                                <th class="text-center">Precio</th>
-                                <th>Detalles</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($bookingOptions as $option)
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if(isset($option['together']['airline_logos']) && count($option['together']['airline_logos']) > 0)
-                                                <img src="{{ $option['together']['airline_logos'][0] }}"
-                                                    alt="{{ $option['together']['book_with'] }}" class="provider-logo me-3" width="40">
-                                            @endif
-                                            <div>
-                                                <strong>{{ $option['together']['book_with'] ?? 'Proveedor' }}</strong>
-                                                @if(isset($option['together']['option_title']))
-                                                    <div class="text-muted small">{{ $option['together']['option_title'] }}</div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="fw-bold">€{{ number_format($option['together']['price'] ?? 0, 2) }}</span>
-                                        @if(isset($option['together']['local_prices']))
-                                            <div class="text-muted small">
-                                                @foreach($option['together']['local_prices'] as $localPrice)
-                                                    {{ $localPrice['currency'] }} {{ $localPrice['price'] }}
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if(isset($option['together']['extensions']) && is_array($option['together']['extensions']))
-                                            <ul class="list-unstyled mb-0">
-                                                @foreach($option['together']['extensions'] as $extension)
-                                                    <li><small><i class="fas fa-check text-success me-1"></i> {{ $extension }}</small></li>
-                                                @endforeach
-                                            </ul>
-                                        @endif
-                                        @if(isset($option['together']['baggage_prices']))
-                                            <div class="mt-1">
-                                                <small><i class="fas fa-suitcase text-primary me-1"></i>
-                                                    {{ implode(', ', $option['together']['baggage_prices']) }}
-                                                </small>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if(isset($option['together']['booking_request']['url']) && isset($option['together']['booking_request']['post_data']))
-                                            <form method="POST" action="{{ $option['together']['booking_request']['url'] }}"
-                                                target="_blank" id="bookingForm_{{ $loop->index }}">
-                                                @php
-                                                    parse_str($option['together']['booking_request']['post_data'], $postFields);
-                                                @endphp
+                            <div class="dt-option-details">
+                                @if(isset($o['extensions']) && is_array($o['extensions']))
+                                    <ul>
+                                        @foreach($o['extensions'] as $extension)
+                                            <li><i class="fas fa-check"></i>{{ $extension }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                                @if(isset($o['baggage_prices']))
+                                    <p><i class="fas fa-suitcase"></i>{{ implode(', ', $o['baggage_prices']) }}</p>
+                                @endif
+                            </div>
 
-                                                @foreach($postFields as $name => $value)
-                                                    <input type="hidden" name="{{ $name }}" value="{{ $value }}">
-                                                @endforeach
+                            <div class="dt-option-price">
+                                <strong>€{{ number_format($precioOpcion ?? 0, 2) }}</strong>
+                                @if(isset($o['local_prices']))
+                                    <small>
+                                        @foreach($o['local_prices'] as $localPrice)
+                                            {{ $localPrice['currency'] }} {{ $localPrice['price'] }}
+                                        @endforeach
+                                    </small>
+                                @endif
+                            </div>
 
-                                                <button type="submit" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-external-link-alt me-1"></i> Reservar
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            <div class="dt-option-action">
+                                @if(isset($o['booking_request']['url']) && isset($o['booking_request']['post_data']))
+                                    <form method="POST" action="{{ $o['booking_request']['url'] }}" target="_blank"
+                                        id="bookingForm_{{ $loop->index }}">
+                                        @php
+                                            parse_str($o['booking_request']['post_data'], $postFields);
+                                        @endphp
+
+                                        @foreach($postFields as $name => $value)
+                                            <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+                                        @endforeach
+
+                                        <button type="submit" class="dt-reserve">
+                                            Reservar <i class="fas fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </section>
         @endif
 
-        <section class="card shadow p-4 mb-4">
-            <h4><i class="fas fa-leaf"></i> Emisiones de CO₂</h4>
-            <div class="d-flex align-items-center">
-                <div>
-                    <p><i class="fas fa-smog"></i> <strong>Este vuelo:</strong>
-                        {{ number_format($flight['carbon_emissions']['this_flight'] ?? 0) }}g CO₂</p>
-                    <p><i class="fas fa-globe"></i> <strong>Promedio de la ruta:</strong>
-                        {{ number_format($flight['carbon_emissions']['typical_for_this_route'] ?? 0) }}g CO₂</p>
-                    <p><i class="fas fa-percentage"></i> <strong>Diferencia:</strong>
-                        {{ $flight['carbon_emissions']['difference_percent'] ?? 0 }}%</p>
+        {{-- Emisiones de CO₂ --}}
+        @if (!empty($carbono['this_flight']))
+            @php
+                $esteVuelo = (int) $carbono['this_flight'];
+                $tipico = (int) ($carbono['typical_for_this_route'] ?? 0);
+                $diferencia = $carbono['difference_percent'] ?? null;
+                $porcentaje = $tipico > 0 ? min(100, round($esteVuelo / $tipico * 100)) : null;
+            @endphp
+            <section class="dt-card">
+                <div class="dt-section-head">
+                    <h3><i class="fas fa-leaf"></i>Emisiones de CO₂</h3>
+                    @if ($diferencia !== null)
+                        <span class="dt-pill {{ $diferencia <= 0 ? 'is-good' : 'is-bad' }}">
+                            <i class="fas {{ $diferencia <= 0 ? 'fa-arrow-trend-down' : 'fa-arrow-trend-up' }}"></i>
+                            {{ $diferencia > 0 ? '+' : '' }}{{ $diferencia }}% respecto al promedio de la ruta
+                        </span>
+                    @endif
                 </div>
-            </div>
-        </section>
+
+                <div class="dt-co2">
+                    <div class="dt-co2-box">
+                        <small>Este vuelo</small>
+                        <strong>{{ number_format($esteVuelo / 1000, 0, ',', '.') }}<em>kg CO₂</em></strong>
+                        <span>{{ number_format($esteVuelo, 0, ',', '.') }} g por pasajero</span>
+                    </div>
+                    @if ($tipico > 0)
+                        <div class="dt-co2-box dt-co2-box--ref">
+                            <small>Promedio de la ruta</small>
+                            <strong>{{ number_format($tipico / 1000, 0, ',', '.') }}<em>kg CO₂</em></strong>
+                            <span>{{ number_format($tipico, 0, ',', '.') }} g por pasajero</span>
+                        </div>
+                    @endif
+                </div>
+
+                @if ($porcentaje !== null)
+                    <div class="dt-co2-bar" title="{{ $porcentaje }}% del promedio de la ruta">
+                        <div class="dt-co2-fill {{ $esteVuelo <= $tipico ? '' : 'is-over' }}" style="width: {{ $porcentaje }}%"></div>
+                    </div>
+                @endif
+            </section>
+        @endif
+
+        <div class="dt-faq">
+            <span><i class="far fa-circle-question"></i>¿Dudas sobre el equipaje permitido o las escalas de este itinerario?</span>
+            <a href="{{ route('faq') }}">Consultar preguntas frecuentes <i class="fas fa-arrow-right"></i></a>
+        </div>
     </div>
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('js/details.js') }}"></script>
+    <script src="{{ asset('js/details.js') }}?v={{ filemtime(public_path('js/details.js')) }}"></script>
 @endsection

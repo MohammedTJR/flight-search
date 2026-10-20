@@ -1,20 +1,188 @@
-#map {
-    height: calc(100vh - 180px);
-    /* Ajustado para considerar ambos headers */
-    width: 100%;
-    z-index: 1;
-    margin-top: 0;
+/* =====================================================================
+   Radar en vivo — centro de mando Aero Minimal (tokens en aero.css)
+   ===================================================================== */
+
+.radar-stage {
     position: relative;
-    /* Importante: hace que el posicionamiento absoluto de los controles sea relativo a este elemento */
+    height: calc(100vh - 72px);
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--fl-navy-deep);
+    color: #f8f9ff;
 }
 
+@supports (height: 100dvh) {
+    .radar-stage {
+        height: calc(100dvh - 72px);
+    }
+}
+
+#map {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: #0b1220;
+}
+
+/* ============================ HUD ============================ */
+.radar-hud {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    pointer-events: none;
+}
+
+.radar-hud>* {
+    pointer-events: auto;
+}
+
+.radar-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1rem;
+    max-width: 100%;
+    padding: 0.5rem 1rem;
+    background: rgba(6, 13, 25, 0.85);
+    border-radius: 9999px;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.radar-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.radar-stat {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.radar-stat strong {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #39b8fd;
+}
+
+.radar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 36rem;
+    padding: 0.5rem;
+    background: rgba(6, 13, 25, 0.9);
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.radar-search-icon {
+    position: absolute;
+    left: 1.2rem;
+    font-size: 0.9rem;
+    color: #39b8fd;
+    pointer-events: none;
+}
+
+.radar-search input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.55rem 1rem 0.55rem 2.5rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: #fff;
+    background: rgba(6, 13, 25, 0.6);
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.radar-search input::placeholder {
+    color: #64748b;
+}
+
+.radar-search input:focus {
+    border-color: #39b8fd;
+}
+
+.radar-search-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #060d19;
+    background: #39b8fd;
+    border: none;
+    border-radius: 0.6rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.radar-search-btn:hover {
+    background: #006591;
+    color: #f8f9ff;
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: none;
+    max-height: 220px;
+    overflow-y: auto;
+    background: rgba(6, 13, 25, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+}
+
+.search-results:not(:empty) {
+    display: block;
+}
+
+.search-results div {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.search-results div:hover {
+    background: rgba(57, 184, 253, 0.12);
+}
+
+.radar-header .alert {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 0.75rem;
+}
+
+/* ================== Controles del mapa (Leaflet) ================== */
 #map-controls {
     position: absolute;
-    top: 10px;
-    /* Posicionado con respecto al contenedor del mapa */
-    right: 10px;
+    top: 1rem;
+    right: 1rem;
     z-index: 999;
-    /* Por encima del mapa pero por debajo del panel de detalles */
     background: transparent;
 }
 
@@ -23,40 +191,48 @@
     display: inline-block;
 }
 
+.btn-map-control,
+.leaflet-bar a,
+.leaflet-bar a:hover {
+    background-color: rgba(6, 13, 25, 0.9);
+    color: #fff;
+}
+
 .btn-map-control {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 8px;
-    cursor: pointer;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     width: 40px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .btn-map-control:hover {
-    background: #f5f5f5;
+    color: #39b8fd;
     transform: scale(1.05);
 }
 
 .btn-map-control i {
-    font-size: 18px;
-    color: #333;
+    font-size: 1rem;
+    color: inherit;
 }
 
 .map-style-options {
     display: none;
     position: absolute;
     right: 0;
-    top: 45px;
-    background: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    width: 180px;
+    top: 48px;
+    width: 200px;
+    padding: 0.35rem;
+    background: rgba(6, 13, 25, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
     z-index: 1002;
 }
 
@@ -68,7 +244,7 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
 
     to {
@@ -78,93 +254,81 @@
 }
 
 .map-option {
-    padding: 10px 15px;
-    cursor: pointer;
     display: flex;
     align-items: center;
-    transition: background 0.2s ease;
-}
-
-.map-option:not(:last-child) {
-    border-bottom: 1px solid #f0f0f0;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
 }
 
 .map-option:hover {
-    background-color: #f8f9fa;
+    background: rgba(57, 184, 253, 0.12);
 }
 
 .map-option i {
-    margin-right: 10px;
-    width: 20px;
-    text-align: center;
-    color: #0d6efd;
+    width: 1.5rem;
+    color: #39b8fd;
 }
 
-#flight-details-panel {
-    position: fixed;
-    top: 130px;
-    /* Ajustado para considerar ambos headers */
-    right: -400px;
-    width: 380px;
-    height: calc(100vh - 180px);
-    /* Ajustado para considerar ambos headers */
-    background-color: white;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    padding: 20px;
-    overflow-y: auto;
-    transition: right 0.3s ease-in-out;
+/* Mapa oscuro: OSM invertido y atenuado */
+.map-tiles-dark {
+    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.55);
 }
 
-#flight-details-panel.show {
-    right: 0;
+/* Zoom: columna de cristal abajo a la izquierda */
+.leaflet-bottom.leaflet-left .leaflet-control-zoom {
+    margin: 0 0 1.25rem 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-.close-panel {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 18px;
+.leaflet-bar a {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-weight: 400;
 }
 
-.detail-row {
-    display: flex;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 8px 0;
+.leaflet-bar a:last-child {
+    border-bottom: none;
 }
 
-.detail-label {
-    font-weight: bold;
-    width: 40%;
+.leaflet-bar a:hover {
+    color: #39b8fd;
 }
 
-.detail-value {
-    width: 60%;
+.leaflet-control-attribution {
+    background: rgba(6, 13, 25, 0.7) !important;
+    color: #94a3b8 !important;
 }
 
-.flight-title {
-    border-bottom: 2px solid #0d6efd;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+.leaflet-control-attribution a {
+    color: #94a3b8 !important;
 }
 
-.info-section {
-    margin-bottom: 20px;
+.leaflet-tooltip {
+    padding: 0.35rem 0.6rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(6, 13, 25, 0.95);
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-.refresh-info {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 14px;
-    z-index: 999;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.leaflet-tooltip-top::before {
+    border-top-color: rgba(6, 13, 25, 0.95);
 }
 
+/* ========================== Aviones ========================== */
 .aircraft-marker {
     background: none !important;
     border: none !important;
@@ -177,27 +341,57 @@
 
 .aircraft-icon {
     transform-origin: center center;
-    /* Asegura que la rotación sea desde el centro */
     transition: transform 0.1s linear;
-    /* Suaviza la rotación */
-    color: #0d6efd;
+    color: #39b8fd;
     font-size: 20px;
     display: inline-block;
-    /* Asegura que la transformación se aplique correctamente */
+    filter: drop-shadow(0 0 4px rgba(6, 13, 25, 0.8));
+}
+
+/* ================== Estado inferior / carga ================== */
+.refresh-info {
+    position: absolute;
+    left: 4.25rem;
+    bottom: 1.25rem;
+    z-index: 450;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    background: rgba(6, 13, 25, 0.85);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.refresh-info i {
+    margin-right: 0.5rem;
+    color: #39b8fd;
+}
+
+.refresh-sub {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+.refresh-sub:empty {
+    display: none;
 }
 
 .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
+    position: absolute;
+    inset: 0;
     z-index: 2000;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    background: rgba(6, 13, 25, 0.8);
+    color: #e2e8f0;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
 }
 
 .spinner-border {
@@ -205,99 +399,314 @@
     height: 3rem;
 }
 
-.radar-header {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 10px 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 990;
-    /* El nav principal ya es sticky-top, este header debe fluir normalmente debajo de él */
-}
-
-.stats-container {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.stat-card {
-    background-color: white;
-    padding: 8px 15px;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    min-width: 120px;
-    text-align: center;
-}
-
-.stat-value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #0d6efd;
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-.search-container {
-    position: relative;
-    /* Asegura que los elementos hijos se posicionen en relación a este contenedor */
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.search-container input {
-    width: 250px;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.search-results {
+/* ================== Panel de telemetría del vuelo ================== */
+#flight-details-panel {
     position: absolute;
-    top: 100%;
-    left: 0;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    max-height: 200px;
-    overflow-y: auto;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    /* Ocultar el borde cuando está vacío */
-    border: none;
-    display: none;
-    /* Por defecto estará oculto */
-}
-
-/* Mostrar el borde solo cuando tenga contenido */
-.search-results:not(:empty) {
-    border: 1px solid #ddd;
-    display: block;
-}
-
-.search-results div {
-    padding: 10px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.search-results div:hover {
-    background: #f8f9fa;
-}
-
-/* Alert personalizado para móviles */
-.mobile-warning-overlay {
-    position: fixed;
     top: 0;
-    left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 600;
+    width: 410px;
+    max-width: 100%;
+    padding: 1.25rem;
+    overflow-y: auto;
+    background: rgba(7, 15, 30, 0.95);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.3s ease-in-out, visibility 0.3s;
+}
+
+#flight-details-panel.show {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.panel-header {
+    display: none;
+}
+
+.close-panel {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.close-panel:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tp-empty {
+    padding: 4rem 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.tp-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding-right: 2.5rem;
+}
+
+.tp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #c9e6ff;
+    background: rgba(0, 101, 145, 0.35);
+    border-radius: 9999px;
+}
+
+.tp-id {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #75777d;
+}
+
+.tp-title {
+    margin: 1rem 0 0.25rem;
+}
+
+.tp-title h4 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+
+.tp-title p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.tp-route {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(239, 244, 255, 0.05);
+    border-radius: 1rem;
+}
+
+.tp-route-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.tp-route-end {
+    min-width: 0;
+    flex: 1 1 0;
+}
+
+.tp-route-end--right {
+    text-align: right;
+}
+
+.tp-code {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+
+.tp-ap {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #cbd5e1;
+}
+
+.tp-city {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.tp-route-mid {
+    padding-top: 0.6rem;
+    color: #39b8fd;
+    font-size: 1.1rem;
+}
+
+.tp-progress {
+    position: relative;
+    margin-top: 1rem;
+    height: 6px;
+    background: #060d19;
+    border-radius: 9999px;
+}
+
+.tp-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #006591, #39b8fd);
+    border-radius: 9999px;
+}
+
+.tp-progress-dot {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #39b8fd;
+}
+
+.tp-route-note {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.tp-sub {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1.5rem 0 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #75777d;
+}
+
+.tp-sub i {
+    color: #39b8fd;
+}
+
+.tp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+}
+
+.tp-card {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+    padding: 0.75rem;
+    background: rgba(239, 244, 255, 0.05);
+    border-radius: 0.75rem;
+}
+
+.tp-card-icon {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #39b8fd;
+    background: #060d19;
+    border-radius: 0.5rem;
+}
+
+.tp-card-label {
+    display: block;
+    font-size: 0.65rem;
+    color: #94a3b8;
+}
+
+.tp-card-value {
+    display: block;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #fff;
+    overflow-wrap: anywhere;
+}
+
+.tp-card-value small {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #75777d;
+}
+
+.tp-card-note {
+    display: block;
+    font-size: 0.65rem;
+    color: #75777d;
+}
+
+.tp-meta {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    background: rgba(6, 13, 25, 0.6);
+    border-radius: 0.75rem;
+}
+
+.tp-meta div+div {
+    margin-top: 0.25rem;
+}
+
+.tp-meta strong {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.tp-btn {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(90deg, #006591, #39b8fd);
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 25px -5px rgba(57, 184, 253, 0.35);
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.tp-btn:hover {
+    filter: brightness(1.1);
+}
+
+.tp-btn:active {
+    transform: scale(0.98);
+}
+
+/* ======================= Aviso para móviles ======================= */
+.mobile-warning-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(6, 13, 25, 0.75);
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -306,44 +715,45 @@
 }
 
 .mobile-warning-container {
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
     max-width: 400px;
     width: 100%;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
     animation: fadeInUp 0.3s ease-out;
 }
 
 .mobile-warning-title {
-    color: #d9534f;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #b45309;
 }
 
 .mobile-warning-content {
     margin-bottom: 20px;
     line-height: 1.5;
+    color: var(--fl-ink-soft);
 }
 
 .mobile-warning-button {
-    background-color: #0d6efd;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
     width: 100%;
-    font-weight: bold;
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: var(--fl-navy);
+    border: none;
+    border-radius: 9999px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .mobile-warning-button:hover {
-    background-color: #0b5ed7;
+    background-color: #16263f;
 }
 
 @keyframes fadeInUp {
@@ -358,129 +768,97 @@
     }
 }
 
-/* Media queries para móviles */
-@media (max-width: 768px) {
-    #map {
-        height: calc(100vh - 220px);
-        /* Más espacio para el mapa */
+/* ============================ Móvil ============================ */
+@media (max-width: 991.98px) {
+    .radar-stage {
+        height: calc(100vh - 62px);
     }
 
-    .radar-header {
-        padding: 8px 10px;
+    @supports (height: 100dvh) {
+        .radar-stage {
+            height: calc(100dvh - 62px);
+        }
+    }
+}
+
+@media (max-width: 767.98px) {
+    .radar-hud {
+        top: 0.6rem;
+        left: 0.6rem;
+        right: 0.6rem;
     }
 
-    .stats-container {
-        gap: 8px;
-        justify-content: space-between;
-        margin-bottom: 10px;
+    .radar-status {
+        border-radius: 1rem;
+        padding: 0.5rem 0.85rem;
     }
 
-    .stat-card {
-        min-width: 80px;
-        padding: 6px 8px;
+    .radar-stat--extra {
+        display: none;
     }
 
-    .stat-value {
-        font-size: 1rem;
+    #map-controls {
+        top: auto;
+        bottom: 1.25rem;
+        right: 0.75rem;
     }
 
-    .search-container {
-        width: 100%;
+    .map-style-options {
+        top: auto;
+        bottom: 48px;
     }
 
-    .search-container input {
-        width: 100%;
+    .refresh-info {
+        left: 4rem;
+        right: 4rem;
+        bottom: 1.25rem;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.7rem;
     }
 
-    /* Panel de detalles para móviles */
+    .refresh-info .refresh-sub {
+        display: none;
+    }
+
+    /* Panel como hoja inferior */
     #flight-details-panel {
         top: auto;
-        bottom: -70vh;
         left: 0;
-        right: 0;
         width: 100%;
-        height: 70vh;
-        border-radius: 10px 10px 0 0;
-        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
-        transition: bottom 0.3s ease-in-out;
+        height: 70%;
+        padding-top: 0.5rem;
+        border-radius: 1rem 1rem 0 0;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        transform: translateY(100%);
     }
 
     #flight-details-panel.show {
-        bottom: 0;
-        right: auto;
+        transform: translateY(0);
     }
 
-    /* Cabecera deslizable del panel */
     .panel-header {
-        padding: 10px;
-        cursor: pointer;
+        display: block;
+        padding: 0.4rem;
         text-align: center;
-        border-bottom: 1px solid #eee;
-        position: relative;
+        cursor: pointer;
     }
 
-    .panel-header:after {
+    .panel-header i {
+        display: none;
+    }
+
+    .panel-header::after {
         content: "";
         display: block;
         width: 40px;
         height: 4px;
-        background: #ccc;
+        margin: 0 auto;
+        background: #334155;
         border-radius: 2px;
-        margin: 8px auto 0;
     }
 
-    /* Contenido desplazable */
-    #flight-details-content {
-        height: calc(100% - 50px);
-        overflow-y: auto;
-        padding-bottom: 20px;
-    }
-
-    /* Botón de cerrar ajustado para móviles */
     .close-panel {
-        top: 5px;
-        right: 5px;
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Ajustes para los controles del mapa en móviles */
-    #map-controls {
-        top: auto;
-        bottom: 20px;
-        right: 10px;
-    }
-
-    .refresh-info {
-        bottom: 80px;
-        left: 10px;
-        font-size: 12px;
-        padding: 8px;
-    }
-}
-
-/* Para pantallas muy pequeñas */
-@media (max-width: 480px) {
-    .stat-card {
-        min-width: 70px;
-        padding: 4px 6px;
-    }
-
-    .stat-value {
-        font-size: 0.9rem;
-    }
-
-    .stat-label {
-        font-size: 0.7rem;
-    }
-
-    #flight-details-panel {
-        height: 65vh;
-        bottom: -65vh;
+        top: 0.5rem;
+        right: 0.75rem;
     }
 }

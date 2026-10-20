@@ -19,6 +19,11 @@ let countdown = 60;
 let animationFrame; // Para manejar la animación
 let lastUpdateTime = 0;
 
+// Colores del radar (mapa oscuro): avión normal, avión seleccionado y ruta
+const PLANE_COLOR = '#39b8fd';
+const PLANE_SELECTED = '#f59e0b';
+const ROUTE_COLOR = '#39b8fd';
+
 // --- Radar mundial: carga por zona visible ---
 const MIN_ZOOM_FOR_FLIGHTS = 6; // Por debajo de este zoom no se dibujan aviones
 const MAX_FLIGHTS = 1200;        // Tope de seguridad de marcadores por carga
@@ -44,10 +49,10 @@ function toggleZoomHint(show) {
             hint = document.createElement('div');
             hint.id = 'zoom-hint';
             hint.innerHTML = '<i class="fas fa-magnifying-glass-plus me-2"></i>Acércate para ver los vuelos de la zona';
-            hint.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:1000;' +
-                'background:rgba(10,31,56,0.85);color:#fff;padding:0.55rem 1rem;border-radius:2rem;' +
-                'font-size:0.9rem;display:flex;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,0.25);' +
-                'pointer-events:none;white-space:nowrap;';
+            hint.style.cssText = 'position:absolute;bottom:4.5rem;left:50%;transform:translateX(-50%);z-index:1000;' +
+                'background:rgba(6,13,25,0.9);color:#fff;padding:0.55rem 1rem;border-radius:2rem;' +
+                'font-size:0.85rem;font-weight:600;display:flex;align-items:center;' +
+                'box-shadow:0 10px 25px -5px rgba(0,0,0,0.5);pointer-events:none;white-space:nowrap;';
             document.getElementById('map').appendChild(hint);
         }
         hint.style.display = 'flex';
@@ -91,18 +96,22 @@ const mapLayers = {
         maxZoom: 17
     }),
 
-    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© CartoDB'
+    // Teselas de OpenStreetMap oscurecidas con un filtro CSS (.map-tiles-dark en radar.css):
+    // las de CartoDB dark_all ya exigen API key y pintan una marca de agua.
+    dark: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap',
+        className: 'map-tiles-dark'
     })
 };
 
 // Función para inicializar el mapa
 function initializeMap() {
 
-    map = L.map('map').setView([40.416775, -3.703790], 6);
+    map = L.map('map', { zoomControl: false }).setView([40.416775, -3.703790], 6);
+    L.control.zoom({ position: 'bottomleft', zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' }).addTo(map);
 
-    // Capa por defecto
-    mapLayers.osm.addTo(map);
+    // Capa por defecto: mapa oscuro (coincide con el icono inicial del selector)
+    mapLayers.dark.addTo(map);
 
     // Al mover o hacer zoom, recargar los aviones del nuevo área visible (con debounce)
     map.on('moveend', function () {
@@ -453,13 +462,14 @@ function updateFlights(flightData) {
 
                 marker.flightData = flight;
                 marker.on('click', function () {
-                    showFlightDetails(flight);
+                    // flightData (no el `flight` de la creación) lleva los últimos datos del refresco
+                    showFlightDetails(marker.flightData);
                     if (selectedFlight && markers[selectedFlight]) {
                         const prevIcon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
-                        if (prevIcon) prevIcon.style.color = '#0d6efd';
+                        if (prevIcon) prevIcon.style.color = PLANE_COLOR;
                     }
                     const currentIcon = marker.getElement().querySelector('.aircraft-icon');
-                    if (currentIcon) currentIcon.style.color = '#ff4500';
+                    if (currentIcon) currentIcon.style.color = PLANE_SELECTED;
                     selectedFlight = icao24;
                 });
 
@@ -512,15 +522,15 @@ function drawRoute(route) {
     currentRoute = route;
 
     // Tramo recorrido (origen -> giros reales -> avión): línea sólida
-    routeFlown = L.polyline([], { color: '#0b7a9e', weight: 3, opacity: 0.9 }).addTo(map);
+    routeFlown = L.polyline([], { color: ROUTE_COLOR, weight: 3, opacity: 0.9 }).addTo(map);
     // Tramo restante (avión -> destino): discontinua y más tenue
     routeRemain = L.polyline([], {
-        color: '#0b7a9e', weight: 2.5, opacity: 0.55, dashArray: '8, 8'
+        color: ROUTE_COLOR, weight: 2.5, opacity: 0.55, dashArray: '8, 8'
     }).addTo(map);
 
     [[o, 'Origen'], [d, 'Destino']].forEach(([ap, label]) => {
         const m = L.circleMarker([ap.lat, ap.lng], {
-            radius: 6, color: '#0b7a9e', fillColor: '#fff', fillOpacity: 1, weight: 2
+            radius: 6, color: ROUTE_COLOR, fillColor: '#fff', fillOpacity: 1, weight: 2
         }).addTo(map);
         m.bindTooltip(`${label}: ${ap.name || ap.iata || ''}`, { direction: 'top' });
         routeMarkers.push(m);
@@ -549,29 +559,66 @@ function updateRouteGeometry() {
     }
 }
 
+// Escapa texto de origen externo (callsign, nombres de aeropuerto...) antes de meterlo en HTML
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
+// Distancia en km entre dos coordenadas (haversine)
+function distanceKm(lat1, lon1, lat2, lon2) {
+    const rad = Math.PI / 180;
+    const dLat = (lat2 - lat1) * rad;
+    const dLon = (lon2 - lon1) * rad;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 // HTML de la sección de ruta para el panel de detalles
-function renderRouteSection(route) {
+function renderRouteSection(route, flight) {
     if (route === 'loading') {
-        return '<div class="text-muted small"><i class="fas fa-spinner fa-spin me-2"></i>Buscando ruta...</div>';
+        return '<div class="tp-route"><div class="tp-route-note"><i class="fas fa-spinner fa-spin me-2"></i>Buscando ruta...</div></div>';
     }
     if (!route) {
-        return '<div class="text-muted small"><i class="fas fa-circle-info me-2"></i>Ruta no disponible para este vuelo.</div>';
+        return '<div class="tp-route"><div class="tp-route-note"><i class="fas fa-circle-info me-2"></i>Ruta no disponible para este vuelo.</div></div>';
     }
-    const ap = (a) => `${a.name || 'Aeropuerto'}${a.iata ? ' (' + a.iata + ')' : ''}` +
-        (a.municipality ? `<div class="text-muted small">${a.municipality}${a.country ? ', ' + a.country : ''}</div>` : '');
+    const end = (a, extra) => `
+        <div class="tp-route-end ${extra}">
+            <span class="tp-code">${escapeHtml(a.iata || '—')}</span>
+            <span class="tp-ap">${escapeHtml(a.name || 'Aeropuerto')}</span>
+            ${a.municipality ? `<span class="tp-city">${escapeHtml(a.municipality)}${a.country ? ', ' + escapeHtml(a.country) : ''}</span>` : ''}
+        </div>`;
+
+    // Progreso estimado: distancia recorrida sobre la suma recorrida + restante
+    let progress = '';
+    const o = route.origin, d = route.destination;
+    if (flight && flight[6] != null && flight[5] != null &&
+        o.lat != null && o.lng != null && d.lat != null && d.lng != null) {
+        const done = distanceKm(o.lat, o.lng, flight[6], flight[5]);
+        const left = distanceKm(flight[6], flight[5], d.lat, d.lng);
+        const pct = Math.max(0, Math.min(100, Math.round(done / ((done + left) || 1) * 100)));
+        progress = `
+        <div class="tp-progress" title="${pct}% del trayecto">
+            <div class="tp-progress-bar" style="width:${pct}%"></div>
+            <div class="tp-progress-dot" style="left:${pct}%"></div>
+        </div>`;
+    }
+
     return `
-        <div class="detail-row">
-            <div class="detail-label"><i class="fas fa-plane-departure me-2"></i>Origen:</div>
-            <div class="detail-value">${ap(route.origin)}</div>
-        </div>
-        <div class="detail-row">
-            <div class="detail-label"><i class="fas fa-plane-arrival me-2"></i>Destino:</div>
-            <div class="detail-value">${ap(route.destination)}</div>
+        <div class="tp-route">
+            <div class="tp-route-row">
+                ${end(o, '')}
+                <div class="tp-route-mid"><i class="fas fa-plane"></i></div>
+                ${end(d, 'tp-route-end--right')}
+            </div>
+            ${progress}
         </div>`;
 }
 
 // Carga (y cachea) la ruta de un callsign, actualiza el panel y dibuja la línea
-function loadRoute(callsign) {
+function loadRoute(callsign, flight) {
     callsign = (callsign || '').trim();
     currentRouteCallsign = callsign;
 
@@ -579,7 +626,7 @@ function loadRoute(callsign) {
         // Si el usuario ya cambió de avión, no pisar el panel
         if (currentRouteCallsign !== callsign) return;
         const section = document.getElementById('route-section');
-        if (section) section.innerHTML = renderRouteSection(route);
+        if (section) section.innerHTML = renderRouteSection(route, flight);
         // Dibujar la ruta solo en una selección nueva, no en cada refresco del
         // panel (así no se borra el rastro de giros reales acumulado).
         if (routeDrawnFor !== callsign) {
@@ -610,17 +657,52 @@ function loadRoute(callsign) {
         });
 }
 
+// Punto cardinal (8 vientos) para un rumbo en grados
+function cardinal(deg) {
+    return ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'][Math.round(deg / 45) % 8];
+}
+
+function telemetryCard(icon, label, value, note) {
+    return `
+        <div class="tp-card">
+            <div class="tp-card-icon"><i class="fas ${icon}"></i></div>
+            <div>
+                <span class="tp-card-label">${label}</span>
+                <span class="tp-card-value">${value}</span>
+                ${note ? `<span class="tp-card-note">${note}</span>` : ''}
+            </div>
+        </div>`;
+}
+
 function showFlightDetails(flight) {
+    const nf = new Intl.NumberFormat('es-ES');
     const icao24 = flight[0];
     const callsign = flight[1] ? flight[1].trim() : 'N/A';
     const originCountry = flight[2] || 'Desconocido';
     const lastUpdate = new Date(flight[4] * 1000).toLocaleString();
-    const altitude = flight[7] ? `${Math.round(flight[7])} metros` : 'N/A';
-    const velocity = flight[9] ? `${Math.round(flight[9] * 3.6)} km/h` : 'N/A';
-    const heading = flight[10] ? `${Math.round(flight[10])}°` : 'N/A';
-    const verticalRate = flight[11] !== null ? `${flight[11].toFixed(1)} m/s` : 'N/A';
-    const onGround = flight[8] ? 'Sí' : 'No';
+    const onGround = !!flight[8];
     const squawk = flight[14] || 'N/A';
+
+    // Altitud (m -> ft y nivel de vuelo), velocidad (m/s -> km/h y nudos), rumbo y régimen vertical
+    const altM = flight[7];
+    const altitude = altM != null
+        ? `${nf.format(Math.round(altM))} <small>m</small>`
+        : 'N/A';
+    const altNote = altM != null
+        ? `${nf.format(Math.round(altM * 3.28084))} ft · FL${String(Math.round(altM * 3.28084 / 100)).padStart(3, '0')}`
+        : '';
+    const speedMs = flight[9];
+    const velocity = speedMs != null
+        ? `${nf.format(Math.round(speedMs * 3.6))} <small>km/h</small>`
+        : 'N/A';
+    const speedNote = speedMs != null ? `${nf.format(Math.round(speedMs * 1.94384))} kts` : '';
+    const track = flight[10];
+    const heading = track != null
+        ? `${Math.round(track)}° <small>${cardinal(track)}</small>`
+        : 'N/A';
+    const vr = flight[11];
+    const verticalRate = vr != null ? `${vr.toFixed(1)} <small>m/s</small>` : 'N/A';
+    const vrNote = vr == null ? '' : (vr > 1 ? 'Ascendiendo' : (vr < -1 ? 'Descendiendo' : 'Vuelo nivelado'));
 
     // Interpretar fuente de posición
     let positionSource = 'Desconocida';
@@ -631,77 +713,36 @@ function showFlightDetails(flight) {
 
     // Crear contenido HTML para el panel
     const detailsHTML = `
-        <div class="flight-title">
-            <h4><i class="fas fa-plane me-2"></i>${callsign}</h4>
-            <p class="mb-0 text-muted">${icao24.toUpperCase()} - ${originCountry}</p>
+        <div class="tp-head">
+            <span class="tp-chip"><span class="pulse-dot"></span>${onGround ? 'En tierra' : 'En vuelo'}</span>
+            <span class="tp-id">ICAO24 ${escapeHtml(icao24.toUpperCase())}</span>
         </div>
 
-        <div class="info-section">
-            <h5><i class="fas fa-route me-2"></i>Ruta</h5>
-            <div id="route-section">${renderRouteSection('loading')}</div>
+        <div class="tp-title">
+            <h4>${escapeHtml(callsign)}</h4>
+            <p>${escapeHtml(originCountry)}</p>
         </div>
 
-        <div class="info-section">
-            <h5><i class="fas fa-info-circle me-2"></i>Información General</h5>
-            <div class="detail-row">
-                <div class="detail-label">ICAO24:</div>
-                <div class="detail-value">${icao24.toUpperCase()}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Callsign:</div>
-                <div class="detail-value">${callsign}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">País:</div>
-                <div class="detail-value">${originCountry}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Squawk:</div>
-                <div class="detail-value">${squawk}</div>
-            </div>
+        <div id="route-section">${renderRouteSection('loading')}</div>
+
+        <h5 class="tp-sub"><i class="fas fa-sliders"></i>Telemetría en vuelo</h5>
+        <div class="tp-grid">
+            ${telemetryCard('fa-arrows-up-down', 'Altitud', altitude, altNote)}
+            ${telemetryCard('fa-gauge-high', 'Velocidad', velocity, speedNote)}
+            ${telemetryCard('fa-compass', 'Rumbo', heading, '')}
+            ${telemetryCard('fa-arrow-trend-up', 'Régimen vertical', verticalRate, vrNote)}
+            ${telemetryCard('fa-hashtag', 'Squawk', escapeHtml(squawk), '')}
+            ${telemetryCard('fa-tower-broadcast', 'Fuente', positionSource, '')}
         </div>
 
-        <div class="info-section">
-            <h5><i class="fas fa-chart-line me-2"></i>Datos de Vuelo</h5>
-            <div class="detail-row">
-                <div class="detail-label">Altitud:</div>
-                <div class="detail-value">${altitude}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Velocidad:</div>
-                <div class="detail-value">${velocity}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Dirección:</div>
-                <div class="detail-value">${heading}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Tasa Vertical:</div>
-                <div class="detail-value">${verticalRate}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">En tierra:</div>
-                <div class="detail-value">${onGround}</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Fuente de datos:</div>
-                <div class="detail-value">${positionSource}</div>
-            </div>
+        <div class="tp-meta">
+            <div><strong>En tierra:</strong> ${onGround ? 'Sí' : 'No'}</div>
+            <div><strong>Última actualización:</strong> ${escapeHtml(lastUpdate)}</div>
         </div>
 
-        <div class="info-section">
-            <h5><i class="fas fa-clock me-2"></i>Tiempo</h5>
-            <div class="detail-row">
-                <div class="detail-label">Última actualización:</div>
-                <div class="detail-value">${lastUpdate}</div>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <button class="btn btn-outline-primary w-100" onclick="centerOnFlight('${icao24}')">
-                <i class="fas fa-search-location me-2"></i>Centrar en el mapa
-            </button>
-        </div>
+        <button type="button" class="tp-btn" onclick="centerOnFlight('${escapeHtml(icao24)}')">
+            <i class="fas fa-location-crosshairs"></i>Centrar en el mapa
+        </button>
     `;
 
     // Actualizar contenido y mostrar panel
@@ -709,15 +750,14 @@ function showFlightDetails(flight) {
     document.getElementById('flight-details-panel').classList.add('show');
 
     // Cargar la ruta origen -> destino (por callsign) y dibujarla en el mapa
-    loadRoute(callsign);
+    loadRoute(callsign, flight);
 }
-
 function closeFlightDetails() {
     document.getElementById('flight-details-panel').classList.remove('show');
 
     // Restaurar color del marcador seleccionado
     if (selectedFlight && markers[selectedFlight]) {
-        markers[selectedFlight].getElement().querySelector('i').style.color = '#0d6efd';
+        markers[selectedFlight].getElement().querySelector('i').style.color = PLANE_COLOR;
         selectedFlight = null;
     }
 
@@ -759,11 +799,11 @@ function searchFlight() {
             // Resaltar el marcador seleccionado
             if (selectedFlight && markers[selectedFlight]) {
                 const prevIcon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
-                if (prevIcon) prevIcon.style.color = '#0d6efd'; // Restaurar color del marcador anterior
+                if (prevIcon) prevIcon.style.color = PLANE_COLOR; // Restaurar color del marcador anterior
             }
 
             const currentIcon = markers[icao24].getElement().querySelector('.aircraft-icon');
-            if (currentIcon) currentIcon.style.color = '#ff4500'; // Resaltar el marcador actual
+            if (currentIcon) currentIcon.style.color = PLANE_SELECTED; // Resaltar el marcador actual
 
             selectedFlight = icao24; // Actualizar el avión seleccionado
             found = true;

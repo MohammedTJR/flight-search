@@ -93,20 +93,6 @@
     background: rgba(255, 255, 255, 0.16);
 }
 
-.pulse-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--fl-radar);
-    animation: fl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes fl-pulse {
-    50% {
-        opacity: 0.35;
-    }
-}
-
 .hero-title {
     font-size: clamp(2rem, 5.5vw, 3rem);
     font-weight: 800;

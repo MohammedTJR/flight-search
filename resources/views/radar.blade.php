@@ -11,54 +11,16 @@
 @endsection
 
 @section('contenido')
-    <div class="radar-header">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h4 class="mb-0"><i class="fas fa-plane me-2"></i>Radar de Vuelos en Tiempo Real</h4>
-                <div id="last-update" class="text-muted small">Última actualización: --:--:--</div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div id="total-flights" class="stat-value">0</div>
-                        <div class="stat-label">Vuelos</div>
-                    </div>
-                    <div class="stat-card">
-                        <div id="total-countries" class="stat-value">0</div>
-                        <div class="stat-label">Países</div>
-                    </div>
-                    <div class="stat-card">
-                        <div id="avg-altitude" class="stat-value">0</div>
-                        <div class="stat-label">Alt. media (m)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div id="avg-speed" class="stat-value">0</div>
-                        <div class="stat-label">Vel. media (km/h)</div>
-                    </div>
-                </div>
-                <!-- Campo de búsqueda -->
-                <div class="search-container">
-                    <input type="text" id="flight-search" class="form-control" placeholder="Buscar por ICAO24 o Callsign"
-                        oninput="filterSearchResults()">
-                    <button class="btn btn-primary ms-2" onclick="searchFlight()">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    <div id="search-results" class="search-results"></div> <!-- Contenedor para los resultados -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container-fluid px-0">
+    <div class="radar-stage">
         <div id="map">
             <div id="map-controls">
                 <div class="map-style-selector">
                     <button id="toggle-map-style" class="btn-map-control" title="Cambiar estilo de mapa">
-                        <i class="fas fa-layer-group"></i>
+                        <i class="fas fa-moon"></i>
                     </button>
                     <div id="map-style-options" class="map-style-options">
                         <div class="map-option" data-layer="osm">
-                            <i class="fas fa-map"></i> Mapa Estándar
+                            <i class="fas fa-map"></i> Mapa estándar
                         </div>
                         <div class="map-option" data-layer="esri">
                             <i class="fas fa-satellite"></i> Satélite
@@ -67,35 +29,57 @@
                             <i class="fas fa-mountain"></i> Topográfico
                         </div>
                         <div class="map-option" data-layer="dark">
-                            <i class="fas fa-moon"></i> Modo Oscuro
+                            <i class="fas fa-moon"></i> Modo oscuro
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="flight-details-panel">
+
+        <div class="radar-hud radar-header">
+            <div class="radar-status">
+                <span class="radar-live"><span class="pulse-dot"></span>Espacio aéreo en vivo</span>
+                <span class="radar-stat"><strong id="total-flights">0</strong> vuelos</span>
+                <span class="radar-stat"><strong id="total-countries">0</strong> países</span>
+                <span class="radar-stat radar-stat--extra"><strong id="avg-altitude">0</strong> m alt. media</span>
+                <span class="radar-stat radar-stat--extra"><strong id="avg-speed">0</strong> km/h vel. media</span>
+            </div>
+
+            <div class="radar-search">
+                <i class="fas fa-magnifying-glass radar-search-icon"></i>
+                <input type="text" id="flight-search" placeholder="Buscar por ICAO24 o callsign" autocomplete="off"
+                    oninput="filterSearchResults()" onkeydown="if (event.key === 'Enter') searchFlight()">
+                <button type="button" class="radar-search-btn" onclick="searchFlight()">Buscar</button>
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+
+        <aside id="flight-details-panel">
             <div class="panel-header" onclick="togglePanel()">
                 <i class="fas fa-chevron-up"></i>
             </div>
-            <i class="fas fa-times close-panel" onclick="closeFlightDetails()"></i>
+            <button type="button" class="close-panel" onclick="closeFlightDetails()" aria-label="Cerrar panel">
+                <i class="fas fa-xmark"></i>
+            </button>
             <div id="flight-details-content">
-                <div class="text-center py-5">
+                <div class="tp-empty">
                     <p>Selecciona un vuelo en el mapa para ver sus detalles</p>
                 </div>
             </div>
-        </div>
+        </aside>
 
         <div class="refresh-info">
-            <i class="fas fa-sync-alt me-2"></i>Datos actualizados cada 60 segundos
-            <div id="next-update" class="small text-muted"></div>
+            <div><i class="fas fa-rotate"></i>Datos actualizados cada 60 segundos</div>
+            <div id="next-update" class="refresh-sub"></div>
+            <div id="last-update" class="refresh-sub">Última actualización: --:--:--</div>
         </div>
-    </div>
 
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="spinner-border text-primary mb-3" role="status">
-            <span class="visually-hidden">Cargando...</span>
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner-border text-info mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p>Cargando datos de vuelos en tiempo real...</p>
         </div>
-        <p>Cargando datos de vuelos en tiempo real...</p>
     </div>
 
     <div id="mobile-warning-overlay" class="mobile-warning-overlay" style="display: none;">

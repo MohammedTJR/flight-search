@@ -28,6 +28,22 @@ body.bg-light {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Punto pulsante de "en vivo" (home y radar) */
+.pulse-dot {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--fl-radar);
+    animation: fl-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fl-pulse {
+    50% {
+        opacity: 0.35;
+    }
+}
+
 /* =========================== Navegación =========================== */
 .fl-nav {
     position: sticky;

@@ -1,0 +1,398 @@
+/* =====================================================================
+   Aero Minimal — sistema de diseño de FlyLow (nav, footer, cookies)
+   Cargado desde plantilla.blade.php, así que afecta a todas las páginas.
+   ===================================================================== */
+:root {
+    --fl-navy: #0a1628;
+    --fl-navy-deep: #060d19;
+    --fl-sky: #0ea5e9;
+    --fl-sky-dark: #0284c7;
+    --fl-sky-rgb: 14, 165, 233;
+    --fl-cyan: #06b6d4;
+    --fl-slate: #64748b;
+    --fl-ground: #f8fafc;
+    --fl-surface-low: #eff4ff;
+    --fl-surface-container: #e5eeff;
+    --fl-border: #e2e8f0;
+    --fl-ink: #0b1c30;
+    --fl-ink-soft: #45474c;
+    --fl-radar: #10b981;
+    --fl-shadow-card: 0 4px 20px -2px rgba(10, 22, 40, 0.05), 0 2px 6px -1px rgba(10, 22, 40, 0.03);
+    --fl-shadow-float: 0 20px 40px -15px rgba(10, 22, 40, 0.12), 0 0 1px 1px rgba(10, 22, 40, 0.04);
+}
+
+body.bg-light {
+    background-color: var(--fl-ground) !important;
+    color: var(--fl-ink);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================== Navegación =========================== */
+.fl-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: rgba(255, 255, 255, 0.82);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 1px 8px rgba(10, 22, 40, 0.05);
+}
+
+.fl-nav__inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+}
+
+.fl-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--fl-ink);
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+}
+
+.fl-brand img {
+    height: 34px;
+    width: auto;
+}
+
+.fl-nav__toggle {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: var(--fl-surface-low);
+    color: var(--fl-ink);
+}
+
+.fl-nav__menu {
+    flex-basis: 100%;
+    padding-top: 0.5rem;
+}
+
+.fl-nav__links,
+.fl-nav__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+}
+
+.fl-nav__actions {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--fl-border);
+}
+
+.fl-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--fl-ink-soft);
+    text-decoration: none;
+    background: none;
+    border: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.fl-nav__link:hover {
+    background: var(--fl-surface-low);
+    color: var(--fl-ink);
+}
+
+.fl-nav__link.active {
+    background: var(--fl-surface-container);
+    color: var(--fl-ink);
+}
+
+.fl-nav__link--cta {
+    background: var(--fl-navy);
+    color: #fff;
+    justify-content: center;
+}
+
+.fl-nav__link--cta.active,
+.fl-nav__link--cta:hover {
+    background: #16263f;
+    color: #fff;
+}
+
+.fl-account::after {
+    display: none;
+}
+
+.fl-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--fl-navy);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.fl-dropdown {
+    border: 1px solid var(--fl-border);
+    border-radius: 0.75rem;
+    padding: 0.4rem;
+    box-shadow: var(--fl-shadow-float);
+    font-size: 0.9rem;
+}
+
+.fl-dropdown .dropdown-item {
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--fl-ink-soft);
+}
+
+.fl-dropdown .dropdown-item i {
+    width: 1.25rem;
+    color: var(--fl-sky-dark);
+}
+
+.fl-dropdown .dropdown-item:hover {
+    background: var(--fl-surface-low);
+    color: var(--fl-ink);
+}
+
+.logout-button {
+    border: none !important;
+}
+
+@media (min-width: 992px) {
+    .fl-nav__inner {
+        flex-wrap: nowrap;
+        padding: 0 2rem;
+        min-height: 72px;
+    }
+
+    .fl-nav__menu {
+        display: flex !important;
+        flex: 1 1 auto;
+        height: auto !important;
+        padding-top: 0;
+        align-items: center;
+        justify-content: space-between;
+        margin-left: 1.5rem;
+    }
+
+    .fl-nav__links,
+    .fl-nav__actions {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .fl-nav__actions {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+    }
+}
+
+/* ============================== Footer ============================== */
+.fl-footer {
+    background: var(--fl-surface-low);
+    color: var(--fl-ink-soft);
+    margin-top: auto;
+}
+
+.fl-footer__inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 3rem 1rem 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .fl-footer__inner {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+.fl-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .fl-footer__grid {
+        grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+        gap: 2.5rem;
+    }
+}
+
+.fl-footer .fl-brand {
+    font-size: 1.1rem;
+}
+
+.fl-footer .fl-brand img {
+    height: 28px;
+}
+
+.fl-footer__about {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 20rem;
+    margin: 0.75rem 0 0;
+}
+
+.fl-footer__title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--fl-ink);
+    margin: 0 0 0.75rem;
+}
+
+.fl-footer__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+}
+
+.fl-footer a {
+    color: var(--fl-ink-soft);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.fl-footer a:hover {
+    color: var(--fl-ink);
+}
+
+.fl-footer__list i {
+    width: 1.25rem;
+    color: var(--fl-sky-dark);
+}
+
+.fl-footer__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(10, 22, 40, 0.08);
+    font-size: 0.8rem;
+}
+
+@media (min-width: 768px) {
+    .fl-footer__bottom {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+/* ============================== Cookies ============================== */
+.cookies-banner.fixed-bottom {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: 38rem;
+    padding: 1.25rem !important;
+    border: 1px solid var(--fl-border);
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.96) !important;
+    color: var(--fl-ink) !important;
+    box-shadow: 0 20px 50px -10px rgba(10, 22, 40, 0.22);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+@media (min-width: 576px) {
+    .cookies-banner.fixed-bottom {
+        left: auto;
+        right: 1.5rem;
+    }
+}
+
+.cookies-banner .container {
+    max-width: none;
+    padding: 0;
+}
+
+.cookies-banner h5 {
+    font-size: 0.95rem;
+    color: var(--fl-ink);
+}
+
+.cookies-banner h5 i {
+    color: var(--fl-sky-dark);
+}
+
+.cookies-banner p {
+    color: var(--fl-ink-soft);
+}
+
+.cookies-banner .col-lg-8,
+.cookies-banner .col-lg-4 {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    text-align: left !important;
+}
+
+.cookies-banner .d-flex.flex-column {
+    flex-direction: row !important;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.cookies-banner .btn {
+    flex-grow: 0 !important;
+    border-radius: 9999px;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+}
+
+.cookies-banner .btn-primary {
+    order: 3;
+    background: var(--fl-navy);
+    border-color: var(--fl-navy);
+    color: #fff;
+}
+
+.cookies-banner .btn-outline-light {
+    order: 2;
+    border-color: transparent;
+    color: var(--fl-ink-soft);
+}
+
+.cookies-banner .btn-link {
+    order: 1;
+    color: var(--fl-ink-soft) !important;
+    text-decoration: none;
+}
+
+.cookies-banner .btn-outline-light:hover,
+.cookies-banner .btn-link:hover {
+    background: var(--fl-surface-low);
+    color: var(--fl-ink) !important;
+}
+
+.custom-modal-content {
+    border-radius: 0.75rem;
+}
+
+.custom-modal-header.bg-primary {
+    background: var(--fl-navy) !important;
+}

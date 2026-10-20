@@ -1,89 +1,49 @@
-<footer class="text-white py-4 mt-auto">
-    <div class="container">
-        <div class="row gy-4">
-            <!-- Logo y descripción -->
-            <div class="col-lg-4 col-md-6">
-                <div class="mb-3">
-                    <img src="{{ asset('img/logo.png') }}" alt="FlyLow Logo" class="img-fluid"
-                        style="max-width: 150px;">
-                </div>
-                <p class="text-light">Encuentra los vuelos más económicos y planifica tu próximo viaje con FlyLow.
+<footer class="fl-footer">
+    <div class="fl-footer__inner">
+        <div class="fl-footer__grid">
+            <div>
+                <a href="{{ route('home') }}" class="fl-brand">
+                    <img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo">
+                    <span>FlyLow</span>
+                </a>
+                <p class="fl-footer__about">Encuentra los vuelos más económicos y planifica tu próximo viaje con FlyLow.
                 </p>
-                <div class="social-links d-flex gap-3 mt-3">
-                    <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-white"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                </div>
             </div>
 
-            <!-- Links rápidos -->
-            <div class="col-lg-2 col-md-6">
-                <h5 class="fw-bold mb-3">Enlaces</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="{{ route('home') }}" class="text-decoration-none text-light">Inicio</a>
-                    </li>
-                    <li class="mb-2"><a href="{{ route('radar') }}" class="text-decoration-none text-light">Radar</a>
-                    </li>
-                    <li class="mb-2"><a href="{{ route('favorites.show') }}"
-                            class="text-decoration-none text-light">Favoritos</a></li>
-                    <li class="mb-2"><a href="{{ route('profile.show') }}" class="text-decoration-none text-light">Mi
-                            cuenta</a></li>
+            <div>
+                <h4 class="fl-footer__title">Exploración</h4>
+                <ul class="fl-footer__list">
+                    <li><a href="{{ route('home') }}">Inicio</a></li>
+                    <li><a href="{{ route('radar') }}">Radar</a></li>
+                    <li><a href="{{ route('favorites.show') }}">Favoritos</a></li>
+                    <li><a href="{{ route('profile.show') }}">Mi cuenta</a></li>
                 </ul>
             </div>
 
-            <!-- Ayuda y soporte -->
-            <div class="col-lg-3 col-md-6">
-                <h5 class="fw-bold mb-3">Ayuda</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="{{ route('help') }}" class="text-decoration-none text-light">Centro de
-                            ayuda</a></li>
-                    <li class="mb-2"><a href="{{ route('faq') }}" class="text-decoration-none text-light">Preguntas
-                            frecuentes</a>
-                    </li>
-                    <li class="mb-2"><a href="{{ route('privacy') }}" class="text-decoration-none text-light">Política
-                            de privacidad</a>
-                    </li>
-                    <li class="mb-2"><a href="{{ route('terms') }}" class="text-decoration-none text-light">Términos y
-                            condiciones</a>
-                    </li>
+            <div>
+                <h4 class="fl-footer__title">Asistencia y legal</h4>
+                <ul class="fl-footer__list">
+                    <li><a href="{{ route('help') }}">Centro de ayuda</a></li>
+                    <li><a href="{{ route('faq') }}">Preguntas frecuentes</a></li>
+                    <li><a href="{{ route('privacy') }}">Política de privacidad</a></li>
+                    <li><a href="{{ route('terms') }}">Términos y condiciones</a></li>
                 </ul>
             </div>
 
-            <!-- Contacto -->
-            <div class="col-lg-3 col-md-6">
-                <h5 class="fw-bold mb-3">Contacto</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <a href="mailto:info@flylow.es" class="text-light text-decoration-none">
-                            <i class="fas fa-envelope me-2 text-primary"></i>info@flylow.es
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="tel:+34900123456" class="text-light text-decoration-none">
-                            <i class="fas fa-phone me-2 text-primary"></i>+34 900 123 456
-                        </a>
-                    </li>
-                    <li class="mb-2">
-                        <a href="https://maps.google.com/?q=Gandia,Valencia" target="_blank" class="text-light text-decoration-none">
-                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>Gandía, Valencia
-                        </a>
-                    </li>
+            <div>
+                <h4 class="fl-footer__title">Contacto</h4>
+                <ul class="fl-footer__list">
+                    <li><a href="mailto:info@flylow.es"><i class="fas fa-envelope"></i>info@flylow.es</a></li>
+                    <li><a href="tel:+34900123456"><i class="fas fa-phone"></i>+34 900 123 456</a></li>
+                    <li><a href="https://maps.google.com/?q=Gandia,Valencia" target="_blank" rel="noopener"><i
+                                class="fas fa-location-dot"></i>Gandía, Valencia</a></li>
                 </ul>
             </div>
         </div>
 
-        <!-- Línea divisoria -->
-        <hr class="my-3 bg-secondary">
-
-        <!-- Copyright -->
-        <div class="row">
-            <div class="col-md-6">
-                <p class="mb-0">&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <p class="mb-0">Diseñado por MOTJR</p>
-            </div>
+        <div class="fl-footer__bottom">
+            <span>&copy; {{ date('Y') }} FlyLow. Todos los derechos reservados.</span>
+            <span>Diseñado por MOTJR</span>
         </div>
     </div>
 </footer>

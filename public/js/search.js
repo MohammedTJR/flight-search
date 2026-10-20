@@ -52,6 +52,7 @@ jQuery.noConflict();
                             .city + ', ' + closestAirport.iata + ')');
                         // Guarda solo el código IATA en el campo oculto (lo que se envía).
                         $('#departure_code').val(closestAirport.iata);
+                        syncCodeBadges();
                     });
                 } else {
                     // Muestra un mensaje de error si la geolocalización no es soportada.
@@ -95,10 +96,19 @@ jQuery.noConflict();
             getLocation();
         });
 
+        // Muestra el código IATA elegido junto a la etiqueta de cada campo.
+        function syncCodeBadges() {
+            ['departure', 'arrival'].forEach(function (id) {
+                var code = $('#' + id + '_code').val();
+                $('#' + id + '-badge').text(code).prop('hidden', !code);
+            });
+        }
+
         $('#departure').on('input', function () {
             var searchText = $(this).val().toLowerCase();
             // Al teclear se invalida la selección previa: el código se fija solo al elegir de la lista.
             $('#departure_code').val('');
+            syncCodeBadges();
 
             if (searchText.length > 0) {
                 $('#departure-dropdown').show();
@@ -119,6 +129,7 @@ jQuery.noConflict();
         $('#arrival').on('input', function () {
             var searchText = $(this).val().toLowerCase();
             $('#arrival_code').val('');
+            syncCodeBadges();
 
             if (searchText.length > 0) {
                 $('#arrival-dropdown').show();
@@ -139,12 +150,14 @@ jQuery.noConflict();
         $(document).on('click', '#departure-dropdown div', function () {
             $('#departure').val($(this).text());              // nombre completo (visible)
             $('#departure_code').val($(this).data('iata'));   // solo el código (se envía)
+            syncCodeBadges();
             $('#departure-dropdown').hide();
         });
 
         $(document).on('click', '#arrival-dropdown div', function () {
             $('#arrival').val($(this).text());                // nombre completo (visible)
             $('#arrival_code').val($(this).data('iata'));     // solo el código (se envía)
+            syncCodeBadges();
             $('#arrival-dropdown').hide();
         });
 
@@ -168,6 +181,7 @@ jQuery.noConflict();
             var tmpCode = $dc.val();
             $dc.val($ac.val());
             $ac.val(tmpCode);
+            syncCodeBadges();
 
             $('#departure-dropdown, #arrival-dropdown').hide();
         });
@@ -223,6 +237,8 @@ jQuery.noConflict();
                     text: 'El número máximo de pasajeros es 9'
                 });
             }
+
+            refreshPassengerSummary();
         }
 
         function getTotalPassengers() {
@@ -232,46 +248,38 @@ jQuery.noConflict();
                 parseInt(document.getElementById('bebes_regazo').value);
         }
 
-        function actualizarPasajeros() {
+        // Actualiza el resumen del botón ("2 pasajeros · Business") y su tooltip detallado.
+        function refreshPassengerSummary() {
             const total = getTotalPassengers();
             const adultos = parseInt(document.getElementById('adultos').value);
             const ninos = parseInt(document.getElementById('ninos').value);
             const bebesAsiento = parseInt(document.getElementById('bebes_asiento').value);
             const bebesRegazo = parseInt(document.getElementById('bebes_regazo').value);
-            
-            // Crear el texto resumen de pasajeros con iconos
-            let summaryText = [];
-            if (adultos > 0) summaryText.push(`${adultos}<i class="fas fa-user ms-1"></i>`);
-            if (ninos > 0) summaryText.push(`${ninos}<i class="fas fa-child ms-1"></i>`);
-            if (bebesAsiento > 0) summaryText.push(`${bebesAsiento}<i class="fas fa-baby ms-1"></i>`);
-            if (bebesRegazo > 0) summaryText.push(`${bebesRegazo}<i class="fas fa-baby-carriage ms-1"></i>`);
-            
-            const btnText = document.querySelector('[data-bs-toggle="dropdown"] span');
-            btnText.innerHTML = `<i class="fas fa-users me-2"></i>Seleccionar pasajeros <span class="text-primary">${summaryText.join(' ')}</span>`;
-            
-            // Crear el texto del tooltip más detallado
+            const clase = document.getElementById('travel_class');
+            const claseTexto = clase.options[clase.selectedIndex].text;
+
+            document.getElementById('passengers-summary').textContent =
+                `${total} ${total === 1 ? 'pasajero' : 'pasajeros'} · ${claseTexto}`;
+
             let tooltipText = [];
             if (adultos > 0) tooltipText.push(`${adultos} Adulto${adultos !== 1 ? 's' : ''}`);
             if (ninos > 0) tooltipText.push(`${ninos} Niño${ninos !== 1 ? 's' : ''}`);
             if (bebesAsiento > 0) tooltipText.push(`${bebesAsiento} Bebé${bebesAsiento !== 1 ? 's' : ''} con asiento`);
             if (bebesRegazo > 0) tooltipText.push(`${bebesRegazo} Bebé${bebesRegazo !== 1 ? 's' : ''} en regazo`);
-            
-            // Actualizar el tooltip
-            const button = document.querySelector('[data-bs-toggle="dropdown"]');
-            button.setAttribute('title', tooltipText.join(', '));
-            
-            // Inicializar el tooltip de Bootstrap si no existe
-            if (!bootstrap.Tooltip.getInstance(button)) {
-                new bootstrap.Tooltip(button);
-            }
+            document.querySelector('.pax-trigger').setAttribute('title', tooltipText.join(', '));
+        }
 
-            // Cerrar el dropdown
-            const dropdownMenu = document.querySelector('.dropdown-menu');
-            const dropdown = bootstrap.Dropdown.getInstance(dropdownMenu.previousElementSibling);
-            if (dropdown) {
-                dropdown.hide();
+        function actualizarPasajeros() {
+            refreshPassengerSummary();
+
+            // Cerrar el desplegable (Bootstrap no se expone como global, así que se alterna con su propio botón)
+            const trigger = document.querySelector('.pax-trigger');
+            if (trigger.classList.contains('show')) {
+                trigger.click();
             }
         }
+
+        $('#travel_class').on('change', refreshPassengerSummary);
 
         // El ancho del desplegable lo controla el CSS (ancho fijo compacto)
 

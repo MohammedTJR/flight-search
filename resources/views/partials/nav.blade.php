@@ -1,55 +1,66 @@
-<header class="d-flex flex-wrap justify-content-center py-3 border-bottom shadow-sm sticky-top bg-white">
-    <div class="container d-flex flex-wrap justify-content-between align-items-center">
-        <!-- Logo y nombre -->
-        <a href="{{ route('home') }}"
-            class="d-flex align-items-center mb-2 mb-md-0 me-md-auto text-primary text-decoration-none">
-            <img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo" style="width:50px; height:auto;" class="me-2">
-            <span class="fs-3 fw-semibold">FlyLow</span>
+<header class="fl-nav">
+    <div class="fl-nav__inner">
+        <a href="{{ route('home') }}" class="fl-brand">
+            <img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo">
+            <span>FlyLow</span>
         </a>
 
-        <!-- Menú de navegación -->
-        <ul class="nav nav-pills align-items-center">
-            <!-- Enlace al Radar (siempre visible) -->
-            <li class="nav-item">
-                <a href="{{ route('radar') }}" class="nav-link {{ request()->routeIs('radar.*') ? 'active' : '' }}">
-                    <i class="fas fa-satellite-dish me-2"></i>Radar en vivo
-                </a>
-            </li>
+        <button class="fl-nav__toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#flNavMenu"
+            aria-controls="flNavMenu" aria-expanded="false" aria-label="Abrir menú">
+            <i class="fas fa-bars"></i>
+        </button>
 
-            @auth
-                <!-- Dropdown para usuarios autenticados (visible en todas las pantallas) -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-2"></i>{{ Auth::user()->name }}
+        <div class="collapse fl-nav__menu" id="flNavMenu">
+            <nav class="fl-nav__links">
+                <a href="{{ route('radar') }}" class="fl-nav__link {{ request()->routeIs('radar*') ? 'active' : '' }}">
+                    <i class="fas fa-satellite-dish"></i>Radar en vivo
+                </a>
+                @auth
+                    <a href="{{ route('flight.tracking.index') }}"
+                        class="fl-nav__link {{ request()->routeIs('flight.tracking.*') ? 'active' : '' }}">Mis vuelos</a>
+                    <a href="{{ route('favorites.show') }}"
+                        class="fl-nav__link {{ request()->routeIs('favorites.*') ? 'active' : '' }}">Favoritos</a>
+                @endauth
+                <a href="{{ route('help') }}" class="fl-nav__link {{ request()->routeIs('help') ? 'active' : '' }}">Centro
+                    de ayuda</a>
+            </nav>
+
+            <div class="fl-nav__actions">
+                @auth
+                    <div class="dropdown">
+                        <button class="fl-nav__link fl-account dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <span class="fl-avatar"><i class="fas fa-user"></i></span>
+                            {{ Auth::user()->name }}
+                            <i class="fas fa-chevron-down small"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end fl-dropdown">
+                            <li><a class="dropdown-item" href="{{ route('flight.tracking.index') }}"><i
+                                        class="fas fa-plane"></i>Mis vuelos</a></li>
+                            <li><a class="dropdown-item" href="{{ route('favorites.show') }}"><i
+                                        class="fas fa-heart"></i>Favoritos</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i
+                                        class="fas fa-user"></i>Mi perfil</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item logout-button">
+                                        <i class="fas fa-sign-out-alt"></i>Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}"
+                        class="fl-nav__link fl-nav__link--cta {{ request()->routeIs('login') ? 'active' : '' }}">
+                        <i class="fas fa-right-to-bracket"></i>Iniciar sesión
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('flight.tracking.index') }}"><i
-                                    class="fas fa-plane me-2"></i>Mis Vuelos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('favorites.show') }}"><i
-                                    class="fas fa-heart me-2"></i>Favoritos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i
-                                    class="fas fa-user me-2"></i>Mi Perfil</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item logout-button">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
-            @else
-                <!-- Enlaces para usuarios no autenticados -->
-                <li class="nav-item">
-                    <a href="{{ route('login') }}" class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}">
-                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                    </a>
-                </li>
-            @endauth
-        </ul>
+                @endauth
+            </div>
+        </div>
     </div>
 </header>

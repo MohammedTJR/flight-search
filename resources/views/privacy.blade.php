@@ -3,111 +3,93 @@
 @section('titulo_pagina', 'Política de Privacidad | FlyLow')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('css/privacy.css') }}">
+<link rel="stylesheet" href="{{ asset('css/content.css') }}?v={{ filemtime(public_path('css/content.css')) }}">
 @endsection
 
 @section('contenido')
-<div class="privacy-page bg-light">
-    <!-- Hero Section -->
-    <div class="privacy-hero py-5 bg-dark text-white">
-        <div class="container py-4">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb small">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white-50">Inicio</a></li>
-                            <li class="breadcrumb-item active text-white" aria-current="page">Política de Privacidad</li>
-                        </ol>
-                    </nav>
-                    <h1 class="display-4 fw-bold mb-3">Política de Privacidad</h1>
-                    <p class="lead mb-4">Última actualización: {{ now()->format('d/m/Y') }}</p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="#resumen" class="btn btn-outline-light">Resumen Ejecutivo</a>
-                        <a href="#control-datos" class="btn btn-outline-light">Control de tus datos</a>
-                        <a href="#cookies" class="btn btn-outline-light">Uso de Cookies</a>
-                    </div>
-                </div>
-                <div class="col-lg-4 mt-4 mt-lg-0 text-center">
-                    <img src="{{ asset('img/privacy-shield.png') }}" alt="Protección de datos" class="img-fluid" style="max-height: 200px;">
-                </div>
-            </div>
+<section class="ct-hero">
+    <div class="ct-wrap">
+        <ol class="ct-crumbs">
+            <li><a href="{{ route('home') }}">Inicio</a></li>
+            <li>Política de Privacidad</li>
+        </ol>
+        <span class="ct-chip"><i class="fas fa-shield-halved"></i>Conforme al RGPD (UE) 2016/679 y LOPDGDD 3/2018</span>
+        <h1 class="ct-title">Política de Privacidad</h1>
+        <p class="ct-lead">Última actualización: {{ now()->format('d/m/Y') }}. En FlyLow protegemos tu privacidad y <strong>no vendemos tus datos personales</strong>.</p>
+        <div class="ct-actions">
+            <a href="#cookies" class="ct-btn ct-btn--primary"><i class="fas fa-cookie-bite"></i>Uso de cookies</a>
+            <a href="#control-datos" class="ct-btn"><i class="fas fa-user-shield"></i>Control de tus datos</a>
+            <button type="button" class="ct-btn ct-btn--soft" onclick="window.print()"><i class="fas fa-print"></i>Imprimir</button>
+        </div>
+
+        <div class="ct-summary" id="resumen">
+            <article class="ct-summary-card">
+                <span class="ico"><i class="fas fa-database"></i></span>
+                <small>01 / Recopilación</small>
+                <h2>Qué recopilamos</h2>
+                <ul>
+                    <li>Datos de búsqueda (origen, destino, fechas)</li>
+                    <li>Información de cuenta (email, nombre)</li>
+                    <li>Comportamiento en el sitio (anónimo)</li>
+                    <li>Datos de pago (procesados externamente)</li>
+                </ul>
+            </article>
+            <article class="ct-summary-card">
+                <span class="ico"><i class="fas fa-lock"></i></span>
+                <small>02 / Protección</small>
+                <h2>Cómo protegemos</h2>
+                <ul>
+                    <li>Encriptación SSL/TLS</li>
+                    <li>Protección contra breaches</li>
+                    <li>Accesos restringidos</li>
+                    <li>Auditorías periódicas</li>
+                </ul>
+            </article>
+            <article class="ct-summary-card">
+                <span class="ico"><i class="fas fa-share-nodes"></i></span>
+                <small>03 / Transferencias</small>
+                <h2>Compartir datos</h2>
+                <ul>
+                    <li>Aerolíneas para reservas</li>
+                    <li>Proveedores de pago</li>
+                    <li>Análisis de tráfico (Google Analytics)</li>
+                    <li>Solo cuando es necesario</li>
+                </ul>
+            </article>
+            <article class="ct-summary-card">
+                <span class="ico"><i class="fas fa-user-gear"></i></span>
+                <small>04 / Control</small>
+                <h2>Tus derechos</h2>
+                <ul>
+                    <li>Acceso a tus datos</li>
+                    <li>Solicitar corrección</li>
+                    <li>Pedir eliminación</li>
+                    <li>Oponerte al procesamiento</li>
+                </ul>
+            </article>
         </div>
     </div>
+</section>
 
-    <!-- Quick Summary -->
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card border-0 shadow-sm my-5" id="resumen">
-                    <div class="card-body p-4 p-lg-5">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="icon-wrapper bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                                <i class="fas fa-file-contract fa-lg text-primary"></i>
-                            </div>
-                            <h2 class="mb-0">Resumen Ejecutivo</h2>
-                        </div>
-                        
-                        <div class="alert alert-primary">
-                            <i class="fas fa-info-circle me-2"></i> Esta sección resume nuestra política completa en <strong>términos sencillos</strong>. Para detalles legales, consulta las secciones correspondientes.
-                        </div>
-                        
-                        <div class="row g-4 mt-3">
-                            <div class="col-md-6">
-                                <div class="p-4 border rounded h-100">
-                                    <h5 class="fw-bold"><i class="fas fa-database text-primary me-2"></i> Qué recopilamos</h5>
-                                    <ul class="mb-0">
-                                        <li>Datos de búsqueda (origen, destino, fechas)</li>
-                                        <li>Información de cuenta (email, nombre)</li>
-                                        <li>Comportamiento en el sitio (anónimo)</li>
-                                        <li>Datos de pago (procesados externamente)</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-4 border rounded h-100">
-                                    <h5 class="fw-bold"><i class="fas fa-shield-alt text-success me-2"></i> Cómo protegemos</h5>
-                                    <ul class="mb-0">
-                                        <li>Encriptación SSL/TLS</li>
-                                        <li>Protección contra breaches</li>
-                                        <li>Accesos restringidos</li>
-                                        <li>Auditorías periódicas</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-4 border rounded h-100">
-                                    <h5 class="fw-bold"><i class="fas fa-share-square text-info me-2"></i> Compartir datos</h5>
-                                    <ul class="mb-0">
-                                        <li>Aerolíneas para reservas</li>
-                                        <li>Proveedores de pago</li>
-                                        <li>Análisis de tráfico (Google Analytics)</li>
-                                        <li>Solo cuando es necesario</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="p-4 border rounded h-100">
-                                    <h5 class="fw-bold"><i class="fas fa-user-cog text-warning me-2"></i> Tus derechos</h5>
-                                    <ul class="mb-0">
-                                        <li>Acceso a tus datos</li>
-                                        <li>Solicitar corrección</li>
-                                        <li>Pedir eliminación</li>
-                                        <li>Oponerte al procesamiento</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Full Policy Content -->
-                <div class="privacy-content mb-5">
+<div class="ct-wrap ct-body">
+    <div class="ct-layout">
+        <aside class="ct-side">
+            <nav class="ct-card ct-toc" aria-label="Índice del documento">
+                <div class="ct-toc-head">Índice del documento <b>5 secciones</b></div>
+                <ol>
+                    <li><a href="#intro"><span class="n">1</span>Introducción</a></li>
+                    <li><a href="#datos"><span class="n">2</span>Datos que recopilamos</a></li>
+                    <li><a href="#finalidad"><span class="n">3</span>Finalidad del tratamiento</a></li>
+                    <li><a href="#control-datos"><span class="n">4</span>Control de tus datos</a></li>
+                    <li><a href="#cookies"><span class="n">5</span>Política de cookies</a></li>
+                </ol>
+            </nav>
+        </aside>
+
+        <main class="lg-content">
                     <!-- 1. Introducción -->
-                    <section class="mb-5">
-                        <h2 class="fw-bold mb-4 d-flex align-items-center">
-                            <span class="section-number me-3">1</span>
-                            Introducción
-                        </h2>
+                    <section class="lg-section" id="intro">
+                        <h2 class="lg-head"><span>1</span>Introducción</h2>
                         <p>En <strong>FlyLow</strong> (operado por MOTJR), protegemos tu privacidad conforme al <strong>RGPD (UE) 2016/679</strong> y <strong>LOPDGDD 3/2018</strong>. Esta política explica:</p>
                         <ul>
                             <li>Qué información recopilamos y por qué</li>
@@ -118,11 +100,8 @@
                     </section>
                     
                     <!-- 2. Datos recopilados -->
-                    <section class="mb-5">
-                        <h2 class="fw-bold mb-4 d-flex align-items-center">
-                            <span class="section-number me-3">2</span>
-                            Datos que Recopilamos
-                        </h2>
+                    <section class="lg-section" id="datos">
+                        <h2 class="lg-head"><span>2</span>Datos que Recopilamos</h2>
                         
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white border-0">
@@ -187,11 +166,8 @@
                     </section>
                     
                     <!-- 3. Uso de datos -->
-                    <section class="mb-5">
-                        <h2 class="fw-bold mb-4 d-flex align-items-center">
-                            <span class="section-number me-3">3</span>
-                            Finalidad del Tratamiento
-                        </h2>
+                    <section class="lg-section" id="finalidad">
+                        <h2 class="lg-head"><span>3</span>Finalidad del Tratamiento</h2>
                         
                         <div class="card border-0 shadow-sm">
                             <div class="card-body">
@@ -255,11 +231,8 @@
                     </section>
                     
                     <!-- 4. Control de datos -->
-                    <section class="mb-5" id="control-datos">
-                        <h2 class="fw-bold mb-4 d-flex align-items-center">
-                            <span class="section-number me-3">4</span>
-                            Control de Tus Datos
-                        </h2>
+                    <section class="lg-section" id="control-datos">
+                        <h2 class="lg-head"><span>4</span>Control de Tus Datos</h2>
                         
                         <div class="card border-0 shadow-sm">
                             <div class="card-body">
@@ -319,11 +292,8 @@
                     </section>
                     
                     <!-- 5. Cookies -->
-                    <section class="mb-5" id="cookies">
-                        <h2 class="fw-bold mb-4 d-flex align-items-center">
-                            <span class="section-number me-3">5</span>
-                            Política de Cookies
-                        </h2>
+                    <section class="lg-section" id="cookies">
+                        <h2 class="lg-head"><span>5</span>Política de Cookies</h2>
                         
                         <div class="card border-0 shadow-sm">
                             <div class="card-body">
@@ -395,60 +365,31 @@
                             </div>
                         </div>
                     </section>
-                </div>
 
-                <div class="card border-0 shadow-sm mt-4 mb-5 bg-light">
-                    <div class="card-body p-4 text-center">
-                        <div class="d-flex align-items-center justify-content-center mb-3">
-                            <i class="fas fa-info-circle fa-lg text-primary me-2"></i>
-                            <h5 class="mb-0 fw-bold">Nota importante sobre este proyecto</h5>
-                        </div>
-                        <p class="mb-0">
-                            Esta aplicación forma parte de un Trabajo de Fin de Grado (TFG).
-                            El contenido combina <strong>funcionalidades reales implementadas</strong>,
-                            <strong>características planificadas para desarrollo futuro</strong>
-                            y <strong>elementos ficticios</strong> con fines demostrativos.
-                            Algunos de los datos mostrados son simulados y no representan servicios reales.
-                        </p>
-                    </div>
-                </div>
-                
-                <!-- Final CTA -->
-                <div class="card border-0 shadow-sm bg-white mb-5">
-                    <div class="card-body p-5 text-center">
-                        <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                        <h3 class="fw-bold mb-3">¿Tienes preguntas sobre privacidad?</h3>
-                        <p class="lead mb-4">Nuestro Delegado de Protección de Datos está disponible para resolver tus dudas.</p>
-                        <a href="mailto:info@flylow.com" class="btn btn-primary px-4 me-2">
-                            <i class="fas fa-envelope me-2"></i> Contactar DPO
-                        </a>
-                        <a href="{{ route('help') }}" class="btn btn-outline-primary px-4">
-                            <i class="fas fa-phone me-2"></i> Llamar
-                        </a>
-                    </div>
+            <div class="ct-project">
+                <i class="fas fa-circle-info"></i>
+                <div>
+                    <h2>Nota importante sobre este proyecto</h2>
+                    <p>Esta aplicación forma parte de un Trabajo de Fin de Grado (TFG). El contenido combina
+                        <strong>funcionalidades reales implementadas</strong>, <strong>características planificadas para
+                            desarrollo futuro</strong> y <strong>elementos ficticios</strong> con fines demostrativos.
+                        Algunos de los datos mostrados son simulados y no representan servicios reales.</p>
                 </div>
             </div>
-        </div>
+
+            <section class="ct-cta">
+                <h2>¿Tienes preguntas sobre privacidad?</h2>
+                <p>Nuestro Delegado de Protección de Datos está disponible para resolver tus dudas.</p>
+                <div class="ct-cta-actions">
+                    <a href="mailto:info@flylow.com" class="ct-btn ct-btn--primary"><i class="far fa-envelope"></i>Contactar DPO</a>
+                    <a href="{{ route('help') }}" class="ct-btn"><i class="fas fa-phone"></i>Llamar</a>
+                </div>
+            </section>
+        </main>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll para anclas
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                window.scrollTo({
-                    top: target.offsetTop - 100,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-});
-</script>
+    <script src="{{ asset('js/toc.js') }}?v={{ filemtime(public_path('js/toc.js')) }}"></script>
 @endsection

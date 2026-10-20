@@ -3,47 +3,48 @@
 @section('titulo_pagina', 'Términos y Condiciones | FlyLow - Comparador de vuelos')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/terms.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/content.css') }}?v={{ filemtime(public_path('css/content.css')) }}">
 @endsection
 
 @section('contenido')
-    <div class="terms-page bg-light">
-        <!-- Hero Section -->
-        <div class="terms-hero py-5 bg-primary text-white">
-            <div class="container py-4">
-                <div class="row align-items-center">
-                    <div class="col-lg-8">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb small">
-                                <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-white-50">Inicio</a>
-                                </li>
-                                <li class="breadcrumb-item active text-white" aria-current="page">Términos y Condiciones
-                                </li>
-                            </ol>
-                        </nav>
-                        <h1 class="display-4 fw-bold mb-3">Términos y Condiciones</h1>
-                        <p class="lead mb-4">Última actualización: {{ now()->format('d/m/Y') }}</p>
-                        <div class="d-flex flex-wrap gap-3">
-                            <a href="#definiciones" class="btn btn-outline-light">Definiciones</a>
-                            <a href="#uso-servicio" class="btn btn-outline-light">Uso del Servicio</a>
-                            <a href="#limitacion" class="btn btn-outline-light">Responsabilidades</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 mt-4 mt-lg-0 text-center">
-                        <img src="{{ asset('img/terms-document.png') }}" alt="Documento legal" class="img-fluid"
-                            style="max-height: 200px;">
-                    </div>
-                </div>
+    <section class="ct-hero">
+        <div class="ct-wrap">
+            <ol class="ct-crumbs">
+                <li><a href="{{ route('home') }}">Inicio</a></li>
+                <li>Términos y Condiciones</li>
+            </ol>
+            <span class="ct-chip"><i class="far fa-file-lines"></i>Última actualización: {{ now()->format('d/m/Y') }}</span>
+            <h1 class="ct-title">Términos y Condiciones</h1>
+            <p class="ct-lead">Condiciones que regulan el uso del sitio web FlyLow, un comparador de vuelos independiente.</p>
+            <div class="ct-actions">
+                <a href="{{ route('privacy') }}" class="ct-btn ct-btn--primary"><i class="fas fa-shield-halved"></i>Política de Privacidad</a>
+                <button type="button" class="ct-btn ct-btn--soft" onclick="window.print()"><i class="fas fa-print"></i>Imprimir</button>
             </div>
         </div>
+    </section>
 
-        <!-- Main Content -->
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="terms-content my-5">
+    <div class="ct-wrap ct-body">
+        <div class="ct-layout">
+            <aside class="ct-side">
+                <nav class="ct-card ct-toc" aria-label="Índice de cláusulas">
+                    <div class="ct-toc-head">Índice de cláusulas <b>8 artículos</b></div>
+                    <ol>
+                        <li><a href="#preambulo"><span class="n">§</span>Introducción</a></li>
+                        <li><a href="#definiciones"><span class="n">1</span>Definiciones</a></li>
+                        <li><a href="#uso-servicio"><span class="n">2</span>Uso del servicio</a></li>
+                        <li><a href="#reservas"><span class="n">3</span>Reservas y pagos</a></li>
+                        <li><a href="#precios"><span class="n">4</span>Política de precios</a></li>
+                        <li><a href="#propiedad"><span class="n">5</span>Propiedad intelectual</a></li>
+                        <li><a href="#limitacion"><span class="n">6</span>Limitación de responsabilidad</a></li>
+                        <li><a href="#modificaciones"><span class="n">7</span>Modificaciones</a></li>
+                        <li><a href="#ley-aplicable"><span class="n">8</span>Disposiciones finales</a></li>
+                    </ol>
+                </nav>
+            </aside>
+
+            <main class="lg-content">
                         <!-- Introducción -->
-                        <section class="mb-5">
+                        <section id="preambulo" class="lg-section">
                             <div class="alert alert-warning">
                                 <i class="fas fa-exclamation-triangle me-2"></i> <strong>Importante:</strong> Al utilizar
                                 FlyLow, aceptas estos Términos y Condiciones en su totalidad. Si no estás de acuerdo, no
@@ -55,11 +56,8 @@
                         </section>
 
                         <!-- 1. Definiciones -->
-                        <section id="definiciones" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">1</span>
-                                Definiciones
-                            </h2>
+                        <section id="definiciones" class="lg-section">
+                            <h2 class="lg-head"><span>1</span>Definiciones</h2>
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
                                     <dl class="row">
@@ -88,11 +86,8 @@
                         </section>
 
                         <!-- 2. Uso del Servicio -->
-                        <section id="uso-servicio" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">2</span>
-                                Uso del Servicio
-                            </h2>
+                        <section id="uso-servicio" class="lg-section">
+                            <h2 class="lg-head"><span>2</span>Uso del Servicio</h2>
 
                             <div class="card border-0 shadow-sm mb-4">
                                 <div class="card-header bg-white border-0">
@@ -143,11 +138,8 @@
                         </section>
 
                         <!-- 3. Reservas -->
-                        <section id="reservas" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">3</span>
-                                Reservas y Pagos
-                            </h2>
+                        <section id="reservas" class="lg-section">
+                            <h2 class="lg-head"><span>3</span>Reservas y Pagos</h2>
 
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
@@ -207,11 +199,8 @@
                         </section>
 
                         <!-- 4. Precios -->
-                        <section id="precios" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">4</span>
-                                Política de Precios
-                            </h2>
+                        <section id="precios" class="lg-section">
+                            <h2 class="lg-head"><span>4</span>Política de Precios</h2>
 
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
@@ -274,11 +263,8 @@
                         </section>
 
                         <!-- 5. Propiedad Intelectual -->
-                        <section id="propiedad" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">5</span>
-                                Propiedad Intelectual
-                            </h2>
+                        <section id="propiedad" class="lg-section">
+                            <h2 class="lg-head"><span>5</span>Propiedad Intelectual</h2>
 
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
@@ -320,11 +306,8 @@
                         </section>
 
                         <!-- 6. Limitación de Responsabilidad -->
-                        <section id="limitacion" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">6</span>
-                                Limitación de Responsabilidad
-                            </h2>
+                        <section id="limitacion" class="lg-section">
+                            <h2 class="lg-head"><span>6</span>Limitación de Responsabilidad</h2>
 
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
@@ -367,11 +350,8 @@
                         </section>
 
                         <!-- 7. Modificaciones -->
-                        <section id="modificaciones" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">7</span>
-                                Modificaciones
-                            </h2>
+                        <section id="modificaciones" class="lg-section">
+                            <h2 class="lg-head"><span>7</span>Modificaciones</h2>
 
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
@@ -417,11 +397,8 @@
                         </section>
 
                         <!-- 8. Ley Aplicable -->
-                        <section id="ley-aplicable" class="mb-5">
-                            <h2 class="fw-bold mb-4 d-flex align-items-center">
-                                <span class="section-number me-3">8</span>
-                                Disposiciones Finales
-                            </h2>
+                        <section id="ley-aplicable" class="lg-section">
+                            <h2 class="lg-head"><span>8</span>Disposiciones Finales</h2>
 
                             <div class="card border-0 shadow-sm">
                                 <div class="card-body">
@@ -460,45 +437,22 @@
                             </div>
                         </section>
 
-                        <!-- Nota Importante sobre el Proyecto -->
-                        <div class="card border-0 shadow-sm mt-4 bg-light">
-                            <div class="card-body p-4 text-center">
-                                <div class="d-flex align-items-center justify-content-center mb-3">
-                                    <i class="fas fa-info-circle fa-lg text-primary me-2"></i>
-                                    <h5 class="mb-0 fw-bold">Nota importante sobre este proyecto</h5>
-                                </div>
-                                <p class="mb-0">
-                                    Esta aplicación forma parte de un Proyecto de Fin de Ciclo (PFC).
-                                    El contenido combina <strong>funcionalidades reales implementadas</strong>,
-                                    <strong>características planificadas para desarrollo futuro</strong>
-                                    y <strong>elementos ficticios</strong> con fines demostrativos.
-                                    Algunos de los datos mostrados son simulados y no representan servicios reales.
-                                </p>
-                            </div>
-                        </div>
+                <div class="ct-project">
+                    <i class="fas fa-circle-info"></i>
+                    <div>
+                        <h2>Nota importante sobre este proyecto</h2>
+                        <p>Esta aplicación forma parte de un Proyecto de Fin de Ciclo (PFC). El contenido combina
+                            <strong>funcionalidades reales implementadas</strong>, <strong>características planificadas
+                                para desarrollo futuro</strong> y <strong>elementos ficticios</strong> con fines
+                            demostrativos. Algunos de los datos mostrados son simulados y no representan servicios
+                            reales.</p>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Smooth scroll for anchors
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        window.scrollTo({
-                            top: target.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="{{ asset('js/toc.js') }}?v={{ filemtime(public_path('js/toc.js')) }}"></script>
 @endsection

@@ -72,6 +72,15 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# --- Permisos: este script corre como root, así que las cachés y vistas compiladas
+#     quedan con dueño root y PHP-FPM no puede reescribirlas (500 al cambiar una vista).
+#     Se devuelven al usuario con el que corre PHP-FPM (por defecto www-data). ---
+WEB_USER="$(ps -eo user,comm | awk '$2 ~ /^php-fpm/ && $1 != "root" {print $1; exit}' || true)"
+WEB_USER="${WEB_USER:-www-data}"
+echo "==> permisos de storage y bootstrap/cache para $WEB_USER"
+chown -R "$WEB_USER":"$WEB_USER" storage bootstrap/cache
+chmod -R ug+rwX storage bootstrap/cache
+
 # --- Recargar PHP-FPM para limpiar opcache ---
 echo "==> recargar php-fpm"
 systemctl reload php8.3-fpm 2>/dev/null || true

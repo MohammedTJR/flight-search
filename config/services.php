@@ -47,4 +47,26 @@ return [
         'redirect' => env('GITHUB_REDIRECT_URI'),
     ],
 
+    'serpapi' => [
+        // Clave principal + SERPAPI_KEY_1, SERPAPI_KEY_2, ... (en orden).
+        // Se resuelve aquí (en un fichero de config) para que funcione también
+        // con `php artisan config:cache`, donde env() no está disponible en runtime.
+        'keys' => (function () {
+            $keys = [];
+            if ($main = env('SERPAPI_KEY')) {
+                $keys[] = $main;
+            }
+            $i = 1;
+            while ($key = env("SERPAPI_KEY_{$i}")) {
+                $keys[] = $key;
+                $i++;
+            }
+            return $keys;
+        })(),
+    ],
+
+    'unsplash' => [
+        'access_key' => env('UNSPLASH_ACCESS_KEY'),
+    ],
+
 ];

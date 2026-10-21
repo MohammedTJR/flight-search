@@ -23,7 +23,7 @@ class ImageService
                 $response = Http::get('https://api.unsplash.com/search/photos', [
                     'query' => $searchTerm,
                     'per_page' => 1,
-                    'client_id' => env('UNSPLASH_ACCESS_KEY'),
+                    'client_id' => config('services.unsplash.access_key'),
                     'orientation' => 'landscape',
                 ]);
 

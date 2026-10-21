@@ -22,18 +22,9 @@ class ApiKeyService
      */
     private function loadApiKeys()
     {
-        // Obtener la clave principal
-        $mainKey = env('SERPAPI_KEY');
-        if ($mainKey) {
-            $this->apiKeys[] = $mainKey;
-        }
-
-        // Obtener claves adicionales (SERPAPI_KEY_1, SERPAPI_KEY_2, etc.)
-        $i = 1;
-        while ($key = env("SERPAPI_KEY_{$i}")) {
-            $this->apiKeys[] = $key;
-            $i++;
-        }
+        // Las claves se resuelven desde config/services.php (compatible con
+        // config:cache, donde env() devolvería null en runtime).
+        $this->apiKeys = config('services.serpapi.keys', []);
 
         if (empty($this->apiKeys)) {
             Log::error('No se encontraron API keys para SerpAPI');

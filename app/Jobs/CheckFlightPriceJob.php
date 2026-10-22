@@ -17,6 +17,13 @@ class CheckFlightPriceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private const TRAVEL_CLASS_CODES = [
+        'economy' => 1,
+        'premium_economy' => 2,
+        'business' => 3,
+        'first' => 4,
+    ];
+
     protected $favoriteFlight;
 
     /**
@@ -44,11 +51,15 @@ class CheckFlightPriceJob implements ShouldQueue
         }
 
         $searchParams = $this->favoriteFlight->search_params;
-        
-        // Aplicar preferencias de viaje del usuario
+
+        // El precio guardado corresponde a la clase con la que se buscó el vuelo.
+        // Solo si falta se usa la preferida del usuario; SerpApi exige el código
+        // numérico (1 económica, 2 premium, 3 business, 4 primera), no el nombre.
         $userPreferences = $this->favoriteFlight->user->travel_preferences;
-        $searchParams['travel_class'] = $userPreferences['preferred_class'];
-        
+        $searchParams['travel_class'] = $searchParams['travel_class']
+            ?? self::TRAVEL_CLASS_CODES[$userPreferences['preferred_class']]
+            ?? 1;
+
         $url = "https://serpapi.com/search.json?"
             . "engine=google_flights"
             . "&departure_id={$this->favoriteFlight->origin}"
@@ -64,8 +75,10 @@ class CheckFlightPriceJob implements ShouldQueue
             . "&travel_class={$searchParams['travel_class']}"
             . "&api_key={$apiKey}";
 
-        // Añadir preferencia de vuelos directos si está activada
-        if ($userPreferences['direct_flights']) {
+        // Preferencia de vuelos directos: solo se aplica si el favorito es directo;
+        // con escalas, el filtro lo sacaría de los resultados y no se detectaría su precio.
+        $esDirecto = empty($this->favoriteFlight->flight_details['layovers'] ?? []);
+        if ($userPreferences['direct_flights'] && $esDirecto) {
             $url .= "&max_stops=0";
         }
 

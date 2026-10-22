@@ -25,47 +25,83 @@
 </div>
 
 <!-- Modal de Configuración (versión sin Bootstrap) -->
-<div class="custom-modal" id="cookiesModal">
-    <div class="custom-modal-content">
-        <div class="custom-modal-header bg-primary text-white">
-            <h5 class="custom-modal-title"><i class="fas fa-cookie-bite me-2"></i> Preferencias de Cookies</h5>
-            <button type="button" class="custom-modal-close" id="closeCookiesModal">&times;</button>
-        </div>
-        <div class="custom-modal-body">
-            <div class="mb-4">
-                <p>Selecciona las cookies que deseas activar. Las cookies técnicas son necesarias para el
-                    funcionamiento del sitio.</p>
+<div class="custom-modal" id="cookiesModal" role="dialog" aria-modal="true" aria-labelledby="cookiesModalTitle">
+    <div class="ck-modal">
+        <div class="ck-bar"></div>
 
-                <div class="custom-form-check">
-                    <input class="custom-form-check-input" type="checkbox" id="essentialCookies" checked disabled>
-                    <label class="custom-form-check-label" for="essentialCookies">Cookies Esenciales</label>
-                    <p class="small text-muted mt-1 mb-0">Necesarias para el funcionamiento básico del sitio. No se
-                        pueden desactivar.</p>
-                </div>
-
-                <div class="custom-form-check">
-                    <input class="custom-form-check-input" type="checkbox" id="analyticsCookies">
-                    <label class="custom-form-check-label" for="analyticsCookies">Cookies de Análisis</label>
-                    <p class="small text-muted mt-1 mb-0">Nos permiten medir el tráfico y analizar tu comportamiento
-                        para mejorar el servicio.</p>
-                </div>
-
-                <div class="custom-form-check">
-                    <input class="custom-form-check-input" type="checkbox" id="marketingCookies">
-                    <label class="custom-form-check-label" for="marketingCookies">Cookies de Marketing</label>
-                    <p class="small text-muted mt-1 mb-0">Para mostrarte publicidad personalizada basada en tus
-                        intereses.</p>
+        <div class="ck-head">
+            <div class="ck-head__title">
+                <span class="ck-head__icon"><i class="fas fa-cookie-bite"></i></span>
+                <div>
+                    <small>Privacidad · FlyLow</small>
+                    <h2 id="cookiesModalTitle">Preferencias de Cookies</h2>
                 </div>
             </div>
+            <button type="button" class="ck-close" id="closeCookiesModal" aria-label="Cerrar">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
 
-            <div class="custom-alert">
-                <i class="fas fa-info-circle me-2"></i> Puedes cambiar estas preferencias en cualquier momento desde
-                el enlace en el pie de página.
+        <div class="ck-body">
+            <p class="ck-intro">Selecciona las cookies que deseas activar. Las cookies técnicas son necesarias para el
+                funcionamiento del sitio.</p>
+
+            <div class="ck-card ck-card--fixed">
+                <span class="ck-box is-on"><i class="fas fa-check"></i></span>
+                <div class="ck-card__text">
+                    <div class="ck-card__title">
+                        <strong>Cookies Esenciales</strong>
+                        <span class="ck-tag ck-tag--on"><i></i>Siempre activas</span>
+                    </div>
+                    <p>Necesarias para el funcionamiento básico del sitio, la navegación segura y el mantenimiento de
+                        tu sesión. No se pueden desactivar.</p>
+                </div>
+                <i class="fas fa-lock ck-lock" title="Necesarias por seguridad"></i>
+            </div>
+
+            <label class="ck-card ck-card--option" for="analyticsCookies">
+                <input class="ck-check" type="checkbox" id="analyticsCookies">
+                <span class="ck-box"><i class="fas fa-check"></i></span>
+                <div class="ck-card__text">
+                    <div class="ck-card__title">
+                        <strong>Cookies de Análisis</strong>
+                        <span class="ck-tag">Estadísticas</span>
+                    </div>
+                    <p>Nos permiten medir el tráfico y analizar el uso del sitio para mejorar el servicio.</p>
+                </div>
+            </label>
+
+            <label class="ck-card ck-card--option" for="marketingCookies">
+                <input class="ck-check" type="checkbox" id="marketingCookies">
+                <span class="ck-box"><i class="fas fa-check"></i></span>
+                <div class="ck-card__text">
+                    <div class="ck-card__title">
+                        <strong>Cookies de Marketing</strong>
+                        <span class="ck-tag">Opcional</span>
+                    </div>
+                    <p>Para mostrarte publicidad personalizada basada en tus intereses.</p>
+                </div>
+            </label>
+
+            <div class="ck-info">
+                <i class="fas fa-circle-info"></i>
+                <p>Puedes cambiar estas preferencias en cualquier momento desde el enlace
+                    <strong>«Configuración de cookies»</strong> del pie de página.</p>
             </div>
         </div>
-        <div class="custom-modal-footer">
-            <button type="button" class="btn btn-outline-secondary" id="cancelCookiesModal">Cancelar</button>
-            <button type="button" class="btn btn-primary" id="saveCookiePreferences">Guardar preferencias</button>
+
+        <div class="ck-foot">
+            <button type="button" class="ck-btn ck-btn--ghost" id="essentialOnlyCookies">Aceptar solo esenciales</button>
+            <div class="ck-foot__main">
+                <button type="button" class="ck-btn ck-btn--ghost" id="cancelCookiesModal">Cancelar</button>
+                <button type="button" class="ck-btn ck-btn--primary" id="saveCookiePreferences">
+                    <i class="fas fa-shield-halved"></i>Guardar preferencias
+                </button>
+            </div>
+        </div>
+
+        <div class="ck-toast" id="cookiesToast" role="status">
+            <i class="fas fa-circle-check"></i><span>Preferencias guardadas</span>
         </div>
     </div>
 </div>
@@ -121,7 +157,19 @@
                 marketing: document.getElementById('marketingCookies').checked
             };
             saveCookiePreferences(preferences);
-            hideCookiesModal();
+            confirmAndClose('Preferencias guardadas');
+        });
+
+        // Aceptar solo las esenciales desde el modal
+        document.getElementById('essentialOnlyCookies')?.addEventListener('click', function () {
+            document.getElementById('analyticsCookies').checked = false;
+            document.getElementById('marketingCookies').checked = false;
+            saveCookiePreferences({
+                essential: true,
+                analytics: false,
+                marketing: false
+            });
+            confirmAndClose('Solo cookies esenciales');
         });
 
         // Cerrar modal al hacer clic fuera del contenido
@@ -131,10 +179,28 @@
             }
         });
 
+        // Cerrar con Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                hideCookiesModal();
+            }
+        });
+
+        // Mensaje de confirmación y cierre
+        function confirmAndClose(message) {
+            const toast = document.getElementById('cookiesToast');
+            toast.querySelector('span').textContent = message;
+            toast.classList.add('is-visible');
+            setTimeout(() => {
+                toast.classList.remove('is-visible');
+                hideCookiesModal();
+            }, 900);
+        }
+
         // Función para mostrar el modal
         function showCookiesModal() {
             const modal = document.getElementById('cookiesModal');
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
 
             // Cargar preferencias existentes
             const preferences = JSON.parse(localStorage.getItem('cookiePreferences')) || {
@@ -151,6 +217,9 @@
         function hideCookiesModal() {
             document.getElementById('cookiesModal').style.display = 'none';
         }
+
+        // Lo usa el enlace «Configuración de cookies» del pie de página
+        window.openCookiePreferences = showCookiesModal;
 
         // Función para guardar preferencias
         function saveCookiePreferences(preferences) {

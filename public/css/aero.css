@@ -638,10 +638,341 @@ body.bg-light {
     color: var(--fl-ink) !important;
 }
 
-.custom-modal-content {
-    border-radius: 0.75rem;
+/* Modal de preferencias de cookies */
+.custom-modal {
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(6, 13, 25, 0.6);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
 }
 
-.custom-modal-header.bg-primary {
-    background: var(--fl-navy) !important;
+.ck-modal {
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    max-height: calc(100vh - 2rem);
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 0.9rem;
+    box-shadow: 0 24px 50px -12px rgba(6, 13, 25, 0.35), 0 0 1px rgba(0, 0, 0, 0.08);
+    animation: slideDown 0.3s;
+}
+
+.ck-bar {
+    flex: 0 0 6px;
+    background: linear-gradient(90deg, #39b8fd, #006591, #004666);
+}
+
+.ck-head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.5rem;
+    color: #fff;
+    background: #101c2e;
+}
+
+.ck-head__title {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.ck-head__icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #39b8fd;
+    background: rgba(57, 184, 253, 0.2);
+    border-radius: 50%;
+}
+
+.ck-head small {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #39b8fd;
+}
+
+.ck-head h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #fff;
+}
+
+.ck-close {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #eaf1ff;
+    background: rgba(211, 228, 254, 0.12);
+    border: none;
+    border-radius: 50%;
+    transition: background-color 0.15s ease;
+}
+
+.ck-close:hover {
+    background: rgba(211, 228, 254, 0.25);
+}
+
+.ck-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.ck-intro {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--fl-ink-soft);
+}
+
+.ck-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 0;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border-radius: 0.8rem;
+    box-shadow: 0 2px 10px rgba(10, 22, 40, 0.06);
+}
+
+.ck-card--fixed {
+    background: rgba(239, 244, 255, 0.7);
+    box-shadow: none;
+}
+
+.ck-card--option {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.ck-card--option:hover {
+    background: rgba(239, 244, 255, 0.6);
+}
+
+.ck-check {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ck-box {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    margin-top: 0.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: transparent;
+    background: #dce9ff;
+    border-radius: 0.35rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ck-box.is-on,
+.ck-check:checked+.ck-box {
+    color: #fff;
+    background: #006591;
+}
+
+.ck-check:focus-visible+.ck-box {
+    box-shadow: 0 0 0 3px rgba(0, 101, 145, 0.35);
+}
+
+.ck-card__text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ck-card__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.ck-card__title strong {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--fl-ink);
+}
+
+.ck-card__text p {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--fl-ink-soft);
+}
+
+.ck-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--fl-ink-soft);
+    background: var(--fl-surface-container);
+    border-radius: 9999px;
+}
+
+.ck-tag--on {
+    color: #004666;
+    background: #dce9ff;
+}
+
+.ck-tag--on i {
+    width: 6px;
+    height: 6px;
+    background: #006591;
+    border-radius: 50%;
+}
+
+.ck-lock {
+    flex: 0 0 auto;
+    margin-top: 0.2rem;
+    font-size: 0.85rem;
+    color: #c5c6cd;
+}
+
+.ck-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.8rem 1rem;
+    background: var(--fl-surface-low);
+    border-radius: 0.7rem;
+}
+
+.ck-info>i {
+    margin-top: 0.15rem;
+    color: #006591;
+}
+
+.ck-info p {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: #004666;
+}
+
+.ck-foot {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: #fff;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.ck-foot__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+@media (min-width: 576px) {
+    .ck-foot {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .ck-foot__main {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.ck-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 0.6rem;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ck-btn--ghost {
+    color: var(--fl-ink-soft);
+    background: transparent;
+}
+
+.ck-btn--ghost:hover {
+    color: var(--fl-ink);
+    background: var(--fl-surface-low);
+}
+
+.ck-btn--primary {
+    color: #fff;
+    background: #006591;
+    box-shadow: 0 6px 16px -4px rgba(0, 101, 145, 0.4);
+}
+
+.ck-btn--primary:hover {
+    background: #004666;
+}
+
+.ck-toast {
+    position: absolute;
+    top: 5.5rem;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: #060d19;
+    border-radius: 9999px;
+    box-shadow: 0 10px 25px -5px rgba(6, 13, 25, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 0.5rem);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.ck-toast i {
+    color: #10b981;
+}
+
+.ck-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
 }

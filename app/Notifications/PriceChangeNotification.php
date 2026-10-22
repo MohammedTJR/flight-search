@@ -47,6 +47,7 @@ class PriceChangeNotification extends Notification
         return (new MailMessage)
             ->subject('¡Cambio de precio en tu vuelo favorito!')
             ->view('mails.price-change', [
+                'user' => $notifiable,
                 'flight' => $this->favoriteFlight,
                 'oldPrice' => $this->oldPrice,
                 'newPrice' => $this->newPrice,

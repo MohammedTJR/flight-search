@@ -618,8 +618,130 @@
     color: #94a3b8;
 }
 
-.tk-form small {
+.tk-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #006591;
+    background: var(--fl-surface-low);
+    border-radius: 9999px;
+}
+
+.tk-form__label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+}
+
+.tk-form__label span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.tk-input__clear {
+    position: absolute;
+    right: 0.6rem;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 0.8rem;
+    color: #75777d;
+    background: none;
+    border: none;
+    border-radius: 50%;
+}
+
+.tk-input__clear[hidden] {
+    display: none;
+}
+
+.tk-input__clear:hover {
+    color: var(--fl-ink);
+    background: rgba(10, 22, 40, 0.06);
+}
+
+.tk-input input {
+    padding-right: 2.6rem;
+}
+
+.tk-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.15rem 0 0;
     font-size: 0.75rem;
+    color: #64748b;
+}
+
+.tk-hint i {
+    color: #006591;
+}
+
+/* Qué verás */
+.tk-know {
+    margin-top: 1.25rem;
+    padding: 1.5rem;
+}
+
+.tk-know h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--fl-ink);
+}
+
+.tk-know h2 i {
+    color: #006591;
+}
+
+.tk-know__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+}
+
+@media (min-width: 576px) {
+    .tk-know__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.tk-know__grid>div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.8rem 1rem;
+    background: var(--fl-ground);
+    border-radius: 0.75rem;
+}
+
+.tk-know__grid i {
+    margin-bottom: 0.2rem;
+    color: #006591;
+}
+
+.tk-know__grid b {
+    font-size: 0.8rem;
+    color: var(--fl-ink);
+}
+
+.tk-know__grid span {
+    font-size: 0.72rem;
+    line-height: 1.45;
     color: #64748b;
 }
 

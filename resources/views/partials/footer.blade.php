@@ -27,6 +27,7 @@
                     <li><a href="{{ route('faq') }}">Preguntas frecuentes</a></li>
                     <li><a href="{{ route('privacy') }}">Política de privacidad</a></li>
                     <li><a href="{{ route('terms') }}">Términos y condiciones</a></li>
+                    <li><a href="#" onclick="window.openCookiePreferences && window.openCookiePreferences(); return false;">Configuración de cookies</a></li>
                 </ul>
             </div>
 

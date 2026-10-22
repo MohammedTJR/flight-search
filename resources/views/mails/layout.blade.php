@@ -144,6 +144,7 @@
 
         .pill {
             display: inline-block;
+            white-space: nowrap;
             padding: 2px 9px;
             font-size: 11px;
             font-weight: 700;

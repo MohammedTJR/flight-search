@@ -393,6 +393,24 @@
     border-radius: 0.3rem;
 }
 
+.tk-hint-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0.9rem 0 0;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #004666;
+    background: var(--fl-surface-low);
+    border-radius: 0.7rem;
+}
+
+.tk-hint-note i {
+    margin-top: 0.2rem;
+    color: #006591;
+}
+
 .tk-location {
     display: flex;
     align-items: flex-start;

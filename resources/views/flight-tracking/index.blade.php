@@ -63,8 +63,12 @@
                         $d = $flight->flight_data ?? [];
                         $pos = $flight->position_data;
                         $ended = !empty($d['flight_ended']);
-                        $estado = $ended ? 'Aterrizado' : ($pos ? 'En ruta' : 'Sin posición');
+                        $enTierra = !empty($pos['on_ground']);
+                        // Si hubo una posición pero ahora no hay señal, la posición es la última conocida
+                        $estado = $ended ? 'Aterrizado' : ($pos ? ($enTierra ? 'En tierra' : 'En ruta') : 'Sin señal');
                         $estadoClase = $ended ? 'is-ended' : ($pos ? 'is-live' : 'is-none');
+                        $origen = $d['orig_iata'] ?? $d['orig_icao'] ?? 'N/A';
+                        $destino = $d['dest_iata'] ?? $d['dest_icao'] ?? 'N/A';
                     @endphp
                     <article class="tk-flight {{ $loop->first ? 'is-open' : '' }}">
                         <button class="tk-flight-head {{ $loop->first ? '' : 'collapsed' }}" type="button"
@@ -87,7 +91,8 @@
                                 <div class="tk-route">
                                     <div class="tk-route-end">
                                         <small>Origen</small>
-                                        <strong>{{ $d['orig_icao'] ?? 'N/A' }}</strong>
+                                        <strong>{{ $origen }}</strong>
+                                        @if(!empty($d['orig_name']))<span>{{ $d['orig_name'] }}</span>@endif
                                         @if(!empty($d['datetime_takeoff']))
                                             <span>Despegue: {{ \Carbon\Carbon::parse($d['datetime_takeoff'])->format('d/m H:i') }} UTC</span>
                                         @endif
@@ -95,7 +100,8 @@
                                     <div class="tk-route-mid"><span></span><i class="fas fa-plane"></i><span></span></div>
                                     <div class="tk-route-end tk-route-end--right">
                                         <small>Destino</small>
-                                        <strong>{{ $d['dest_icao'] ?? 'N/A' }}</strong>
+                                        <strong>{{ $destino }}</strong>
+                                        @if(!empty($d['dest_name']))<span>{{ $d['dest_name'] }}</span>@endif
                                         @if(!empty($d['datetime_landed']))
                                             <span>Aterrizaje: {{ \Carbon\Carbon::parse($d['datetime_landed'])->format('d/m H:i') }} UTC</span>
                                         @endif
@@ -109,9 +115,14 @@
                                             <div><dt>Aerolínea</dt><dd>{{ $d['operating_as'] ?? 'N/A' }}</dd></div>
                                             <div><dt>Tipo de avión</dt><dd>{{ $d['type'] ?? 'N/A' }}</dd></div>
                                             <div><dt>Matrícula</dt><dd class="mono">{{ $d['reg'] ?? 'N/A' }}</dd></div>
-                                            <div><dt>Origen</dt><dd>{{ $d['orig_icao'] ?? 'N/A' }}</dd></div>
-                                            <div><dt>Destino</dt><dd>{{ $d['dest_icao'] ?? 'N/A' }}</dd></div>
+                                            <div><dt>Origen</dt><dd>{{ $origen }}</dd></div>
+                                            <div><dt>Destino</dt><dd>{{ $destino }}</dd></div>
                                         </dl>
+                                        @if(!empty($d['via_registration']) && !empty($d['reg']))
+                                            <p class="tk-hint-note"><i class="fas fa-circle-info"></i>El vuelo no está en el aire ahora.
+                                                Se muestra el avión {{ $d['reg'] }}, que lo operó la última vez
+                                                @if(!empty($d['current_callsign']))y que ahora vuela como {{ $d['current_callsign'] }}@endif.</p>
+                                        @endif
                                     </section>
 
                                     <section>
@@ -139,7 +150,7 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <div class="tk-warn"><i class="fas fa-triangle-exclamation"></i>No se pudo obtener la posición actual del vuelo.</div>
+                                            <div class="tk-warn"><i class="fas fa-triangle-exclamation"></i>Ahora mismo no hay señal ADS-B de este vuelo: aún no ha despegado, ya aterrizó o no hay cobertura. Pulsa «Actualizar» cuando esté volando.</div>
                                         @endif
                                     </section>
                                 </div>

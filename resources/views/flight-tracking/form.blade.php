@@ -59,7 +59,7 @@
                 <div>
                     <i class="fas fa-route"></i>
                     <b>Ruta y estado</b>
-                    <span>Origen, destino y si está en ruta o ya aterrizó.</span>
+                    <span>Origen, destino y si está volando ahora mismo.</span>
                 </div>
             </div>
         </div>

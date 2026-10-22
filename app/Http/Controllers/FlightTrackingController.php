@@ -5,12 +5,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use App\Models\TrackedFlight;
+use App\Services\FlightTrackerService;
 use Illuminate\Support\Facades\Auth;
 use Log;
 
 class FlightTrackingController extends Controller
 {
-    private $apiKey = "0196d61f-a87a-707f-b87e-a785f0ac5002|87RjRvksNSOToN5Q8a8kLU4iln7PX1iNqamwJ59A0f7e5fb4";
+    public function __construct(private FlightTrackerService $tracker)
+    {
+    }
 
     public function index()
     {
@@ -50,41 +53,48 @@ class FlightTrackingController extends Controller
             return back()->with('error', 'Ya estás siguiendo este vuelo.');
         }
 
-        $flightInfo = $this->getFlightInfo($flightNumber);
+        $result = $this->tracker->lookup($flightNumber);
 
-        if (empty($flightInfo['data'])) {
+        if ($result === null) {
             return back()->with('error', 'No se encontró información para el vuelo ' . $flightNumber);
         }
 
-        $registration = $flightInfo['data'][0]['reg'] ?? null;
-        $flightPosition = $registration ? $this->getFlightPosition($registration) : null;
-
         // Guardar el vuelo seguido
-        $trackedFlight = Auth::user()->trackedFlights()->create([
+        Auth::user()->trackedFlights()->create([
             'flight_number' => $flightNumber,
-            'flight_data' => $flightInfo['data'][0],
-            'position_data' => $flightPosition['data'][0] ?? null,
+            'flight_data' => $result['flight_data'],
+            'position_data' => $result['position_data'],
             'last_checked_at' => now()
         ]);
 
-        return redirect()->route('flight.tracking.index')->with('success', 'Vuelo añadido a tu lista de seguimiento.');
+        $mensaje = $result['live']
+            ? 'Vuelo añadido: ahora mismo está en el aire.'
+            : 'Vuelo añadido. Ahora no tiene señal ADS-B (aún no ha despegado o ya aterrizó): pulsa «Actualizar» cuando esté volando.';
+
+        return redirect()->route('flight.tracking.index')->with('success', $mensaje);
     }
 
     public function refreshFlight($id)
     {
         $trackedFlight = Auth::user()->trackedFlights()->findOrFail($id);
 
-        $flightInfo = $this->getFlightInfo($trackedFlight->flight_number);
-        $registration = $flightInfo['data'][0]['reg'] ?? null;
-        $flightPosition = $registration ? $this->getFlightPosition($registration) : null;
+        // Se pasan los datos guardados para reutilizar la matrícula que operó el vuelo la última vez
+        $result = $this->tracker->lookup($trackedFlight->flight_number, $trackedFlight->flight_data ?? []);
+
+        if ($result === null) {
+            return back()->with('error', 'No se pudo consultar el vuelo ahora mismo. Inténtalo de nuevo en un momento.');
+        }
 
         $trackedFlight->update([
-            'flight_data' => $flightInfo['data'][0] ?? $trackedFlight->flight_data,
-            'position_data' => $flightPosition['data'][0] ?? $trackedFlight->position_data,
+            'flight_data' => $result['flight_data'],
+            // Sin señal ahora, se conserva la última posición conocida
+            'position_data' => $result['position_data'] ?? $trackedFlight->position_data,
             'last_checked_at' => now()
         ]);
 
-        return back()->with('success', 'Información del vuelo actualizada.');
+        return back()->with('success', $result['live']
+            ? 'Información del vuelo actualizada.'
+            : 'Consultado: ahora no hay señal ADS-B de este vuelo. Se mantiene la última posición conocida.');
     }
 
     public function destroy($id)
@@ -93,37 +103,6 @@ class FlightTrackingController extends Controller
         $trackedFlight->delete();
 
         return back()->with('success', 'Vuelo eliminado de tu lista de seguimiento.');
-    }
-
-    private function getFlightInfo($flightNumber)
-    {
-        $today = Carbon::now()->format('Y-m-d\TH:i:s\Z');
-        $twoWeeksAgo = Carbon::now()->subDays(13)->format('Y-m-d\TH:i:s\Z');
-
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Accept-Version' => 'v1',
-            'Authorization' => 'Bearer ' . $this->apiKey
-        ])->get('https://fr24api.flightradar24.com/api/flight-summary/light', [
-                    'flights' => $flightNumber,
-                    'flight_datetime_from' => $twoWeeksAgo,
-                    'flight_datetime_to' => $today
-                ]);
-
-        return $response->json();
-    }
-
-    private function getFlightPosition($registration)
-    {
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Accept-Version' => 'v1',
-            'Authorization' => 'Bearer ' . $this->apiKey
-        ])->get('https://fr24api.flightradar24.com/api/live/flight-positions/light', [
-                    'registrations' => $registration
-                ]);
-
-        return $response->json();
     }
 
     private function getAddressFromCoordinates($lat, $lon)

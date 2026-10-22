@@ -72,6 +72,10 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# --- Worker de la cola: se reinicia (con calma) para que cargue el código nuevo ---
+echo "==> reiniciar worker de la cola"
+php artisan queue:restart || true
+
 # --- Permisos: este script corre como root, así que las cachés y vistas compiladas
 #     quedan con dueño root y PHP-FPM no puede reescribirlas (500 al cambiar una vista).
 #     Se devuelven al usuario con el que corre PHP-FPM (por defecto www-data). ---

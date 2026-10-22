@@ -4,10 +4,6 @@
     <link rel="stylesheet" href="{{ asset('css/search.css') }}?v={{ filemtime(public_path('css/search.css')) }}">
 @endsection
 
-@section('script')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@endsection
-
 @section('titulo_pagina', 'FlyLow')
 
 @section('contenido')

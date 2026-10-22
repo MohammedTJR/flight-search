@@ -155,7 +155,13 @@
                                 <i class="fas fa-eye"></i>Ver detalles
                             </a>
                             <form action="{{ route('favorites.remove', $favorite->id) }}" method="POST"
-                                onsubmit="return confirm('¿Eliminar este vuelo de tus favoritos?');">
+                                data-confirm="Dejarás de recibir los avisos de cambio de precio de este vuelo."
+                                data-confirm-title="¿Eliminar este vuelo de favoritos?"
+                                data-confirm-ok="Sí, eliminar vuelo"
+                                data-confirm-cancel="Conservar vuelo"
+                                data-confirm-variant="destructive"
+                                data-confirm-ctx-title="{{ $favorite->origin }} → {{ $favorite->destination }}"
+                                data-confirm-ctx-sub="{{ $favorite->airline }} · {{ $favorite->departure_date->locale('es')->translatedFormat('d M Y') }} · {{ number_format($favorite->price, 2) }}€">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="fv-btn fv-btn--danger" title="Eliminar de favoritos">

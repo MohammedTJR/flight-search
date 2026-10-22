@@ -30,6 +30,7 @@
         @yield('contenido')
     </div>
     @include('partials.footer')
+    <script src="{{ asset('js/dialogs.js') }}?v={{ filemtime(public_path('js/dialogs.js')) }}"></script>
     <script src="{{ asset('js/loading.js') }}?v={{ filemtime(public_path('js/loading.js')) }}"></script>
     @yield('scripts')
 </body>

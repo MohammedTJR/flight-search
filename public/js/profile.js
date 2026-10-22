@@ -13,8 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.addEventListener("click", e => { if (e.target === modal) close(); });
         document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
 
-        const toast = document.getElementById("preferencesToast");
-        document.querySelector(".pf-toast-close")?.addEventListener("click", () => toast.classList.remove("show"));
+        const saveError = () => FlyLowToast.danger({
+            title: "No se pudieron guardar las preferencias",
+            description: "Inténtalo de nuevo en un momento."
+        });
 
         document.getElementById("savePreferences")?.addEventListener("click", function () {
             const btn = this;
@@ -35,22 +37,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(async response => {
                     const data = await response.json();
                     if (response.ok && data.success) {
-                        toast.classList.add("show");
                         close();
-                        setTimeout(() => toast.classList.remove("show"), 3000);
+                        FlyLowToast.success({
+                            title: "Preferencias guardadas",
+                            description: "Tus cambios ya están aplicados."
+                        });
                     } else if (response.status === 422 && data.errors) {
-                        let msg = "Corrige los siguientes errores:\n";
-                        for (const errors of Object.values(data.errors)) {
-                            msg += `- ${errors.join(", ")}\n`;
-                        }
-                        alert(msg);
+                        const lines = Object.values(data.errors).map(errors => "• " + errors.join(", "));
+                        FlyLowDialog.alert({
+                            variant: "warning",
+                            title: "Revisa las preferencias",
+                            message: lines.join("\n"),
+                            okText: "Entendido"
+                        });
                     } else {
-                        alert("Error al guardar las preferencias. Por favor, inténtalo de nuevo.");
+                        saveError();
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("Error al guardar las preferencias. Por favor, inténtalo de nuevo.");
+                    saveError();
                 })
                 .finally(() => {
                     btn.innerHTML = original;

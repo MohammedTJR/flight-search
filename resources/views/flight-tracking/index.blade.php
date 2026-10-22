@@ -162,7 +162,13 @@
                                     </form>
                                     <a href="{{ route('radar') }}" class="tk-btn tk-btn--dark"><i class="fas fa-satellite-dish"></i>Ver en el radar</a>
                                     <form action="{{ route('flight.tracking.destroy', $flight->id) }}" method="POST"
-                                        onsubmit="return confirm('¿Dejar de seguir el vuelo {{ $flight->flight_number }}?');">
+                                        data-confirm="Dejarás de ver su posición, altitud y velocidad en «Mis vuelos». Podrás volver a añadirlo cuando quieras."
+                                        data-confirm-title="¿Dejar de seguir el vuelo {{ $flight->flight_number }}?"
+                                        data-confirm-ok="Sí, dejar de seguir"
+                                        data-confirm-cancel="Conservar vuelo"
+                                        data-confirm-variant="destructive"
+                                        data-confirm-ctx-title="Vuelo {{ $flight->flight_number }}{{ !empty($d['callsign']) ? ' (' . $d['callsign'] . ')' : '' }}"
+                                        data-confirm-ctx-sub="{{ $origen }} → {{ $destino }}{{ !empty($d['operating_as']) ? ' · ' . $d['operating_as'] : '' }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="tk-btn tk-btn--danger"><i class="fas fa-trash-can"></i>Eliminar seguimiento</button>

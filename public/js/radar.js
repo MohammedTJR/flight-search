@@ -778,7 +778,10 @@ function searchFlight() {
     const searchValue = document.getElementById('flight-search').value.trim().toLowerCase();
 
     if (!searchValue) {
-        alert('Por favor, introduce un ICAO24 o Callsign para buscar.');
+        FlyLowToast.warning({
+            title: 'Escribe qué buscar',
+            description: 'Introduce un ICAO24 o un indicativo (callsign).'
+        });
         return;
     }
 
@@ -811,7 +814,10 @@ function searchFlight() {
     });
 
     if (!found) {
-        alert('No se encontró ningún avión con ese ICAO24 o Callsign.');
+        FlyLowToast.info({
+            title: 'Avión no encontrado',
+            description: 'No hay ningún avión en el mapa con ese ICAO24 o callsign.'
+        });
     }
 }
 

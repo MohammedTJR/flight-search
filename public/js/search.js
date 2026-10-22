@@ -57,10 +57,10 @@ jQuery.noConflict();
                 } else {
                     // Muestra un mensaje de error si la geolocalización no es soportada.
 
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Geolocalización no es soportada por este navegador.',
+                    FlyLowDialog.alert({
+                        variant: 'danger',
+                        title: 'No se puede usar tu ubicación',
+                        message: 'Tu navegador no admite la geolocalización. Escribe el aeropuerto de salida a mano.'
                     });
                 }
             }
@@ -190,11 +190,10 @@ jQuery.noConflict();
             // Debe haberse seleccionado origen y destino de la lista (para tener el código IATA).
             if (!$('#departure_code').val() || !$('#arrival_code').val()) {
                 e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atención',
-                    text: 'Selecciona el origen y el destino de la lista de sugerencias.',
-                    confirmButtonText: 'Entendido'
+                FlyLowDialog.alert({
+                    variant: 'warning',
+                    title: 'Elige origen y destino',
+                    message: 'Selecciona el origen y el destino de la lista de sugerencias para poder buscar.'
                 });
                 return;
             }
@@ -205,12 +204,12 @@ jQuery.noConflict();
             var bebesRegazo = parseInt($('#bebes_regazo').val());
             var totalPasajeros = adultos + ninos + bebesAsiento + bebesRegazo;
             if (totalPasajeros > 9) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atención',
-                    text: 'El número total de pasajeros no puede superar los 9.',
-                    confirmButtonText: 'Entendido'
-                }); e.preventDefault();
+                e.preventDefault();
+                FlyLowDialog.alert({
+                    variant: 'warning',
+                    title: 'Demasiados pasajeros',
+                    message: 'El número total de pasajeros no puede superar los 9.'
+                });
             }
         });
 
@@ -231,10 +230,9 @@ jQuery.noConflict();
             const total = getTotalPassengers();
             if (total > 9) {
                 input.value = parseInt(input.value) - delta;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Límite excedido',
-                    text: 'El número máximo de pasajeros es 9'
+                FlyLowToast.warning({
+                    title: 'Límite de pasajeros',
+                    description: 'El número máximo de pasajeros es 9.'
                 });
             }
 

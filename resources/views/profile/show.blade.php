@@ -240,10 +240,6 @@
         </div>
     </div>
 
-    <div class="pf-toast" id="preferencesToast" role="status">
-        <i class="fas fa-circle-check"></i><span>Preferencias guardadas correctamente</span>
-        <button type="button" class="pf-toast-close" aria-label="Cerrar">&times;</button>
-    </div>
 @endsection
 
 @section('scripts')

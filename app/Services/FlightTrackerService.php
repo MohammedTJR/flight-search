@@ -61,6 +61,7 @@ class FlightTrackerService
 
         if ($aircraft) {
             // Matrícula y tipo del avión visto ahora; se recuerdan para la próxima vez
+            $flightData['icao24'] = $aircraft['hex'] ?? ($previous['icao24'] ?? null);
             $flightData['reg'] = $aircraft['r'] ?? ($previous['reg'] ?? null);
             $flightData['type'] = $aircraft['t'] ?? ($previous['type'] ?? null);
             $flightData['via_registration'] = $viaRegistration;

@@ -14,6 +14,15 @@ let trailIcao = null;      // ICAO24 al que pertenece flightTrail
 const routeCache = {};     // Caché de rutas por callsign (evita repetir peticiones)
 let currentRouteCallsign = null; // Callsign cuya ruta se está mostrando
 let routeDrawnFor = null;  // Callsign cuya ruta ya está dibujada (evita redibujar)
+// Si se llega desde «Mis vuelos» (?icao24=...&callsign=...&lat=...&lon=...), el mapa se abre
+// centrado en ese avión y, al cargar los aviones, se selecciona y se abre su ficha.
+const focusParams = new URLSearchParams(window.location.search);
+let pendingFocus = (focusParams.get('icao24') || focusParams.get('callsign')) ? {
+    icao24: (focusParams.get('icao24') || '').toLowerCase(),
+    callsign: (focusParams.get('callsign') || '').trim().toLowerCase(),
+    lat: parseFloat(focusParams.get('lat')),
+    lon: parseFloat(focusParams.get('lon'))
+} : null;
 let updateTimer;
 let countdown = 60;
 let animationFrame; // Para manejar la animación
@@ -107,7 +116,12 @@ const mapLayers = {
 // Función para inicializar el mapa
 function initializeMap() {
 
-    map = L.map('map', { zoomControl: false }).setView([40.416775, -3.703790], 6);
+    // Vista inicial: España, o la última posición conocida del avión si se llega desde «Mis vuelos»
+    const hasFocusPosition = pendingFocus && isFinite(pendingFocus.lat) && isFinite(pendingFocus.lon);
+    map = L.map('map', { zoomControl: false }).setView(
+        hasFocusPosition ? [pendingFocus.lat, pendingFocus.lon] : [40.416775, -3.703790],
+        hasFocusPosition ? 8 : 6
+    );
     L.control.zoom({ position: 'bottomleft', zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' }).addTo(map);
 
     // Capa por defecto: mapa oscuro (coincide con el icono inicial del selector)
@@ -320,6 +334,7 @@ function fetchFlights() {
             }
             updateFlights(states);
             updateStatistics(states);
+            applyPendingFocus();
             document.getElementById('loading-overlay').style.display = 'none';
 
             const now = new Date();
@@ -774,6 +789,47 @@ function centerOnFlight(icao24) {
     }
 }
 
+// Selecciona un avión del mapa: centra la vista, abre su ficha y resalta su marcador
+function selectAircraft(icao24) {
+    const marker = markers[icao24];
+    if (!marker) return;
+
+    map.panTo(marker.getLatLng());
+    showFlightDetails(marker.flightData);
+
+    // Restaurar el color del marcador anterior y resaltar el actual
+    if (selectedFlight && markers[selectedFlight]) {
+        const prevIcon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
+        if (prevIcon) prevIcon.style.color = PLANE_COLOR;
+    }
+    const currentIcon = marker.getElement().querySelector('.aircraft-icon');
+    if (currentIcon) currentIcon.style.color = PLANE_SELECTED;
+
+    selectedFlight = icao24;
+}
+
+// Al llegar desde «Mis vuelos»: selecciona el avión pedido en cuanto aparece en los datos
+function applyPendingFocus() {
+    if (!pendingFocus) return;
+    const wanted = pendingFocus;
+    pendingFocus = null; // solo una vez: después el usuario manda en el mapa
+
+    const match = Object.keys(markers).find(icao24 => {
+        const callsign = (markers[icao24].flightData[1] || '').trim().toLowerCase();
+        return (wanted.icao24 && icao24.toLowerCase() === wanted.icao24)
+            || (wanted.callsign && callsign === wanted.callsign);
+    });
+
+    if (match) {
+        selectAircraft(match);
+    } else {
+        FlyLowToast.info({
+            title: 'No encuentro ese avión en el radar',
+            description: 'Puede que ahora no tenga señal o esté fuera de la zona visible.'
+        });
+    }
+}
+
 function searchFlight() {
     const searchValue = document.getElementById('flight-search').value.trim().toLowerCase();
 
@@ -792,23 +848,7 @@ function searchFlight() {
         const callsign = flight[1] ? flight[1].trim().toLowerCase() : '';
 
         if (icao24.toLowerCase() === searchValue || callsign === searchValue) {
-            // Centrar el mapa en el avión encontrado
-            const position = markers[icao24].getLatLng();
-            map.panTo(position);
-
-            // Mostrar detalles del vuelo
-            showFlightDetails(flight);
-
-            // Resaltar el marcador seleccionado
-            if (selectedFlight && markers[selectedFlight]) {
-                const prevIcon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
-                if (prevIcon) prevIcon.style.color = PLANE_COLOR; // Restaurar color del marcador anterior
-            }
-
-            const currentIcon = markers[icao24].getElement().querySelector('.aircraft-icon');
-            if (currentIcon) currentIcon.style.color = PLANE_SELECTED; // Resaltar el marcador actual
-
-            selectedFlight = icao24; // Actualizar el avión seleccionado
+            selectAircraft(icao24);
             found = true;
         }
     });

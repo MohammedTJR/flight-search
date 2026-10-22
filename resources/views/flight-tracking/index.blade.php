@@ -160,7 +160,13 @@
                                         @csrf
                                         <button type="submit" class="tk-btn"><i class="fas fa-rotate"></i>Actualizar</button>
                                     </form>
-                                    <a href="{{ route('radar') }}" class="tk-btn tk-btn--dark"><i class="fas fa-satellite-dish"></i>Ver en el radar</a>
+                                    {{-- El radar se abre centrado en el avión y con su ficha abierta --}}
+                                    <a href="{{ route('radar', array_filter([
+                                        'icao24' => $d['icao24'] ?? null,
+                                        'callsign' => $d['current_callsign'] ?? $d['callsign'] ?? null,
+                                        'lat' => $pos['lat'] ?? null,
+                                        'lon' => $pos['lon'] ?? null,
+                                    ], fn($v) => $v !== null)) }}" class="tk-btn tk-btn--dark"><i class="fas fa-satellite-dish"></i>Ver en el radar</a>
                                     <form action="{{ route('flight.tracking.destroy', $flight->id) }}" method="POST"
                                         data-confirm="Dejarás de ver su posición, altitud y velocidad en «Mis vuelos». Podrás volver a añadirlo cuando quieras."
                                         data-confirm-title="¿Dejar de seguir el vuelo {{ $flight->flight_number }}?"

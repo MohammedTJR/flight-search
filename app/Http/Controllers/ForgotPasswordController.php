@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PasswordMessages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
@@ -23,7 +24,7 @@ class ForgotPasswordController extends Controller
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? back()->with(['status' => __($status)])
-            : back()->withErrors(['email' => __($status)]);
+            ? back()->with(['status' => PasswordMessages::es($status)])
+            : back()->withErrors(['email' => PasswordMessages::es($status)]);
     }
 }

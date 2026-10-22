@@ -1,53 +1,50 @@
 @extends('plantilla')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth-aero.css') }}?v={{ filemtime(public_path('css/auth-aero.css')) }}">
 @endsection
 
 @section('titulo_pagina', 'Verificar Email - FlyLow')
 
 @section('contenido')
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card glass-card animate__animated animate__fadeIn">
-                <div class="card-header bg-transparent border-0 text-center py-4">
-                    <img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo" class="login-logo mb-3">
-                    <h3 class="text-primary mb-0">Verifica tu Email</h3>
-                    <p class="text-muted mt-2">Te hemos enviado un correo de verificación</p>
+    <div class="au-page">
+        <div class="au-glow"></div>
+
+        <div class="au-card au-card--bar animate__animated animate__fadeIn">
+            <div class="au-head">
+                <div class="au-logo"><img src="{{ asset('img/favicon.png') }}" alt="FlyLow Logo"></div>
+                <h1>Verifica tu Email</h1>
+                <p>Te hemos enviado un correo de verificación</p>
+            </div>
+
+            @if(session('message') || session('status') === 'verification-link-sent')
+                <div class="au-alert au-alert--ok">
+                    <i class="fas fa-circle-check"></i>{{ session('message') ?? 'Te hemos enviado un nuevo enlace de verificación.' }}
                 </div>
+            @endif
 
-                <div class="card-body px-5 py-4">
-                    @if (session('message'))
-                        <div class="alert alert-success animate__animated animate__fadeIn">
-                            {{ session('message') }}
-                        </div>
-                    @endif
+            <div class="au-verify">
+                <p>Antes de empezar a explorar y guardar tus vuelos, confirma tu cuenta haciendo clic en el enlace que enviamos a:</p>
 
-                    <div class="text-center mb-4">
-                        <p>Antes de continuar, por favor verifica tu correo electrónico haciendo clic en el enlace que te hemos enviado.</p>
-                        <p class="mt-3">Si no has recibido el correo, puedes solicitar otro:</p>
-                    </div>
+                <span class="au-pill"><i class="far fa-envelope"></i><span>{{ Auth::user()->email }}</span></span>
 
-                    <form method="POST" action="{{ route('verification.send') }}" class="d-grid gap-3">
-                        @csrf
-                        <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 shadow-sm">
-                            <i class="fas fa-envelope me-2"></i>
-                            Reenviar email de verificación
-                        </button>
-                    </form>
-
-                    <div class="text-center mt-4">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="btn btn-link text-muted">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
-                            </button>
-                        </form>
-                    </div>
+                <div class="au-callout">
+                    <i class="fas fa-circle-info"></i>
+                    <p>¿No ves el mensaje en tu bandeja de entrada? Revisa la carpeta de <strong>spam</strong> o promociones, o solicita un nuevo enlace.</p>
                 </div>
             </div>
+
+            <form method="POST" action="{{ route('verification.send') }}" class="au-form">
+                @csrf
+                <button type="submit" class="au-submit">
+                    <i class="far fa-envelope"></i><span>Reenviar email de verificación</span>
+                </button>
+            </form>
+
+            <form method="POST" action="{{ route('logout') }}" class="au-back">
+                @csrf
+                <button type="submit" class="au-linkbtn"><i class="fas fa-right-from-bracket"></i>Cerrar sesión</button>
+            </form>
         </div>
     </div>
-</div>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\PasswordMessages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
@@ -34,7 +35,7 @@ class ResetPasswordController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+            ? redirect()->route('login')->with('status', PasswordMessages::es($status))
+            : back()->withErrors(['email' => [PasswordMessages::es($status)]]);
     }
 }

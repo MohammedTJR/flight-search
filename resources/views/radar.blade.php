@@ -54,18 +54,12 @@
             </div>
         </div>
 
-        <aside id="flight-details-panel">
-            <div class="panel-header" onclick="togglePanel()">
-                <i class="fas fa-chevron-up"></i>
-            </div>
-            <button type="button" class="close-panel" onclick="closeFlightDetails()" aria-label="Cerrar panel">
-                <i class="fas fa-xmark"></i>
-            </button>
-            <div id="flight-details-content">
-                <div class="tp-empty">
-                    <p>Selecciona un vuelo en el mapa para ver sus detalles</p>
-                </div>
-            </div>
+        {{-- Vuelo seleccionado: resumen siempre visible (hoja compacta en móvil) y detalles plegables --}}
+        <aside id="flight-details-panel" aria-label="Vuelo seleccionado">
+            <button type="button" class="panel-header" onclick="toggleExpanded()"
+                aria-label="Mostrar u ocultar los detalles"></button>
+            <div id="flight-summary"></div>
+            <div id="flight-details-content"></div>
         </aside>
 
         <div class="refresh-info">
@@ -82,23 +76,6 @@
         </div>
     </div>
 
-    <div id="mobile-warning-overlay" class="mobile-warning-overlay" style="display: none;">
-        <div class="mobile-warning-container">
-            <div class="mobile-warning-title">
-                <i class="fas fa-exclamation-triangle"></i>
-                Aviso importante
-            </div>
-            <div class="mobile-warning-content">
-                El radar de vuelos no está optimizado para dispositivos móviles pequeños. Para una mejor experiencia, te
-                recomendamos abrirlo en un navegador de escritorio o en una tablet.
-                <br><br>
-                Puedes seguir usando la aplicación en tu móvil, pero algunas funciones podrían no funcionar correctamente.
-            </div>
-            <button id="mobile-warning-close" class="mobile-warning-button">
-                Entendido
-            </button>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')

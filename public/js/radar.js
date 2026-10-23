@@ -70,24 +70,9 @@ function toggleZoomHint(show) {
     }
 }
 
-function isMobileDevice() {
-    return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
-}
-
-function shouldShowMobileWarning() {
-    return !localStorage.getItem('mobileWarningShown');
-}
-
-function showMobileWarningIfNeeded() {
-    if (isMobileDevice() && shouldShowMobileWarning()) {
-        const overlay = document.getElementById('mobile-warning-overlay');
-        overlay.style.display = 'flex';
-
-        document.getElementById('mobile-warning-close').addEventListener('click', function () {
-            overlay.style.display = 'none';
-            localStorage.setItem('mobileWarningShown', 'true');
-        });
-    }
+// En pantallas pequeñas la ficha del vuelo es una hoja inferior; en las grandes, un panel lateral
+function isMobileLayout() {
+    return window.matchMedia('(max-width: 767.98px)').matches;
 }
 
 const mapLayers = {
@@ -126,6 +111,12 @@ function initializeMap() {
 
     // Capa por defecto: mapa oscuro (coincide con el icono inicial del selector)
     mapLayers.dark.addTo(map);
+
+    // Si el usuario arrastra el mapa mientras sigue un avión, se deja de seguir (la ficha se mantiene)
+    // y el botón «Seguir» permite volver a engancharlo. Los zooms no interrumpen el seguimiento.
+    map.on('dragstart', function () {
+        if (followFlight) setFollow(false);
+    });
 
     // Al mover o hacer zoom, recargar los aviones del nuevo área visible (con debounce)
     map.on('moveend', function () {
@@ -185,7 +176,6 @@ function initializeMap() {
 
 // Inicializar el mapa
 document.addEventListener('DOMContentLoaded', function () {
-    showMobileWarningIfNeeded();
     initializeMap();
     fetchFlights();
 
@@ -264,9 +254,9 @@ function animateFlights() {
             flight[5] = newLng;
             flight[6] = newLat;
 
-            // Si el avión está siendo seguido, mover el mapa
+            // Si el avión está siendo seguido, mantenerlo centrado en la parte visible del mapa
             if (followFlight === icao24) {
-                map.setView([newLat, newLng]);
+                map.setView(mapCenterFor(L.latLng(newLat, newLng)), map.getZoom(), { animate: false });
             }
         }
     }
@@ -476,16 +466,9 @@ function updateFlights(flightData) {
                 }
 
                 marker.flightData = flight;
+                // Seleccionar un avión abre su ficha y empieza a seguirlo
                 marker.on('click', function () {
-                    // flightData (no el `flight` de la creación) lleva los últimos datos del refresco
-                    showFlightDetails(marker.flightData);
-                    if (selectedFlight && markers[selectedFlight]) {
-                        const prevIcon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
-                        if (prevIcon) prevIcon.style.color = PLANE_COLOR;
-                    }
-                    const currentIcon = marker.getElement().querySelector('.aircraft-icon');
-                    if (currentIcon) currentIcon.style.color = PLANE_SELECTED;
-                    selectedFlight = icao24;
+                    selectAircraft(icao24);
                 });
 
                 markers[icao24] = marker;
@@ -505,12 +488,76 @@ function updateFlights(flightData) {
     });
 }
 
-function togglePanel() {
+// ----- Ficha del vuelo seleccionado: seguimiento y detalles plegables -----
+
+// Centro del mapa que deja el avión en medio de la parte VISIBLE (sin tapar por la hoja o el panel)
+function mapCenterFor(latlng) {
     const panel = document.getElementById('flight-details-panel');
-    if (panel.classList.contains('show')) {
-        closeFlightDetails();
-    } else {
-        panel.classList.add('show');
+    if (!panel || !panel.classList.contains('show')) return latlng;
+
+    const zoom = map.getZoom();
+    const shift = isMobileLayout()
+        ? [0, panel.offsetHeight / 2]   // hoja inferior: el avión sube al centro del mapa libre
+        : [panel.offsetWidth / 2, 0];   // panel lateral: el avión se desplaza a la izquierda
+    return map.unproject(map.project(latlng, zoom).add(shift), zoom);
+}
+
+// Publica la altura de la hoja para que controles y zoom suban por encima de ella (solo móvil)
+function updateSheetMetrics() {
+    const stage = document.querySelector('.radar-stage');
+    const panel = document.getElementById('flight-details-panel');
+    const open = panel.classList.contains('show');
+
+    stage.classList.toggle('has-sheet', open);
+    stage.style.setProperty('--sheet-h', open && isMobileLayout() ? panel.offsetHeight + 'px' : '0px');
+}
+
+// Tras cambiar el tamaño de la ficha, ajusta controles y recoloca el avión seguido
+function onPanelResized() {
+    updateSheetMetrics();
+    if (followFlight && markers[followFlight]) {
+        map.setView(mapCenterFor(markers[followFlight].getLatLng()), map.getZoom(), { animate: true });
+    }
+}
+
+function toggleExpanded() {
+    const panel = document.getElementById('flight-details-panel');
+    panel.classList.toggle('is-expanded');
+    updateFollowUI();
+    // El ResizeObserver de la ficha reajusta controles y mapa cuando cambia su altura
+}
+
+function setFollow(on) {
+    followFlight = on && selectedFlight ? selectedFlight : null;
+    updateFollowUI();
+    if (followFlight && markers[followFlight]) {
+        map.setView(mapCenterFor(markers[followFlight].getLatLng()), map.getZoom(), { animate: true });
+    }
+}
+
+function toggleFollow() {
+    setFollow(!followFlight);
+}
+
+// Refleja el estado en los botones (Siguiendo / Seguir y Detalles / Ocultar)
+function updateFollowUI() {
+    const panel = document.getElementById('flight-details-panel');
+    const follow = document.getElementById('fs-follow');
+    const expand = document.getElementById('fs-expand');
+
+    panel.classList.toggle('is-following', !!followFlight);
+
+    if (follow) {
+        follow.classList.toggle('is-on', !!followFlight);
+        follow.setAttribute('aria-pressed', followFlight ? 'true' : 'false');
+        follow.querySelector('span').textContent = followFlight ? 'Siguiendo' : 'Seguir';
+        follow.querySelector('i').className = followFlight ? 'fas fa-location-crosshairs' : 'far fa-circle-dot';
+    }
+    if (expand) {
+        const open = panel.classList.contains('is-expanded');
+        expand.querySelector('span').textContent = open ? 'Ocultar' : 'Detalles';
+        expand.querySelector('i').className = open ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+        expand.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
 }
 
@@ -591,6 +638,39 @@ function distanceKm(lat1, lon1, lat2, lon2) {
     return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// Porcentaje del trayecto recorrido (distancia recorrida / distancia total), o null si no se puede calcular
+function routeProgress(route, flight) {
+    const o = route && route.origin, d = route && route.destination;
+    if (!o || !d || !flight || flight[6] == null || flight[5] == null ||
+        o.lat == null || o.lng == null || d.lat == null || d.lng == null) {
+        return null;
+    }
+    const done = distanceKm(o.lat, o.lng, flight[6], flight[5]);
+    const left = distanceKm(flight[6], flight[5], d.lat, d.lng);
+    return Math.max(0, Math.min(100, Math.round(done / ((done + left) || 1) * 100)));
+}
+
+// Ruta en una línea para el resumen compacto: ORY ✈ MAD con barra de progreso
+function renderSummaryRoute(route, flight) {
+    if (route === 'loading') {
+        return '<span class="fs-route-note"><i class="fas fa-spinner fa-spin"></i>Buscando ruta…</span>';
+    }
+    if (!route) {
+        return '<span class="fs-route-note"><i class="fas fa-circle-info"></i>Ruta no disponible</span>';
+    }
+    const code = a => escapeHtml(a.iata || a.icao || '—');
+    const city = a => escapeHtml(a.municipality || a.name || '');
+    const pct = routeProgress(route, flight);
+
+    return `
+        <div class="fs-route-row">
+            <div class="fs-route-end"><strong>${code(route.origin)}</strong><span>${city(route.origin)}</span></div>
+            <i class="fas fa-plane"></i>
+            <div class="fs-route-end fs-route-end--right"><strong>${code(route.destination)}</strong><span>${city(route.destination)}</span></div>
+        </div>
+        ${pct !== null ? `<div class="tp-progress" title="${pct}% del trayecto"><div class="tp-progress-bar" style="width:${pct}%"></div><div class="tp-progress-dot" style="left:${pct}%"></div></div>` : ''}`;
+}
+
 // HTML de la sección de ruta para el panel de detalles
 function renderRouteSection(route, flight) {
     if (route === 'loading') {
@@ -642,6 +722,8 @@ function loadRoute(callsign, flight) {
         if (currentRouteCallsign !== callsign) return;
         const section = document.getElementById('route-section');
         if (section) section.innerHTML = renderRouteSection(route, flight);
+        const summaryRoute = document.getElementById('fs-route');
+        if (summaryRoute) summaryRoute.innerHTML = renderSummaryRoute(route, flight);
         // Dibujar la ruta solo en una selección nueva, no en cada refresco del
         // panel (así no se borra el rastro de giros reales acumulado).
         if (routeDrawnFor !== callsign) {
@@ -726,18 +808,45 @@ function showFlightDetails(flight) {
     else if (flight[16] === 2) positionSource = 'MLAT';
     else if (flight[16] === 3) positionSource = 'FLARM';
 
-    // Crear contenido HTML para el panel
-    const detailsHTML = `
-        <div class="tp-head">
+    const panel = document.getElementById('flight-details-panel');
+    const content = document.getElementById('flight-details-content');
+    const keepScroll = content.scrollTop; // el refresco periódico no debe devolver la ficha arriba
+    const sameFlight = panel.dataset.icao24 === icao24;
+
+    // Resumen compacto (siempre visible): identificación, ruta, datos clave y acciones
+    const summaryHTML = `
+        <div class="fs-top">
+            <div class="fs-id">
+                <h4>${escapeHtml(callsign)}</h4>
+                <span>${escapeHtml(originCountry)} · ICAO24 ${escapeHtml(icao24.toUpperCase())}</span>
+            </div>
             <span class="tp-chip"><span class="pulse-dot"></span>${onGround ? 'En tierra' : 'En vuelo'}</span>
-            <span class="tp-id">ICAO24 ${escapeHtml(icao24.toUpperCase())}</span>
+            <button type="button" class="fs-close" onclick="closeFlightDetails()"
+                aria-label="Dejar de seguir y cerrar la ficha" title="Dejar de seguir y cerrar">
+                <i class="fas fa-xmark"></i>
+            </button>
         </div>
 
-        <div class="tp-title">
-            <h4>${escapeHtml(callsign)}</h4>
-            <p>${escapeHtml(originCountry)}</p>
+        <div id="fs-route" class="fs-route">${renderSummaryRoute('loading')}</div>
+
+        <div class="fs-stats">
+            <div><small>Altitud</small><strong>${altM != null ? nf.format(Math.round(altM)) + ' m' : 'N/A'}</strong></div>
+            <div><small>Velocidad</small><strong>${speedMs != null ? nf.format(Math.round(speedMs * 3.6)) + ' km/h' : 'N/A'}</strong></div>
+            <div><small>Rumbo</small><strong>${track != null ? Math.round(track) + '° ' + cardinal(track) : 'N/A'}</strong></div>
         </div>
 
+        <div class="fs-actions">
+            <button type="button" id="fs-follow" class="fs-btn fs-btn--follow" onclick="toggleFollow()" aria-pressed="false">
+                <i class="fas fa-location-crosshairs"></i><span>Siguiendo</span>
+            </button>
+            <button type="button" id="fs-expand" class="fs-btn" onclick="toggleExpanded()" aria-expanded="false">
+                <i class="fas fa-chevron-up"></i><span>Detalles</span>
+            </button>
+        </div>
+    `;
+
+    // Detalles completos (se despliegan en la hoja; en pantallas grandes siempre visibles)
+    const detailsHTML = `
         <div id="route-section">${renderRouteSection('loading')}</div>
 
         <h5 class="tp-sub"><i class="fas fa-sliders"></i>Telemetría en vuelo</h5>
@@ -754,48 +863,46 @@ function showFlightDetails(flight) {
             <div><strong>En tierra:</strong> ${onGround ? 'Sí' : 'No'}</div>
             <div><strong>Última actualización:</strong> ${escapeHtml(lastUpdate)}</div>
         </div>
-
-        <button type="button" class="tp-btn" onclick="centerOnFlight('${escapeHtml(icao24)}')">
-            <i class="fas fa-location-crosshairs"></i>Centrar en el mapa
-        </button>
     `;
 
-    // Actualizar contenido y mostrar panel
-    document.getElementById('flight-details-content').innerHTML = detailsHTML;
-    document.getElementById('flight-details-panel').classList.add('show');
+    // Pintar la ficha. Al abrir un vuelo nuevo, en móvil empieza compacta y en escritorio desplegada.
+    document.getElementById('flight-summary').innerHTML = summaryHTML;
+    content.innerHTML = detailsHTML;
+    if (sameFlight) content.scrollTop = keepScroll;
+    if (!sameFlight) {
+        panel.dataset.icao24 = icao24;
+        panel.classList.toggle('is-expanded', !isMobileLayout());
+    }
+    panel.classList.add('show');
+    updateFollowUI();
+    updateSheetMetrics();
 
     // Cargar la ruta origen -> destino (por callsign) y dibujarla en el mapa
     loadRoute(callsign, flight);
 }
+
+// Cierra la ficha y deja de seguir el avión (el botón ✕). Plegar los detalles NO hace esto.
 function closeFlightDetails() {
-    document.getElementById('flight-details-panel').classList.remove('show');
+    const panel = document.getElementById('flight-details-panel');
+    panel.classList.remove('show', 'is-expanded', 'is-following');
+    delete panel.dataset.icao24;
 
     // Restaurar color del marcador seleccionado
     if (selectedFlight && markers[selectedFlight]) {
-        markers[selectedFlight].getElement().querySelector('i').style.color = PLANE_COLOR;
-        selectedFlight = null;
+        const icon = markers[selectedFlight].getElement().querySelector('.aircraft-icon');
+        if (icon) icon.style.color = PLANE_COLOR;
     }
-
-    followFlight = null; // Desactivar el seguimiento
+    selectedFlight = null;
+    followFlight = null;
     currentRouteCallsign = null;
     clearRoute(); // Quitar la ruta del mapa
+    updateSheetMetrics();
 }
 
-function centerOnFlight(icao24) {
-    if (markers[icao24]) {
-        const position = markers[icao24].getLatLng();
-        map.panTo(position); // Centrar el mapa en el avión sin cambiar el zoom
-        followFlight = icao24; // Activar el seguimiento del avión
-    }
-}
-
-// Selecciona un avión del mapa: centra la vista, abre su ficha y resalta su marcador
+// Selecciona un avión: abre su ficha, resalta su marcador y empieza a seguirlo
 function selectAircraft(icao24) {
     const marker = markers[icao24];
     if (!marker) return;
-
-    map.panTo(marker.getLatLng());
-    showFlightDetails(marker.flightData);
 
     // Restaurar el color del marcador anterior y resaltar el actual
     if (selectedFlight && markers[selectedFlight]) {
@@ -806,6 +913,10 @@ function selectAircraft(icao24) {
     if (currentIcon) currentIcon.style.color = PLANE_SELECTED;
 
     selectedFlight = icao24;
+    showFlightDetails(marker.flightData);
+
+    // La ficha ya está abierta: centrar el avión en la parte visible del mapa y seguirlo
+    setFollow(true);
 }
 
 // Al llegar desde «Mis vuelos»: selecciona el avión pedido en cuanto aparece en los datos
@@ -897,6 +1008,24 @@ function filterSearchResults() {
         resultsContainer.style.display = 'none';
     }
 }
+
+// La altura de la hoja cambia al girar el móvil, al cargar la ruta o al desplegar los detalles:
+// se reajustan los controles y el avión seguido se recoloca en la parte visible del mapa
+document.addEventListener('DOMContentLoaded', function () {
+    const panel = document.getElementById('flight-details-panel');
+    if (!panel) return;
+
+    let resizeTimer = null;
+    const refresh = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(onPanelResized, 120);
+    };
+
+    if ('ResizeObserver' in window) {
+        new ResizeObserver(refresh).observe(panel);
+    }
+    window.addEventListener('resize', refresh);
+});
 
 // Añadir detección de touch para móviles
 document.addEventListener('DOMContentLoaded', function () {

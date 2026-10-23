@@ -428,44 +428,6 @@
     display: none;
 }
 
-.close-panel {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    color: #94a3b8;
-    background: none;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.close-panel:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.tp-empty {
-    padding: 4rem 1rem;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #94a3b8;
-}
-
-.tp-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.75rem;
-    padding-right: 2.5rem;
-}
-
 .tp-chip {
     display: inline-flex;
     align-items: center;
@@ -478,31 +440,6 @@
     color: #c9e6ff;
     background: rgba(0, 101, 145, 0.35);
     border-radius: 9999px;
-}
-
-.tp-id {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #75777d;
-}
-
-.tp-title {
-    margin: 1rem 0 0.25rem;
-}
-
-.tp-title h4 {
-    margin: 0;
-    font-size: 1.6rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #fff;
-}
-
-.tp-title p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #94a3b8;
 }
 
 .tp-route {
@@ -676,95 +613,199 @@
     font-weight: 600;
 }
 
-.tp-btn {
-    width: 100%;
-    margin-top: 1.25rem;
-    padding: 0.75rem 1rem;
+/* ============== Resumen compacto del vuelo seleccionado ============== */
+.aircraft-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#flight-summary {
+    padding-bottom: 0.25rem;
+}
+
+.fs-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.fs-id {
+    min-width: 0;
+    flex: 1;
+}
+
+.fs-id h4 {
+    margin: 0;
+    overflow: hidden;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff;
+}
+
+.fs-id span {
+    display: block;
+    overflow: hidden;
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #94a3b8;
+}
+
+.fs-close {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.07);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.fs-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.fs-route {
+    margin-top: 0.8rem;
+}
+
+.fs-route-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.fs-route-row>i {
+    flex: 0 0 auto;
+    color: #39b8fd;
+}
+
+.fs-route-end {
+    min-width: 0;
+    flex: 1 1 0;
+}
+
+.fs-route-end--right {
+    text-align: right;
+}
+
+.fs-route-end strong {
+    display: block;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.fs-route-end span {
+    display: block;
+    overflow: hidden;
+    font-size: 0.7rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #94a3b8;
+}
+
+.fs-route-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.fs-route .tp-progress {
+    margin-top: 0.7rem;
+}
+
+.fs-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.fs-stats>div {
+    padding: 0.5rem 0.6rem;
+    background: rgba(239, 244, 255, 0.06);
+    border-radius: 0.7rem;
+}
+
+.fs-stats small {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.fs-stats strong {
+    font-size: 0.85rem;
+    font-weight: 800;
+    white-space: nowrap;
+    color: #fff;
+}
+
+.fs-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.fs-btn {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    padding: 0.65rem 0.8rem;
+    font-family: inherit;
+    font-size: 0.82rem;
     font-weight: 700;
-    color: #fff;
-    background: linear-gradient(90deg, #006591, #39b8fd);
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.09);
     border: none;
     border-radius: 0.75rem;
-    box-shadow: 0 8px 25px -5px rgba(57, 184, 253, 0.35);
-    transition: filter 0.15s ease, transform 0.15s ease;
-}
-
-.tp-btn:hover {
-    filter: brightness(1.1);
-}
-
-.tp-btn:active {
-    transform: scale(0.98);
-}
-
-/* ======================= Aviso para móviles ======================= */
-.mobile-warning-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(6, 13, 25, 0.75);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-.mobile-warning-container {
-    background-color: #fff;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    max-width: 400px;
-    width: 100%;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
-    animation: fadeInUp 0.3s ease-out;
-}
-
-.mobile-warning-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #b45309;
-}
-
-.mobile-warning-content {
-    margin-bottom: 20px;
-    line-height: 1.5;
-    color: var(--fl-ink-soft);
-}
-
-.mobile-warning-button {
-    width: 100%;
-    padding: 0.7rem 1rem;
-    font-weight: 700;
-    color: #fff;
-    background-color: var(--fl-navy);
-    border: none;
-    border-radius: 9999px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
-.mobile-warning-button:hover {
-    background-color: #16263f;
+.fs-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+.fs-btn:active {
+    transform: scale(0.97);
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+/* «Siguiendo»: botón destacado; «Seguir»: botón neutro para volver a engancharlo */
+.fs-btn--follow.is-on {
+    color: #fff;
+    background: linear-gradient(90deg, #006591, #39b8fd);
+    box-shadow: 0 8px 20px -6px rgba(57, 184, 253, 0.5);
+}
+
+#flight-details-content {
+    margin-top: 0.5rem;
+}
+
+/* En pantallas grandes los detalles siempre se ven y no hace falta el botón */
+@media (min-width: 768px) {
+    #fs-expand {
+        display: none;
     }
 }
 
@@ -797,6 +838,11 @@
         display: none;
     }
 
+    /* Aviones más pequeños: en una pantalla estrecha el radar se llenaba de iconos enormes */
+    .aircraft-icon {
+        font-size: 15px;
+    }
+
     #map-controls {
         top: auto;
         bottom: 1.25rem;
@@ -820,13 +866,13 @@
         display: none;
     }
 
-    /* Panel como hoja inferior */
+    /* Ficha como hoja inferior: compacta por defecto (el mapa sigue a la vista) y desplegable */
     #flight-details-panel {
         top: auto;
         left: 0;
         width: 100%;
-        height: 70%;
-        padding-top: 0.5rem;
+        max-height: 78%;
+        padding: 0.25rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
         border-radius: 1rem 1rem 0 0;
         box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
         transform: translateY(100%);
@@ -836,15 +882,22 @@
         transform: translateY(0);
     }
 
-    .panel-header {
-        display: block;
-        padding: 0.4rem;
-        text-align: center;
-        cursor: pointer;
+    /* Detalles completos: solo cuando se despliegan */
+    #flight-details-content {
+        display: none;
     }
 
-    .panel-header i {
-        display: none;
+    #flight-details-panel.is-expanded #flight-details-content {
+        display: block;
+    }
+
+    .panel-header {
+        display: block;
+        width: 100%;
+        padding: 0.55rem 0 0.75rem;
+        background: none;
+        border: none;
+        cursor: pointer;
     }
 
     .panel-header::after {
@@ -853,12 +906,78 @@
         width: 40px;
         height: 4px;
         margin: 0 auto;
-        background: #334155;
+        background: #475569;
         border-radius: 2px;
     }
 
-    .close-panel {
-        top: 0.5rem;
-        right: 0.75rem;
+    /* Con la hoja abierta: se libera la parte alta y los controles suben por encima de ella */
+    .has-sheet .radar-hud,
+    .has-sheet .refresh-info {
+        display: none;
+    }
+
+    .has-sheet #map-controls {
+        bottom: calc(var(--sheet-h, 0px) + 0.75rem);
+    }
+
+    .has-sheet .leaflet-bottom.leaflet-left {
+        margin-bottom: var(--sheet-h, 0px);
+    }
+}
+
+/* Resumen más ajustado en móvil: que la hoja tape lo mínimo del mapa */
+@media (max-width: 767.98px) {
+    .fs-id h4 {
+        font-size: 1.3rem;
+    }
+
+    .fs-route {
+        margin-top: 0.55rem;
+    }
+
+    .fs-route-end strong {
+        font-size: 1.1rem;
+    }
+
+    .fs-route .tp-progress {
+        margin-top: 0.5rem;
+    }
+
+    .fs-stats {
+        gap: 0.4rem;
+        margin-top: 0.6rem;
+    }
+
+    .fs-stats>div {
+        padding: 0.35rem 0.5rem;
+    }
+
+    .fs-actions {
+        margin-top: 0.6rem;
+    }
+
+    .fs-btn {
+        padding: 0.55rem 0.7rem;
+    }
+
+    .panel-header {
+        padding: 0.4rem 0 0.55rem;
+    }
+}
+
+/* Lo que ya aparece en los detalles no se repite en el resumen cuando estos están visibles */
+@media (min-width: 768px) {
+
+    #flight-summary .fs-route,
+    #flight-summary .fs-stats {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    #flight-details-panel.is-expanded .fs-route,
+    #flight-details-panel.is-expanded .fs-stats {
+        display: none;
     }
 }
